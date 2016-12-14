@@ -46,8 +46,10 @@ void ADSR :: sampleRateChanged( StkFloat newRate, StkFloat oldRate )
 
 void ADSR :: keyOn()
 {
-  if ( target_ <= 0.0 ) target_ = 1.0;
-  state_ = ATTACK;
+    if ( target_ <= 0.0 ) {
+      target_ = 1.0;
+    }
+    state_ = ATTACK;
 }
 
 void ADSR :: keyOff()

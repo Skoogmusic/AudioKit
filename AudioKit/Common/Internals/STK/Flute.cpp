@@ -40,20 +40,21 @@ Flute :: Flute( StkFloat lowestFrequency )
   jetDelay_.setMaximumDelay( nDelays + 1 );
   jetDelay_.setDelay( 49.0 );
 
-  vibrato_.setFrequency( 5.925 );
+  vibrato_.setFrequency( 5.8 );
   filter_.setPole( 0.7 - ( 0.1 * 22050.0 / Stk::sampleRate() ) );
   dcBlock_.setBlockZero();
 
   adsr_.setAllTimes( 0.005, 0.01, 0.8, 0.010 );
   endReflection_ = 0.5;
   jetReflection_ = 0.5;
-  noiseGain_     = 0.15;    // Breath pressure random component.
-  vibratoGain_   = 0.05;    // Breath periodic vibrato component.
-  jetRatio_      = 0.32;
+  noiseGain_     = 0.13;    // Breath pressure random component.
+  vibratoGain_   = 0.01;    // Breath periodic vibrato component.
+  jetRatio_      = 0.34;
 
 	maxPressure_ = 0.0;
   this->clear();
   this->setFrequency( 220.0 );
+  this->setJetDelay(0.34);
 }
 
 Flute :: ~Flute( void )
@@ -84,7 +85,7 @@ void Flute :: setFrequency( StkFloat frequency )
   // (previously approximated as 2.0 samples).  The tuning is still
   // not perfect but I'm not sure why.  Also, we are not accounting
   // for the dc blocking filter delay.
-  StkFloat delay = Stk::sampleRate() / lastFrequency_ - filter_.phaseDelay( lastFrequency_ ) - 1.0;
+    StkFloat delay = Stk::sampleRate() / lastFrequency_ - 2.0; //- filter_.phaseDelay( lastFrequency_ ) - 1.0;
 
   boreDelay_.setDelay( delay );
   jetDelay_.setDelay( delay * jetRatio_ );
@@ -104,7 +105,7 @@ void Flute :: startBlowing( StkFloat amplitude, StkFloat rate )
   }
 
   adsr_.setAttackRate( rate );
-  maxPressure_ = amplitude / (StkFloat) 0.8;
+  maxPressure_ = amplitude * (StkFloat) 1.4;
   adsr_.keyOn();
 }
 
@@ -122,7 +123,7 @@ void Flute :: stopBlowing( StkFloat rate )
 void Flute :: noteOn( StkFloat frequency, StkFloat amplitude )
 {
   this->setFrequency( frequency );
-  this->startBlowing( 1.1 + (amplitude * 0.20), amplitude * 0.02 );
+  this->startBlowing(amplitude, amplitude * 0.02 );
   outputGain_ = amplitude + 0.001;
 }
 
