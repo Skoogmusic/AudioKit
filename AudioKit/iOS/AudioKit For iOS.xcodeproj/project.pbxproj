@@ -36,6 +36,7 @@
 		5349E3BF1E01A4F600152AEC /* ModString.h in Headers */ = {isa = PBXBuildFile; fileRef = 5349E3BE1E01A4F600152AEC /* ModString.h */; };
 		5349E3C11E01A56300152AEC /* NBody.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5349E3C01E01A56300152AEC /* NBody.cpp */; };
 		5349E3C31E01A5A100152AEC /* NBody.h in Headers */ = {isa = PBXBuildFile; fileRef = 5349E3C21E01A5A100152AEC /* NBody.h */; };
+		5349E3CA1E01AD1F00152AEC /* Plucking_a_guitar_string_with_a_buzz_5b.raw in Resources */ = {isa = PBXBuildFile; fileRef = 5349E3C41E01A6E000152AEC /* Plucking_a_guitar_string_with_a_buzz_5b.raw */; };
 		6520FFC21D361B030052410C /* resonantFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6520FFC11D361B030052410C /* resonantFilter.swift */; };
 		898DED261C6944430026FCC3 /* AKVariSpeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898DED251C6944430026FCC3 /* AKVariSpeed.swift */; };
 		8D0E46581D3827970000CCF8 /* AKAudioFile+ProcessingAsynchronously.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D0E46561D3827970000CCF8 /* AKAudioFile+ProcessingAsynchronously.swift */; };
@@ -3782,6 +3783,7 @@
 				C4A929651D1343AE0095E429 /* mand6.raw in Resources */,
 				C4A929611D1343AE0095E429 /* mand2.raw in Resources */,
 				C4A929601D1343AE0095E429 /* mand12.raw in Resources */,
+				5349E3CA1E01AD1F00152AEC /* Plucking_a_guitar_string_with_a_buzz_5b.raw in Resources */,
 				C4A929641D1343AE0095E429 /* mand5.raw in Resources */,
 				C4A929661D1343AE0095E429 /* mand7.raw in Resources */,
 				C4A9295F1D1343AE0095E429 /* mand11.raw in Resources */,
