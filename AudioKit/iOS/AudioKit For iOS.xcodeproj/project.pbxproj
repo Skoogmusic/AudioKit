@@ -812,6 +812,7 @@
 		5349E3C01E01A56300152AEC /* NBody.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NBody.cpp; sourceTree = "<group>"; };
 		5349E3C21E01A5A100152AEC /* NBody.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBody.h; sourceTree = "<group>"; };
 		5349E3C41E01A6E000152AEC /* Plucking_a_guitar_string_with_a_buzz_5b.raw */ = {isa = PBXFileReference; lastKnownFileType = file; path = Plucking_a_guitar_string_with_a_buzz_5b.raw; sourceTree = "<group>"; };
+		539F50AE1E02D7E200793D66 /* SkoogInstruments.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = SkoogInstruments.playground; sourceTree = "<group>"; };
 		6520FFC11D361B030052410C /* resonantFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = resonantFilter.swift; sourceTree = "<group>"; };
 		898DED251C6944430026FCC3 /* AKVariSpeed.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AKVariSpeed.swift; sourceTree = "<group>"; };
 		8D0E46561D3827970000CCF8 /* AKAudioFile+ProcessingAsynchronously.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AKAudioFile+ProcessingAsynchronously.swift"; sourceTree = "<group>"; };
@@ -2076,6 +2077,7 @@
 		C446B3C31D45296A000AEFCA /* Playgrounds */ = {
 			isa = PBXGroup;
 			children = (
+				539F50AE1E02D7E200793D66 /* SkoogInstruments.playground */,
 				C4DABC4A1D4F0D7500A8942F /* Basics.playground */,
 				C4D86EB01D4E148900563FF5 /* Synthesis.playground */,
 				C49A0A001D53228B007D8ADB /* Playback.playground */,

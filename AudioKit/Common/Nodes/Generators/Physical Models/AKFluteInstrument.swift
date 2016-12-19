@@ -125,8 +125,8 @@ open class AKFluteInstrument: AKPolyphonicNode, AKComponent {
         self.internalAU!.triggerFrequency(Float(frequency), amplitude: Float(amplitude))
     }
     
-    open func controlChange(channel: Int, value: Double) {
-        self.internalAU!.controlChange(Int32(channel), value: Float(value * 127))
+    open func controlChange(channel: Int, value: Int) {
+        self.internalAU!.controlChange(Int32(channel), value: Int32(value))
     }
 
     /// Function to start, play, or activate the node, all do the same thing
@@ -140,7 +140,7 @@ open class AKFluteInstrument: AKPolyphonicNode, AKComponent {
     }
     /// Function to start, play, or activate the node, all do the same thing
     open override func play(noteNumber: MIDINoteNumber, velocity: MIDIVelocity) {
-        print("play flute note: \(noteNumber) vel: \(velocity)")
+//        print("play flute note: \(noteNumber) vel: \(velocity)")
         self.internalAU!.startNote(Int32(noteNumber), velocity: Int32(velocity))
     }
     
@@ -151,7 +151,8 @@ open class AKFluteInstrument: AKPolyphonicNode, AKComponent {
         self.internalAU!.stopNote(Int32(noteNumber))
     }
     
-    open func afterTouch(noteNumber: MIDINoteNumber, velocity: Double) {
-        self.internalAU!.controlChange(Int32(noteNumber), value: Float(velocity * 127))
+    open func afterTouch(noteNumber: MIDINoteNumber, velocity: MIDIVelocity) {
+//        print("Audiokit aftertouch flute note: \(noteNumber) vel: \(velocity)")
+        self.internalAU!.controlChange(Int32(noteNumber), value: Int32(velocity))
     }
 }

@@ -116,7 +116,7 @@ public:
             amplitudeRamper.setImmediate(amp);
         }
         
-        void controlChange(int channel, float value) {
+        void controlChange(int channel, int value) {
             flute->controlChange(channel, value);
         }
         
@@ -134,7 +134,7 @@ public:
                 }
             } else {
                 if (stage == stageOff) {
-                    std::cout << "adding note\n";
+//                    std::cout << "adding note\n";
                     add();
                 }
                 stage = stageOn;
@@ -171,16 +171,15 @@ public:
                 clear();
                 remove();
             }
-            
         }
-        void controlChange(float velocity) {
+        void controlChange(int velocity) {
             if (stage == stageOn)
                 flute->controlChange(128, velocity);
         }
     };
 
     AKFluteInstrumentDSPKernel() {
-        std::cout << "Kernel call!\n";
+//        std::cout << "Kernel call!\n";
         noteStates.resize(128);
         for (NoteState& state : noteStates) {
             state.kernel = this;
@@ -203,13 +202,13 @@ public:
     }
     
     void startNote(int note, int velocity) {
-        std::cout << "start note: (" << note << "), vel: (" << velocity << ")\n";
+//        std::cout << "start note: (" << note << "), vel: (" << velocity << ")\n";
         
         noteStates[note].noteOn(note, velocity);
     }
     
     void stopNote(int note) {
-        std::cout << "stop note: (" << note << ")\n";
+//        std::cout << "stop note: (" << note << ")\n";
         noteStates[note].noteOn(note, 0);
     }
 
@@ -238,7 +237,7 @@ public:
 //        amplitudeRamper.setImmediate(amp);
 //    }
     
-    void controlChange(int note, float velocity) {
+    void controlChange(int note, int velocity) {
         noteStates[note].controlChange(velocity);
 //        flute->controlChange(channel, value);
     }

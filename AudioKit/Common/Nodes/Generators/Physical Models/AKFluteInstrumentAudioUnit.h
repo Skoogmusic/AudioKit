@@ -16,7 +16,7 @@
 @property (nonatomic) float amplitude;
 
 - (void)triggerFrequency:(float)frequency amplitude:(float)amplitude;
-- (void)controlChange:(int)channel value:(float)value;
+- (void)controlChange:(int)channel value:(int)value;
 - (void)startNote:(int)note velocity:(int)vel;
 - (void)stopNote:(int)note;
 - (void)start;

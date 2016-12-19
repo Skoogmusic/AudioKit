@@ -36,7 +36,8 @@
 //    _kernel.setFrequency(frequency);
 }
 
-- (void)controlChange:(int)channel value:(float)value {
+- (void)controlChange:(int)channel value:(int)value {
+//    NSLog(@"play flute mm note: %d vel: %d", channel, value);
     _kernel.controlChange(channel, value);
 }
 - (void)setAmplitude:(float)amplitude {
@@ -50,7 +51,7 @@
 }
 
 - (void)startNote:(int)note velocity:(int)vel {
-    NSLog(@"play flute mm note: %d vel: %d", note, vel);
+//    NSLog(@"play flute mm note: %d vel: %d", note, vel);
     _kernel.startNote(note, vel);
 }
 

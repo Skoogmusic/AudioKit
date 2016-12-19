@@ -2,11 +2,24 @@
 import PlaygroundSupport
 import AudioKit
 
-let bank = AKOscillatorBank(waveform: AKTable(.sine),
-                            attackDuration: 0.1,
-                            releaseDuration: 0.1)
+let bank = AKOscillatorBank(waveform: AKTable(.square),
+                            attackDuration: 0.01, decayDuration: 0.01,
+                                sustainLevel: 1.0,
+                                releaseDuration: 0.3,detuningOffset: 0.0, detuningMultiplier: 0.5)
 
-AudioKit.output = bank
+var filter: AKMoogLadder
+var masterVolume = AKMixer()
+var trackedAmp: AKAmplitudeTracker
+
+filter = AKMoogLadder(bank)
+filter.cutoffFrequency = 312.132	//Hz
+filter.resonance = 1.574			//%
+
+
+masterVolume = AKMixer(filter)
+trackedAmp = AKAmplitudeTracker(masterVolume)
+
+AudioKit.output = trackedAmp
 AudioKit.start()
 
 class PlaygroundView: AKPlaygroundView, AKKeyboardDelegate {
@@ -86,11 +99,14 @@ class PlaygroundView: AKPlaygroundView, AKKeyboardDelegate {
     }
 
     func noteOn(note: MIDINoteNumber) {
+        filter.resonance = 0.2 + (0.8 * 0.59)
+        filter.cutoffFrequency = note.midiNoteToFrequency()
         bank.play(noteNumber: note, velocity: 80)
     }
 
     func noteOff(note: MIDINoteNumber) {
         bank.stop(noteNumber: note)
+        filter.resonance = 0.2
     }
 }
 
