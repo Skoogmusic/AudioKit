@@ -171,7 +171,7 @@ extension AVAudioEngine {
 
                 } else if AKSettings.playbackWhileMuted {
 
-                    try AKSettings.setSession(category: .playback)
+                    try AKSettings.setSession(category: .playback, with: .mixWithOthers) // edited to keep background audio active
 
                 } else {
                     try AKSettings.setSession(category: .ambient)
