@@ -23,7 +23,7 @@ class PlaygroundView: AKPlaygroundView, AKKeyboardDelegate {
         addSubview(AKPropertySlider(
             property: "Note On Velocity",
             format: "%0.f",
-            value:  velocity, minimum: 0, maximum: 127,
+            value:  velocity, minimum: 0.0, maximum: 127.0,
             color: AKColor.blue
         ) { multiplier in
             velocity = multiplier
@@ -31,10 +31,10 @@ class PlaygroundView: AKPlaygroundView, AKKeyboardDelegate {
         addSubview(AKPropertySlider(
             property: "Aftertouch",
             format: "%0.f",
-            value:  velocity, minimum: 0, maximum: 127,
+            value:  velocity, minimum: 0.0, maximum: 127.0,
             color: AKColor.green
         ) { multiplier in
-            flute.afterTouch(noteNumber: currentNote, velocity: velocity)
+            flute.afterTouch(noteNumber: currentNote, velocity: Int(velocity))
         })
         
         keyboard = AKKeyboardView(width: 440, height: 100)
@@ -58,7 +58,7 @@ class PlaygroundView: AKPlaygroundView, AKKeyboardDelegate {
     }
     
     func noteOff(note: MIDINoteNumber) {
-        flute.stop(noteNumber: note)
+//        flute.stop(noteNumber: note)
     }
 }
 

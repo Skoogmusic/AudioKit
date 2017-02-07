@@ -106,7 +106,7 @@ class PlaygroundView: AKPlaygroundView, AKKeyboardDelegate {
 
     func noteOff(note: MIDINoteNumber) {
         bank.stop(noteNumber: note)
-        filter.resonance = 0.2
+//        filter.resonance = 0.2
     }
 }
 

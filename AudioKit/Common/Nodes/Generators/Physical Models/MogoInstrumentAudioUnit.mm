@@ -66,12 +66,12 @@
 //}
 
 - (void)setResonance:(int)note velocity:(float)velocity {
-    NSLog(@"set resonance side %d, amount %f", note, velocity);
+    //NSLog(@"set resonance side %d, amount %f", note, velocity);
     _kernel.setResonance(note, velocity);
 }
 
 - (void)setCutoffFrequency:(int)note velocity:(float)velocity {
-    NSLog(@"set cutofffrequency side %d, amount %f", note, velocity);
+    //NSLog(@"set cutofffrequency side %d, amount %f", note, velocity);
     _kernel.setCutoffFrequency(note, velocity);
 }
 
