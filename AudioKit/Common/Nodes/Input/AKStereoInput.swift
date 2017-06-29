@@ -38,7 +38,7 @@ open class AKStereoInput: AKNode, AKToggleable {
             self.avAudioNode = mixer
             AKSettings.audioInputEnabled = true
             AudioKit.engine.attach(mixer)
-            AudioKit.engine.connect(AudioKit.engine.inputNode!, to: self.avAudioNode, format: AudioKit.format)
+            AudioKit.engine.connect(AudioKit.engine.inputNode, to: self.avAudioNode, format: AudioKit.format)
         #endif
     }
     

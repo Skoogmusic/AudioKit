@@ -17,7 +17,7 @@ public typealias MIDIChannel = Int
 extension Collection where IndexDistance == Int {
     /// Return a random element from the collection
     public func randomElement() -> Iterator.Element {
-        let offset = Int(arc4random_uniform(UInt32(count.toIntMax())))
+        let offset = Int(arc4random_uniform(UInt32(Int64(count))))
         return self[index(startIndex, offsetBy: offset)]
     }
 }
@@ -176,10 +176,10 @@ extension Double {
 }
 
 extension RangeReplaceableCollection where Iterator.Element: ExpressibleByIntegerLiteral {
-	/// Initialize array with zeroes, ~10x faster than append for array of size 4096
-	///
-	/// - parameter count: Number of elements in the array
-	///
+    /// Initialize array with zeroes, ~10x faster than append for array of size 4096
+    ///
+    /// - parameter count: Number of elements in the array
+    ///
 
     public init(zeroes count: Int) {
         self.init(repeating: 0, count: count)

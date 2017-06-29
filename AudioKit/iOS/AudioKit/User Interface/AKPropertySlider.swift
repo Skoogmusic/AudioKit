@@ -137,7 +137,7 @@ import Foundation
         let nameLabelStyle = NSMutableParagraphStyle()
         nameLabelStyle.alignment = .left
 
-        let nameLabelFontAttributes = [NSFontAttributeName: UIFont.boldSystemFont(ofSize: fontSize), NSForegroundColorAttributeName: textColor, NSParagraphStyleAttributeName: nameLabelStyle] as [String : Any]
+        let nameLabelFontAttributes = [NSAttributedStringKey.font.rawValue: UIFont.boldSystemFont(ofSize: fontSize), NSAttributedStringKey.foregroundColor: textColor, NSAttributedStringKey.paragraphStyle: nameLabelStyle] as! [String : Any]
 
         let nameLabelInset: CGRect = nameLabelRect.insetBy(dx: 10, dy: 0)
         let nameLabelTextHeight: CGFloat = NSString(string: propertyName).boundingRect(with: CGSize(width: nameLabelInset.width, height: CGFloat.infinity), options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes: nameLabelFontAttributes, context: nil).size.height
@@ -152,7 +152,7 @@ import Foundation
         let valueLabelStyle = NSMutableParagraphStyle()
         valueLabelStyle.alignment = .right
 
-        let valueLabelFontAttributes = [NSFontAttributeName: UIFont.boldSystemFont(ofSize: fontSize), NSForegroundColorAttributeName: textColor, NSParagraphStyleAttributeName: valueLabelStyle] as [String : Any]
+        let valueLabelFontAttributes = [NSAttributedStringKey.font.rawValue: UIFont.boldSystemFont(ofSize: fontSize), NSAttributedStringKey.foregroundColor: textColor, NSAttributedStringKey.paragraphStyle: valueLabelStyle] as! [String : Any]
 
         let valueLabelInset: CGRect = valueLabelRect.insetBy(dx: 10, dy: 0)
         let valueLabelTextHeight: CGFloat = NSString(string: currentValueText).boundingRect(with: CGSize(width: valueLabelInset.width, height: CGFloat.infinity), options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes: valueLabelFontAttributes, context: nil).size.height

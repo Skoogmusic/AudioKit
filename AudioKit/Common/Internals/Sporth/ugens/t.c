@@ -120,6 +120,7 @@ int sporth_tblsize(sporth_stack *stack, void *ud)
 
     char *ftname;
     sp_ftbl *ft;
+    ft = 0;
     size_t *tsize;
 
     switch(pd->mode){

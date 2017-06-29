@@ -183,12 +183,12 @@ open class AKAudioFile: AVAudioFile {
         let buffer =  AVAudioPCMBuffer(pcmFormat: self.processingFormat, frameCapacity: (AVAudioFrameCount( self.length)))
 
         do {
-            try self.read(into: buffer)
+            try self.read(into: buffer!)
         } catch let error as NSError {
             print("error cannot readIntBuffer, Error: \(error)")
         }
 
-        return buffer
+        return buffer!
 
     }()
 
@@ -218,7 +218,7 @@ open class AKAudioFile: AVAudioFile {
         }
 
         if maxLev == 0 {
-            return FLT_MIN
+            return Float.leastNormalMagnitude
         } else {
             return (10 * log10(maxLev))
         }

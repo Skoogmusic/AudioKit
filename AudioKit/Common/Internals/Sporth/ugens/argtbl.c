@@ -125,6 +125,7 @@ int sporth_atblsize(sporth_stack *stack, void *ud)
 
     char *ftname;
     plumber_argtbl *at;
+    at = 0;
     size_t *tsize;
 
     switch(pd->mode){

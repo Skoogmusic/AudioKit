@@ -68,7 +68,7 @@ import AVFoundation
 
     /// Global audio format AudioKit will default to
     open static var audioFormat: AVAudioFormat {
-        return AVAudioFormat(standardFormatWithSampleRate: sampleRate, channels: numberOfChannels)
+        return AVAudioFormat(standardFormatWithSampleRate: sampleRate, channels: numberOfChannels)!
     }
 
     /// Whether to DefaultToSpeaker when audio input is enabled
