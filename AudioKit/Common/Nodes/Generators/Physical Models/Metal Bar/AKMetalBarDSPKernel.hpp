@@ -3,20 +3,12 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright (c) 2016 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
 //
 
-#ifndef AKMetalBarDSPKernel_hpp
-#define AKMetalBarDSPKernel_hpp
+#pragma once
 
-#import "DSPKernel.hpp"
-#import "ParameterRamper.hpp"
-
-#import <AudioKit/AudioKit-Swift.h>
-
-extern "C" {
-#include "soundpipe.h"
-}
+#import "AKSoundpipeKernel.hpp"
 
 enum {
     leftBoundaryConditionAddress = 0,
@@ -28,191 +20,180 @@ enum {
     strikeWidthAddress = 6
 };
 
-class AKMetalBarDSPKernel : public DSPKernel {
+class AKMetalBarDSPKernel : public AKSoundpipeKernel, public AKOutputBuffered {
 public:
     // MARK: Member Functions
-
+    
     AKMetalBarDSPKernel() {}
-
-    void init(int channelCount, double inSampleRate) {
-        channels = channelCount;
-
-        sampleRate = float(inSampleRate);
-
-        sp_create(&sp);
-        sp->sr = sampleRate;
-        sp->nchan = channels;
+    
+    void init(int _channels, double _sampleRate) override {
+        AKSoundpipeKernel::init(_channels, _sampleRate);
         sp_bar_create(&bar);
         sp_bar_init(sp, bar, 3, 0.0001);
-//        bar->bcL = 2;
-//        bar->bcR = 2;
-//        bar->T30 = 0.5;
-//        bar->scan = 0.2;
-//        bar->pos = 0.01;
-//        bar->vel = 1500;
-//        bar->wid = 0.02;
+        //        bar->bcL = 2;
+        //        bar->bcR = 2;
+        //        bar->T30 = 0.5;
+        //        bar->scan = 0.2;
+        //        bar->pos = 0.01;
+        //        bar->vel = 1500;
+        //        bar->wid = 0.02;
     }
-
+    
     void start() {
         started = true;
     }
-
+    
     void stop() {
         started = false;
     }
-
+    
     void destroy() {
         sp_bar_destroy(&bar);
-        sp_destroy(&sp);
+        AKSoundpipeKernel::destroy();
     }
-
+    
     void reset() {
         resetted = true;
     }
-
+    
     void setLeftBoundaryCondition(float bcL) {
         leftBoundaryCondition = bcL;
         leftBoundaryConditionRamper.setImmediate(bcL);
     }
-
+    
     void setRightBoundaryCondition(float bcR) {
         rightBoundaryCondition = bcR;
         rightBoundaryConditionRamper.setImmediate(bcR);
     }
-
+    
     void setDecayDuration(float T30) {
         decayDuration = T30;
         decayDurationRamper.setImmediate(T30);
     }
-
+    
     void setScanSpeed(float scan) {
         scanSpeed = scan;
         scanSpeedRamper.setImmediate(scan);
     }
-
+    
     void setPosition(float pos) {
         position = pos;
         positionRamper.setImmediate(pos);
     }
-
+    
     void setStrikeVelocity(float vel) {
         strikeVelocity = vel;
         strikeVelocityRamper.setImmediate(vel);
     }
-
+    
     void setStrikeWidth(float wid) {
         strikeWidth = wid;
         strikeWidthRamper.setImmediate(wid);
     }
-
+    
     void trigger() {
         internalTrigger = 1;
     }
-
+    
     void setParameter(AUParameterAddress address, AUValue value) {
         switch (address) {
             case leftBoundaryConditionAddress:
                 leftBoundaryConditionRamper.setUIValue(clamp(value, (float)1, (float)3));
                 break;
-
+                
             case rightBoundaryConditionAddress:
                 rightBoundaryConditionRamper.setUIValue(clamp(value, (float)1, (float)3));
                 break;
-
+                
             case decayDurationAddress:
                 decayDurationRamper.setUIValue(clamp(value, (float)0, (float)10));
                 break;
-
+                
             case scanSpeedAddress:
                 scanSpeedRamper.setUIValue(clamp(value, (float)0, (float)100));
                 break;
-
+                
             case positionAddress:
                 positionRamper.setUIValue(clamp(value, (float)0, (float)1));
                 break;
-
+                
             case strikeVelocityAddress:
                 strikeVelocityRamper.setUIValue(clamp(value, (float)0, (float)1000));
                 break;
-
+                
             case strikeWidthAddress:
                 strikeWidthRamper.setUIValue(clamp(value, (float)0, (float)1));
                 break;
-
+                
         }
     }
-
+    
     AUValue getParameter(AUParameterAddress address) {
         switch (address) {
             case leftBoundaryConditionAddress:
                 return leftBoundaryConditionRamper.getUIValue();
-
+                
             case rightBoundaryConditionAddress:
                 return rightBoundaryConditionRamper.getUIValue();
-
+                
             case decayDurationAddress:
                 return decayDurationRamper.getUIValue();
-
+                
             case scanSpeedAddress:
                 return scanSpeedRamper.getUIValue();
-
+                
             case positionAddress:
                 return positionRamper.getUIValue();
-
+                
             case strikeVelocityAddress:
                 return strikeVelocityRamper.getUIValue();
-
+                
             case strikeWidthAddress:
                 return strikeWidthRamper.getUIValue();
-
+                
             default: return 0.0f;
         }
     }
-
+    
     void startRamp(AUParameterAddress address, AUValue value, AUAudioFrameCount duration) override {
         switch (address) {
             case leftBoundaryConditionAddress:
                 leftBoundaryConditionRamper.startRamp(clamp(value, (float)1, (float)3), duration);
                 break;
-
+                
             case rightBoundaryConditionAddress:
                 rightBoundaryConditionRamper.startRamp(clamp(value, (float)1, (float)3), duration);
                 break;
-
+                
             case decayDurationAddress:
                 decayDurationRamper.startRamp(clamp(value, (float)0, (float)10), duration);
                 break;
-
+                
             case scanSpeedAddress:
                 scanSpeedRamper.startRamp(clamp(value, (float)0, (float)100), duration);
                 break;
-
+                
             case positionAddress:
                 positionRamper.startRamp(clamp(value, (float)0, (float)1), duration);
                 break;
-
+                
             case strikeVelocityAddress:
                 strikeVelocityRamper.startRamp(clamp(value, (float)0, (float)1000), duration);
                 break;
-
+                
             case strikeWidthAddress:
                 strikeWidthRamper.startRamp(clamp(value, (float)0, (float)1), duration);
                 break;
-
+                
         }
     }
-
-    void setBuffers(AudioBufferList *inBufferList, AudioBufferList *outBufferList) {
-        inBufferListPtr = inBufferList;
-        outBufferListPtr = outBufferList;
-    }
-
+    
     void process(AUAudioFrameCount frameCount, AUAudioFrameCount bufferOffset) override {
-
+        
         for (int frameIndex = 0; frameIndex < frameCount; ++frameIndex) {
-
+            
             int frameOffset = int(frameIndex + bufferOffset);
-
+            
             leftBoundaryCondition = leftBoundaryConditionRamper.getAndStep();
             bar->bcL = (float)leftBoundaryCondition;
             rightBoundaryCondition = rightBoundaryConditionRamper.getAndStep();
@@ -227,7 +208,7 @@ public:
             bar->vel = (float)strikeVelocity;
             strikeWidth = strikeWidthRamper.getAndStep();
             bar->wid = (float)strikeWidth;
-
+            
             for (int channel = 0; channel < channels; ++channel) {
                 float *out = (float *)outBufferListPtr->mBuffers[channel].mData + frameOffset;
                 if (started) {
@@ -241,21 +222,14 @@ public:
             internalTrigger = 0;
         }
     }
-
+    
     // MARK: Member Variables
-
+    
 private:
-
-    int channels = AKSettings.numberOfChannels;
-    float sampleRate = AKSettings.sampleRate;
     float internalTrigger = 0;
-
-    AudioBufferList *inBufferListPtr = nullptr;
-    AudioBufferList *outBufferListPtr = nullptr;
-
-    sp_data *sp;
+    
     sp_bar *bar;
-
+    
     float leftBoundaryCondition = 1;
     float rightBoundaryCondition = 1;
     float decayDuration = 3;
@@ -263,7 +237,7 @@ private:
     float position = 0.2;
     float strikeVelocity = 500;
     float strikeWidth = 0.05;
-
+    
 public:
     bool started = false;
     bool resetted = false;
@@ -276,4 +250,3 @@ public:
     ParameterRamper strikeWidthRamper = 0.05;
 };
 
-#endif /* AKMetalBarDSPKernel_hpp */

@@ -3,55 +3,45 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright (c) 2016 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
 //
-
-import AVFoundation
 
 /// Pulse-Width Modulating Oscillator Bank
 ///
-/// - Parameters:
-///   - pulseWidth: Duty cycle width (range 0-1).
-///   - attackDuration: Attack time
-///   - decayDuration: Decay time
-///   - sustainLevel: Sustain Level
-///   - releaseDuration: Release time
-///   - detuningOffset: Frequency offset in Hz.
-///   - detuningMultiplier: Frequency detuning multiplier
-///
 open class AKPWMOscillatorBank: AKPolyphonicNode, AKComponent {
     public typealias AKAudioUnitType = AKPWMOscillatorBankAudioUnit
-    static let ComponentDescription = AudioComponentDescription(generator: "pwmb")
+    /// Four letter unique description of the node
+    public static let ComponentDescription = AudioComponentDescription(instrument: "pwmb")
 
     // MARK: - Properties
 
-    internal var internalAU: AKAudioUnitType?
-    internal var token: AUParameterObserverToken?
+    private var internalAU: AKAudioUnitType?
+    private var token: AUParameterObserverToken?
 
     fileprivate var pulseWidthParameter: AUParameter?
     fileprivate var attackDurationParameter: AUParameter?
     fileprivate var decayDurationParameter: AUParameter?
     fileprivate var sustainLevelParameter: AUParameter?
     fileprivate var releaseDurationParameter: AUParameter?
-    fileprivate var detuningOffsetParameter: AUParameter?
-    fileprivate var detuningMultiplierParameter: AUParameter?
+    fileprivate var pitchBendParameter: AUParameter?
+    fileprivate var vibratoDepthParameter: AUParameter?
+    fileprivate var vibratoRateParameter: AUParameter?
 
     /// Ramp Time represents the speed at which parameters are allowed to change
-    open var rampTime: Double = AKSettings.rampTime {
+    @objc open dynamic var rampTime: Double = AKSettings.rampTime {
         willSet {
-            if rampTime != newValue {
-                internalAU?.rampTime = newValue
-                internalAU?.setUpParameterRamp()
-            }
+            internalAU?.rampTime = newValue
         }
     }
 
     /// Duty cycle width (range 0-1).
-    open var pulseWidth: Double = 0.5 {
+    @objc open dynamic var pulseWidth: Double = 0.5 {
         willSet {
             if pulseWidth != newValue {
-                if internalAU!.isSetUp() {
-                    pulseWidthParameter?.setValue(Float(newValue), originator: token!)
+                if internalAU?.isSetUp() ?? false {
+                    if let existingToken = token {
+                        pulseWidthParameter?.setValue(Float(newValue), originator: existingToken)
+                    }
                 } else {
                     internalAU?.pulseWidth = Float(newValue)
                 }
@@ -60,11 +50,13 @@ open class AKPWMOscillatorBank: AKPolyphonicNode, AKComponent {
     }
 
     /// Attack time
-    open var attackDuration: Double = 0.1 {
+    @objc open dynamic var attackDuration: Double = 0.1 {
         willSet {
             if attackDuration != newValue {
-                if internalAU!.isSetUp() {
-                    attackDurationParameter?.setValue(Float(newValue), originator: token!)
+                if internalAU?.isSetUp() ?? false {
+                    if let existingToken = token {
+                        attackDurationParameter?.setValue(Float(newValue), originator: existingToken)
+                    }
                 } else {
                     internalAU?.attackDuration = Float(newValue)
                 }
@@ -72,11 +64,13 @@ open class AKPWMOscillatorBank: AKPolyphonicNode, AKComponent {
         }
     }
     /// Decay time
-    open var decayDuration: Double = 0.1 {
+    @objc open dynamic var decayDuration: Double = 0.1 {
         willSet {
             if decayDuration != newValue {
-                if internalAU!.isSetUp() {
-                    decayDurationParameter?.setValue(Float(newValue), originator: token!)
+                if internalAU?.isSetUp() ?? false {
+                    if let existingToken = token {
+                        decayDurationParameter?.setValue(Float(newValue), originator: existingToken)
+                    }
                 } else {
                     internalAU?.decayDuration = Float(newValue)
                 }
@@ -84,11 +78,13 @@ open class AKPWMOscillatorBank: AKPolyphonicNode, AKComponent {
         }
     }
     /// Sustain Level
-    open var sustainLevel: Double = 1.0 {
+    @objc open dynamic var sustainLevel: Double = 1.0 {
         willSet {
             if sustainLevel != newValue {
-                if internalAU!.isSetUp() {
-                    sustainLevelParameter?.setValue(Float(newValue), originator: token!)
+                if internalAU?.isSetUp() ?? false {
+                    if let existingToken = token {
+                        sustainLevelParameter?.setValue(Float(newValue), originator: existingToken)
+                    }
                 } else {
                     internalAU?.sustainLevel = Float(newValue)
                 }
@@ -96,11 +92,13 @@ open class AKPWMOscillatorBank: AKPolyphonicNode, AKComponent {
         }
     }
     /// Release time
-    open var releaseDuration: Double = 0.1 {
+    @objc open dynamic var releaseDuration: Double = 0.1 {
         willSet {
             if releaseDuration != newValue {
-                if internalAU!.isSetUp() {
-                    releaseDurationParameter?.setValue(Float(newValue), originator: token!)
+                if internalAU?.isSetUp() ?? false {
+                    if let existingToken = token {
+                        releaseDurationParameter?.setValue(Float(newValue), originator: existingToken)
+                    }
                 } else {
                     internalAU?.releaseDuration = Float(newValue)
                 }
@@ -108,38 +106,54 @@ open class AKPWMOscillatorBank: AKPolyphonicNode, AKComponent {
         }
     }
 
-    /// Frequency offset in Hz.
-    open var detuningOffset: Double = 0 {
+    /// Pitch Bend as number of semitones
+    @objc open dynamic var pitchBend: Double = 0 {
         willSet {
-            if detuningOffset != newValue {
-                if internalAU!.isSetUp() {
-                    detuningOffsetParameter?.setValue(Float(newValue), originator: token!)
+            if pitchBend != newValue {
+                if internalAU?.isSetUp() ?? false {
+                    if let existingToken = token {
+                        pitchBendParameter?.setValue(Float(newValue), originator: existingToken)
+                    }
                 } else {
-                    internalAU?.detuningOffset = Float(newValue)
+                    internalAU?.pitchBend = Float(newValue)
                 }
             }
         }
     }
 
-    /// Frequency detuning multiplier
-    open var detuningMultiplier: Double = 1 {
+    /// Vibrato Depth in semitones
+    @objc open dynamic var vibratoDepth: Double = 0 {
         willSet {
-            if detuningMultiplier != newValue {
-                if internalAU!.isSetUp() {
-                    detuningMultiplierParameter?.setValue(Float(newValue), originator: token!)
+            if vibratoDepth != newValue {
+                if internalAU?.isSetUp() ?? false {
+                    if let existingToken = token {
+                        vibratoDepthParameter?.setValue(Float(newValue), originator: existingToken)
+                    }
                 } else {
-                    internalAU?.detuningMultiplier = Float(newValue)
+                    internalAU?.vibratoDepth = Float(newValue)
+                }
+            }
+        }
+    }
+
+    /// Vibrato Rate in Hz
+    @objc open dynamic var vibratoRate: Double = 0 {
+        willSet {
+            if vibratoRate != newValue {
+                if internalAU?.isSetUp() ?? false {
+                    if let existingToken = token {
+                        vibratoRateParameter?.setValue(Float(newValue), originator: existingToken)
+                    }
+                } else {
+                    internalAU?.vibratoRate = Float(newValue)
                 }
             }
         }
     }
 
     // MARK: - Initialization
-    
+
     /// Initialize the oscillator with defaults
-    ///
-    /// - parameter frequency: In cycles per second, or Hz.
-    ///
     public convenience override init() {
         self.init(pulseWidth: 0.5)
     }
@@ -152,8 +166,10 @@ open class AKPWMOscillatorBank: AKPolyphonicNode, AKComponent {
     ///   - decayDuration: Decay time
     ///   - sustainLevel: Sustain Level
     ///   - releaseDuration: Release time
-    ///   - detuningOffset: Frequency offset in Hz.
-    ///   - detuningMultiplier: Frequency detuning multiplier
+    ///   - pitchBend: Change of pitch in semitones
+    ///   - vibratoDepth: Vibrato size in semitones
+    ///   - vibratoRate: Frequency of vibrato in Hz
+
     ///
     public init(
         pulseWidth: Double = 0.5,
@@ -161,60 +177,52 @@ open class AKPWMOscillatorBank: AKPolyphonicNode, AKComponent {
         decayDuration: Double = 0.1,
         sustainLevel: Double = 1.0,
         releaseDuration: Double = 0.1,
-        detuningOffset: Double = 0,
-        detuningMultiplier: Double = 1) {
+        pitchBend: Double = 0,
+        vibratoDepth: Double = 0,
+        vibratoRate: Double = 0) {
 
         self.pulseWidth = pulseWidth
         self.attackDuration = attackDuration
         self.decayDuration = decayDuration
         self.sustainLevel = sustainLevel
         self.releaseDuration = releaseDuration
-        self.detuningOffset = detuningOffset
-        self.detuningMultiplier = detuningMultiplier
+        self.pitchBend = pitchBend
+        self.vibratoDepth = vibratoDepth
+        self.vibratoRate = vibratoRate
 
         _Self.register()
 
         super.init()
-        AVAudioUnit.instantiate(with: _Self.ComponentDescription, options: []) {
-            avAudioUnit, error in
+        AVAudioUnit._instantiate(with: _Self.ComponentDescription) { [weak self] avAudioUnit in
 
-            guard let avAudioUnitGenerator = avAudioUnit else { return }
-
-            self.avAudioNode = avAudioUnitGenerator
-            self.internalAU = avAudioUnitGenerator.auAudioUnit as? AKAudioUnitType
-
-            AudioKit.engine.attach(self.avAudioNode)
+            self?.avAudioNode = avAudioUnit
+            self?.midiInstrument = avAudioUnit as? AVAudioUnitMIDIInstrument
+            self?.internalAU = avAudioUnit.auAudioUnit as? AKAudioUnitType
         }
 
-        guard let tree = internalAU?.parameterTree else { return }
+        guard let tree = internalAU?.parameterTree else {
+            AKLog("Parameter Tree Failed")
+            return
+        }
 
-        pulseWidthParameter         = tree["pulseWidth"]
-        attackDurationParameter     = tree["attackDuration"]
-        decayDurationParameter      = tree["decayDuration"]
-        sustainLevelParameter       = tree["sustainLevel"]
-        releaseDurationParameter    = tree["releaseDuration"]
-        detuningOffsetParameter     = tree["detuningOffset"]
-        detuningMultiplierParameter = tree["detuningMultiplier"]
+        pulseWidthParameter = tree["pulseWidth"]
+        attackDurationParameter = tree["attackDuration"]
+        decayDurationParameter = tree["decayDuration"]
+        sustainLevelParameter = tree["sustainLevel"]
+        releaseDurationParameter = tree["releaseDuration"]
+        pitchBendParameter = tree["pitchBend"]
+        vibratoDepthParameter = tree["vibratoDepth"]
+        vibratoRateParameter = tree["vibratoRate"]
 
-        token = tree.token (byAddingParameterObserver: {
-            address, value in
+        token = tree.token(byAddingParameterObserver: { [weak self] _, _ in
 
+            guard let _ = self else {
+                AKLog("Unable to create strong reference to self")
+                return
+            } // Replace _ with strongSelf if needed
             DispatchQueue.main.async {
-                if address == self.pulseWidthParameter!.address {
-                    self.pulseWidth = Double(value)
-                } else if address == self.attackDurationParameter!.address {
-                    self.attackDuration = Double(value)
-                } else if address == self.decayDurationParameter!.address {
-                    self.decayDuration = Double(value)
-                } else if address == self.sustainLevelParameter!.address {
-                    self.sustainLevel = Double(value)
-                } else if address == self.releaseDurationParameter!.address {
-                    self.releaseDuration = Double(value)
-                } else if address == self.detuningOffsetParameter!.address {
-                    self.detuningOffset = Double(value)
-                } else if address == self.detuningMultiplierParameter!.address {
-                    self.detuningMultiplier = Double(value)
-                }
+                // This node does not change its own values so we won't add any
+                // value observing, but if you need to, this is where that goes.
             }
         })
         internalAU?.pulseWidth = Float(pulseWidth)
@@ -222,19 +230,20 @@ open class AKPWMOscillatorBank: AKPolyphonicNode, AKComponent {
         internalAU?.decayDuration = Float(decayDuration)
         internalAU?.sustainLevel = Float(sustainLevel)
         internalAU?.releaseDuration = Float(releaseDuration)
-        internalAU?.detuningOffset = Float(detuningOffset)
-        internalAU?.detuningMultiplier = Float(detuningMultiplier)
+        internalAU?.pitchBend = Float(pitchBend)
+        internalAU?.vibratoDepth = Float(vibratoDepth)
+        internalAU?.vibratoRate = Float(vibratoRate)
     }
 
     // MARK: - AKPolyphonic
 
-    /// Function to start, play, or activate the node, all do the same thing
-    open override func play(noteNumber: Int, velocity: MIDIVelocity) {
-        self.internalAU!.startNote(Int32(noteNumber), velocity: Int32(velocity))
+    // Function to start, play, or activate the node at frequency
+    open override func play(noteNumber: MIDINoteNumber, velocity: MIDIVelocity, frequency: Double) {
+        internalAU?.startNote(noteNumber, velocity: velocity, frequency: Float(frequency))
     }
 
     /// Function to stop or bypass the node, both are equivalent
     open override func stop(noteNumber: MIDINoteNumber) {
-        self.internalAU!.stopNote(Int32(noteNumber))
+        internalAU?.stopNote(noteNumber)
     }
 }

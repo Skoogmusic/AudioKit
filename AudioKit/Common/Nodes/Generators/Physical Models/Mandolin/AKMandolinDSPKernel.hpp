@@ -3,13 +3,11 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright (c) 2016 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
 //
 
-#ifndef AKMandolinDSPKernel_hpp
-#define AKMandolinDSPKernel_hpp
-
-#import "DSPKernel.hpp"
+#pragma once
+#import "AKDSPKernel.hpp"
 #import "ParameterRamper.hpp"
 
 #import <AudioKit/AudioKit-Swift.h>
@@ -26,38 +24,25 @@ static inline double noteToHz(int noteNumber)
     return 440. * exp2((noteNumber - 69)/12.);
 }
 
-class AKMandolinDSPKernel : public DSPKernel {
+class AKMandolinDSPKernel : public AKDSPKernel, public AKOutputBuffered {
 public:
     // MARK: Member Functions
     
     AKMandolinDSPKernel() {}
     
-    void init(int channelCount, double inSampleRate) {
-        channels = channelCount;
-        
-        sampleRate = float(inSampleRate);
+    void init(int _channels, double _sampleRate) override {
+        AKDSPKernel::init(_channels, _sampleRate);
         
         // iOS Hack
         NSBundle *frameworkBundle = [NSBundle bundleForClass:[AKOscillator class]];
         NSString *resourcePath = [frameworkBundle resourcePath];
         stk::Stk::setRawwavePath([resourcePath cStringUsingEncoding:NSUTF8StringEncoding]);
-        
+        for (int i=0; i <= 3; i++) mandolins[i] = new stk::Mandolin(100);
         stk::Stk::setSampleRate(sampleRate);
-        mand1 = new stk::Mandolin(100);
-        mand2 = new stk::Mandolin(100);
-        mand3 = new stk::Mandolin(100);
-        mand4 = new stk::Mandolin(100);
-        mandolins[0] = mand1;
-        mandolins[1] = mand2;
-        mandolins[2] = mand3;
-        mandolins[3] = mand4;
     }
     
     void destroy() {
-        delete mand1;
-        delete mand2;
-        delete mand3;
-        delete mand4;
+        for (int i=0; i <= 3; i++) delete mandolins[i];
     }
     
     void reset() {
@@ -68,7 +53,7 @@ public:
         detune = clamp(value, 0.0f, 10.0f);
         detuneRamper.setImmediate(detune);
     }
-
+    
     void setBodySize(float value) {
         bodySize = clamp(value, 0.0f, 3.0f);
         bodySizeRamper.setImmediate(bodySize);
@@ -90,7 +75,7 @@ public:
             case detuneAddress:
                 detuneRamper.setUIValue(clamp(value, 0.0f, 10.0f));
                 break;
-
+                
             case bodySizeAddress:
                 bodySizeRamper.setUIValue(clamp(value, 0.0f, 3.0f));
                 break;
@@ -104,7 +89,7 @@ public:
                 
             case bodySizeAddress:
                 return bodySizeRamper.getUIValue();
-
+                
             default: return 0.0f;
         }
     }
@@ -121,10 +106,6 @@ public:
         }
     }
     
-    void setBuffers(AudioBufferList *outBufferList) {
-        outBufferListPtr = outBufferList;
-    }
-    
     void process(AUAudioFrameCount frameCount, AUAudioFrameCount bufferOffset) override {
         
         for (int frameIndex = 0; frameIndex < frameCount; ++frameIndex) {
@@ -134,22 +115,18 @@ public:
             detune = detuneRamper.getAndStep();
             bodySize = bodySizeRamper.getAndStep();
             
-            mand1->setDetune(detune);
-            mand2->setDetune(detune);
-            mand3->setDetune(detune);
-            mand4->setDetune(detune);
-            mand1->setBodySize(1.0 / bodySize);
-            mand2->setBodySize(1.0 / bodySize);
-            mand3->setBodySize(1.0 / bodySize);
-            mand4->setBodySize(1.0 / bodySize);
-
+            for (auto & mandolin : mandolins) {
+                mandolin->setDetune(detune);
+                mandolin->setBodySize(1 / bodySize);
+            }
+            
             for (int channel = 0; channel < channels; ++channel) {
                 float *out = (float *)outBufferListPtr->mBuffers[channel].mData + frameOffset;
                 if (started) {
-                    *out = mand1->tick();
-                    *out += mand2->tick();
-                    *out += mand3->tick();
-                    *out += mand4->tick();
+                    *out = mandolins[0]->tick();
+                    *out += mandolins[1]->tick();
+                    *out += mandolins[2]->tick();
+                    *out += mandolins[3]->tick();
                 } else {
                     *out = 0.0;
                 }
@@ -160,17 +137,6 @@ public:
     // MARK: Member Variables
     
 private:
-    
-    int channels = AKSettings.numberOfChannels;
-    float sampleRate = AKSettings.sampleRate;
-//    float internalTrigger = 0;
-    
-    AudioBufferList *outBufferListPtr = nullptr;
-    
-    stk::Mandolin *mand1;
-    stk::Mandolin *mand2;
-    stk::Mandolin *mand3;
-    stk::Mandolin *mand4;
     
     stk::Mandolin *mandolins[4];
     float detune = 1;
@@ -184,4 +150,4 @@ public:
     ParameterRamper bodySizeRamper = 1;
 };
 
-#endif /* AKMandolinDSPKernel_hpp */
+

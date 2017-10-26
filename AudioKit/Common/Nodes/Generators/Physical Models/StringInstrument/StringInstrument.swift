@@ -8,7 +8,7 @@ import AVFoundation
 
 open class StringInstrument: AKPolyphonicNode, AKComponent {
     public typealias AKAudioUnitType = StringInstrumentAudioUnit
-    static let ComponentDescription = AudioComponentDescription(generator: "str1")
+    public static let ComponentDescription = AudioComponentDescription(generator: "str1")
 
     // MARK: - Properties
 

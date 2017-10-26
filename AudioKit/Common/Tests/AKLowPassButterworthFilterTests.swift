@@ -3,18 +3,22 @@
 //  AudioKitTestSuite
 //
 //  Created by Aurelius Prochazka on 8/9/16.
-//  Copyright © 2016 AudioKit. All rights reserved.
+//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
 //
 
-import XCTest
 import AudioKit
+import XCTest
 
 class AKLowPassButterworthFilterTests: AKTestCase {
 
-    func testDefault() {
-        let input = AKOscillator()
-        output = AKLowPassButterworthFilter(input)
-        input.start()
-        AKTestMD5("84f695a214693116f31fa9d0a8c7352a")
+    func testCutoffFrequency() {
+        output = AKLowPassButterworthFilter(input, cutoffFrequency: 500)
+        AKTestMD5("24d38626ef741d83e9cdfc00a8a22aa3")
     }
+
+    func testDefault() {
+        output = AKLowPassButterworthFilter(input)
+        AKTestMD5("062814922f4b6d38e106b9be5ab1d019")
+    }
+
 }

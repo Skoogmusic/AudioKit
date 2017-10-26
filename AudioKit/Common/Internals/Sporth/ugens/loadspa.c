@@ -5,27 +5,24 @@
 
 int sporth_loadspa(sporth_stack *stack, void *ud)
 {
-#ifndef USE_SPA
-    return PLUMBER_NOTOK;
-#else
     plumber_data *pd = ud;
 
     sp_ftbl *ft;
-    char *str;
-    char *filename;
+    const char *str;
+    const char *filename;
 
     switch(pd->mode){
         case PLUMBER_CREATE:
             plumber_add_ugen(pd, SPORTH_LOADSPA, NULL);
             if(sporth_check_args(stack, "ss") != SPORTH_OK) {
-                fprintf(stderr, "Init: not enough arguments for loadspa\n");
+                plumber_print(pd, "Init: not enough arguments for loadspa\n");
                 return PLUMBER_NOTOK;
             }
 
             filename = sporth_stack_pop_string(stack);
             str = sporth_stack_pop_string(stack);
             if(sp_ftbl_loadspa(pd->sp, &ft, filename) == SP_NOT_OK) {
-                fprintf(stderr, "There was an issue creating the ftable \"%s\".\n", str);
+                plumber_print(pd, "There was an issue creating the ftable \"%s\".\n", str);
                 stack->error++;
                 return PLUMBER_NOTOK;
             }
@@ -33,8 +30,8 @@ int sporth_loadspa(sporth_stack *stack, void *ud)
             break;
 
         case PLUMBER_INIT:
-            filename = sporth_stack_pop_string(stack);
-            str = sporth_stack_pop_string(stack);
+            sporth_stack_pop_string(stack);
+            sporth_stack_pop_string(stack);
             break;
 
         case PLUMBER_COMPUTE:
@@ -48,5 +45,4 @@ int sporth_loadspa(sporth_stack *stack, void *ud)
            break;
     }
     return PLUMBER_OK;
-#endif
 }

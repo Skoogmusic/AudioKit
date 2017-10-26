@@ -3,47 +3,40 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright (c) 2016 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
 //
 
-import AVFoundation
-
-/// Analogue model of the Korg 35 Lowpass Filter
+/// Analog model of the Korg 35 Lowpass Filter
 ///
-/// - parameter input: Input node to process
-/// - parameter cutoffFrequency: Filter cutoff
-/// - parameter resonance: Filter resonance (should be between 0-2)
-/// - parameter saturation: Filter saturation.
-///
-open class AKKorgLowPassFilter: AKNode, AKToggleable, AKComponent {
+open class AKKorgLowPassFilter: AKNode, AKToggleable, AKComponent, AKInput {
     public typealias AKAudioUnitType = AKKorgLowPassFilterAudioUnit
-    static let ComponentDescription = AudioComponentDescription(effect: "klpf")
+    /// Four letter unique description of the node
+    public static let ComponentDescription = AudioComponentDescription(effect: "klpf")
 
     // MARK: - Properties
 
-    internal var internalAU: AKAudioUnitType?
-    internal var token: AUParameterObserverToken?
+    private var internalAU: AKAudioUnitType?
+    private var token: AUParameterObserverToken?
 
     fileprivate var cutoffFrequencyParameter: AUParameter?
     fileprivate var resonanceParameter: AUParameter?
     fileprivate var saturationParameter: AUParameter?
 
     /// Ramp Time represents the speed at which parameters are allowed to change
-    open var rampTime: Double = AKSettings.rampTime {
+    @objc open dynamic var rampTime: Double = AKSettings.rampTime {
         willSet {
-            if rampTime != newValue {
-                internalAU?.rampTime = newValue
-                internalAU?.setUpParameterRamp()
-            }
+            internalAU?.rampTime = newValue
         }
     }
 
     /// Filter cutoff
-    open var cutoffFrequency: Double = 1000.0 {
+    @objc open dynamic var cutoffFrequency: Double = 1_000.0 {
         willSet {
             if cutoffFrequency != newValue {
-                if internalAU!.isSetUp() {
-                    cutoffFrequencyParameter?.setValue(Float(newValue), originator: token!)
+                if internalAU?.isSetUp() ?? false {
+                    if let existingToken = token {
+                        cutoffFrequencyParameter?.setValue(Float(newValue), originator: existingToken)
+                    }
                 } else {
                     internalAU?.cutoffFrequency = Float(newValue)
                 }
@@ -51,11 +44,13 @@ open class AKKorgLowPassFilter: AKNode, AKToggleable, AKComponent {
         }
     }
     /// Filter resonance (should be between 0-2)
-    open var resonance: Double = 1.0 {
+    @objc open dynamic var resonance: Double = 1.0 {
         willSet {
             if resonance != newValue {
-                if internalAU!.isSetUp() {
-                    resonanceParameter?.setValue(Float(newValue), originator: token!)
+                if internalAU?.isSetUp() ?? false {
+                    if let existingToken = token {
+                        resonanceParameter?.setValue(Float(newValue), originator: existingToken)
+                    }
                 } else {
                     internalAU?.resonance = Float(newValue)
                 }
@@ -63,11 +58,13 @@ open class AKKorgLowPassFilter: AKNode, AKToggleable, AKComponent {
         }
     }
     /// Filter saturation.
-    open var saturation: Double = 0.0 {
+    @objc open dynamic var saturation: Double = 0.0 {
         willSet {
             if saturation != newValue {
-                if internalAU!.isSetUp() {
-                    saturationParameter?.setValue(Float(newValue), originator: token!)
+                if internalAU?.isSetUp() ?? false {
+                    if let existingToken = token {
+                        saturationParameter?.setValue(Float(newValue), originator: existingToken)
+                    }
                 } else {
                     internalAU?.saturation = Float(newValue)
                 }
@@ -76,8 +73,8 @@ open class AKKorgLowPassFilter: AKNode, AKToggleable, AKComponent {
     }
 
     /// Tells whether the node is processing (ie. started, playing, or active)
-    open var isStarted: Bool {
-        return internalAU!.isPlaying()
+    @objc open dynamic var isStarted: Bool {
+        return internalAU?.isPlaying() ?? false
     }
 
     // MARK: - Initialization
@@ -90,8 +87,8 @@ open class AKKorgLowPassFilter: AKNode, AKToggleable, AKComponent {
     /// - parameter saturation: Filter saturation.
     ///
     public init(
-        _ input: AKNode,
-        cutoffFrequency: Double = 1000.0,
+        _ input: AKNode? = nil,
+        cutoffFrequency: Double = 1_000.0,
         resonance: Double = 1.0,
         saturation: Double = 0.0) {
 
@@ -102,35 +99,32 @@ open class AKKorgLowPassFilter: AKNode, AKToggleable, AKComponent {
         _Self.register()
 
         super.init()
-        AVAudioUnit.instantiate(with: _Self.ComponentDescription, options: []) {
-            avAudioUnit, error in
+        AVAudioUnit._instantiate(with: _Self.ComponentDescription) { [weak self] avAudioUnit in
 
-            guard let avAudioUnitEffect = avAudioUnit else { return }
+            self?.avAudioNode = avAudioUnit
+            self?.internalAU = avAudioUnit.auAudioUnit as? AKAudioUnitType
 
-            self.avAudioNode = avAudioUnitEffect
-            self.internalAU = avAudioUnitEffect.auAudioUnit as? AKAudioUnitType
-
-            AudioKit.engine.attach(self.avAudioNode)
-            input.addConnectionPoint(self)
+            input?.connect(to: self!)
         }
 
-        guard let tree = internalAU?.parameterTree else { return }
+        guard let tree = internalAU?.parameterTree else {
+            AKLog("Parameter Tree Failed")
+            return
+        }
 
         cutoffFrequencyParameter = tree["cutoffFrequency"]
-        resonanceParameter       = tree["resonance"]
-        saturationParameter      = tree["saturation"]
+        resonanceParameter = tree["resonance"]
+        saturationParameter = tree["saturation"]
 
-        token = tree.token (byAddingParameterObserver: {
-            address, value in
+        token = tree.token(byAddingParameterObserver: { [weak self] _, _ in
 
+            guard let _ = self else {
+                AKLog("Unable to create strong reference to self")
+                return
+            } // Replace _ with strongSelf if needed
             DispatchQueue.main.async {
-                if address == self.cutoffFrequencyParameter!.address {
-                    self.cutoffFrequency = Double(value)
-                } else if address == self.resonanceParameter!.address {
-                    self.resonance = Double(value)
-                } else if address == self.saturationParameter!.address {
-                    self.saturation = Double(value)
-                }
+                // This node does not change its own values so we won't add any
+                // value observing, but if you need to, this is where that goes.
             }
         })
 
@@ -142,12 +136,12 @@ open class AKKorgLowPassFilter: AKNode, AKToggleable, AKComponent {
     // MARK: - Control
 
     /// Function to start, play, or activate the node, all do the same thing
-    open func start() {
-        self.internalAU!.start()
+    @objc open func start() {
+        internalAU?.start()
     }
 
     /// Function to stop or bypass the node, both are equivalent
-    open func stop() {
-        self.internalAU!.stop()
+    @objc open func stop() {
+        internalAU?.stop()
     }
 }

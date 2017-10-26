@@ -6,16 +6,23 @@
 	</samplecode>
  */
 
-#ifndef DSPKernel_h
-#define DSPKernel_h
+#pragma once
 
 #import <AudioToolbox/AudioToolbox.h>
 #import <algorithm>
+#import <AudioKit/AudioKit-Swift.h>
+#import "ParameterRamper.hpp"
+
+extern "C" {
+#include "soundpipe.h"
+}
+
 
 template <typename T>
 T clamp(T input, T low, T high) {
     return std::min(std::max(input, low), high);
 }
+
 
 // Put your DSP code into a subclass of DSPKernel.
 class DSPKernel {
@@ -33,4 +40,5 @@ private:
     void performAllSimultaneousEvents(AUEventSampleTime now, AURenderEvent const*& event);
 };
 
-#endif /* DSPKernel_h */
+
+

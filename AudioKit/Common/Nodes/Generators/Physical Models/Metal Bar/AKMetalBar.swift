@@ -3,33 +3,20 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright (c) 2016 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
 //
 
-import AVFoundation
-
-///
-///
-/// - Parameters:
-///   - leftBoundaryCondition: Boundary condition at left end of bar. 1 = clamped, 2 = pivoting, 3 = free
-///   - rightBoundaryCondition: Boundary condition at right end of bar. 1 = clamped, 2 = pivoting, 3 = free
-///   - decayDuration: 30db decay time (in seconds).
-///   - scanSpeed: Speed of scanning the output location.
-///   - position: Position along bar that strike occurs.
-///   - strikeVelocity: Normalized strike velocity
-///   - strikeWidth: Spatial width of strike.
-///   - stiffness: Dimensionless stiffness parameter
-///   - highFrequencyDamping: High-frequency loss parameter. Keep this small
+/// Metal Bar Physical Model
 ///
 open class AKMetalBar: AKNode, AKComponent {
     public typealias AKAudioUnitType = AKMetalBarAudioUnit
-    static let ComponentDescription = AudioComponentDescription(generator: "mbar")
+    /// Four letter unique description of the node
+    public static let ComponentDescription = AudioComponentDescription(generator: "mbar")
 
     // MARK: - Properties
 
-    internal var internalAU: AKAudioUnitType?
-    internal var token: AUParameterObserverToken?
-
+    private var internalAU: AKAudioUnitType?
+    private var token: AUParameterObserverToken?
 
     fileprivate var leftBoundaryConditionParameter: AUParameter?
     fileprivate var rightBoundaryConditionParameter: AUParameter?
@@ -40,81 +27,92 @@ open class AKMetalBar: AKNode, AKComponent {
     fileprivate var strikeWidthParameter: AUParameter?
 
     /// Ramp Time represents the speed at which parameters are allowed to change
-    open var rampTime: Double = AKSettings.rampTime {
+    @objc open dynamic var rampTime: Double = AKSettings.rampTime {
         willSet {
-            if rampTime != newValue {
-                internalAU?.rampTime = newValue
-                internalAU?.setUpParameterRamp()
-            }
+            internalAU?.rampTime = newValue
         }
     }
 
     /// Boundary condition at left end of bar. 1 = clamped, 2 = pivoting, 3 = free
-    open var leftBoundaryCondition: Double = 1 {
+    @objc open dynamic var leftBoundaryCondition: Double = 1 {
         willSet {
             if leftBoundaryCondition != newValue {
-                leftBoundaryConditionParameter?.setValue(Float(newValue), originator: token!)
+                if let existingToken = token {
+                    leftBoundaryConditionParameter?.setValue(Float(newValue), originator: existingToken)
+                }
             }
         }
     }
 
     /// Boundary condition at right end of bar. 1 = clamped, 2 = pivoting, 3 = free
-    open var rightBoundaryCondition: Double = 1 {
+    @objc open dynamic var rightBoundaryCondition: Double = 1 {
         willSet {
             if rightBoundaryCondition != newValue {
-                rightBoundaryConditionParameter?.setValue(Float(newValue), originator: token!)
+                if let existingToken = token {
+                    rightBoundaryConditionParameter?.setValue(Float(newValue), originator: existingToken)
+                }
             }
         }
     }
 
     /// 30db decay time (in seconds).
-    open var decayDuration: Double = 3 {
+    @objc open dynamic var decayDuration: Double = 3 {
         willSet {
             if decayDuration != newValue {
-                decayDurationParameter?.setValue(Float(newValue), originator: token!)
+                if let existingToken = token {
+                    decayDurationParameter?.setValue(Float(newValue), originator: existingToken)
+                }
             }
         }
     }
 
     /// Speed of scanning the output location.
-    open var scanSpeed: Double = 0.25 {
+    @objc open dynamic var scanSpeed: Double = 0.25 {
         willSet {
             if scanSpeed != newValue {
-                scanSpeedParameter?.setValue(Float(newValue), originator: token!)
+                if let existingToken = token {
+                    scanSpeedParameter?.setValue(Float(newValue), originator: existingToken)
+                }
             }
         }
     }
 
     /// Position along bar that strike occurs.
-    open var position: Double = 0.2 {
+    @objc open dynamic var position: Double = 0.2 {
         willSet {
             if position != newValue {
-                positionParameter?.setValue(Float(newValue), originator: token!)
+                if let existingToken = token {
+                    positionParameter?.setValue(Float(newValue), originator: existingToken)
+                }
             }
         }
     }
 
     /// Normalized strike velocity
-    open var strikeVelocity: Double = 500 {
+    @objc open dynamic var strikeVelocity: Double = 500 {
         willSet {
             if strikeVelocity != newValue {
-                strikeVelocityParameter?.setValue(Float(newValue), originator: token!)
+                if let existingToken = token {
+                    strikeVelocityParameter?.setValue(Float(newValue), originator: existingToken)
+                }
             }
         }
     }
 
     /// Spatial width of strike.
-    open var strikeWidth: Double = 0.05 {
+    @objc open dynamic var strikeWidth: Double = 0.05 {
         willSet {
             if strikeWidth != newValue {
-                strikeWidthParameter?.setValue(Float(newValue), originator: token!)
+                if let existingToken = token {
+                    strikeWidthParameter?.setValue(Float(newValue), originator: existingToken)
+                }
             }
         }
     }
 
     /// Tells whether the node is processing (ie. started, playing, or active)
-    open var isStarted: Bool {
-        return internalAU!.isPlaying()
+    @objc open dynamic var isStarted: Bool {
+        return internalAU?.isPlaying() ?? false
     }
 
     // MARK: - Initialization
@@ -143,7 +141,6 @@ open class AKMetalBar: AKNode, AKComponent {
         stiffness: Double = 3,
         highFrequencyDamping: Double = 0.001) {
 
-
         self.leftBoundaryCondition = leftBoundaryCondition
         self.rightBoundaryCondition = rightBoundaryCondition
         self.decayDuration = decayDuration
@@ -155,46 +152,34 @@ open class AKMetalBar: AKNode, AKComponent {
         _Self.register()
 
         super.init()
-        AVAudioUnit.instantiate(with: _Self.ComponentDescription, options: []) {
-            avAudioUnit, error in
+        AVAudioUnit._instantiate(with: _Self.ComponentDescription) { [weak self] avAudioUnit in
 
-            guard let avAudioUnitGenerator = avAudioUnit else { return }
-
-            self.avAudioNode = avAudioUnitGenerator
-            self.internalAU = avAudioUnitGenerator.auAudioUnit as? AKAudioUnitType
-
-            AudioKit.engine.attach(self.avAudioNode)
+            self?.avAudioNode = avAudioUnit
+            self?.internalAU = avAudioUnit.auAudioUnit as? AKAudioUnitType
         }
 
-        guard let tree = internalAU?.parameterTree else { return }
+        guard let tree = internalAU?.parameterTree else {
+            AKLog("Parameter Tree Failed")
+            return
+        }
 
-        leftBoundaryConditionParameter  = tree["leftBoundaryCondition"]
+        leftBoundaryConditionParameter = tree["leftBoundaryCondition"]
         rightBoundaryConditionParameter = tree["rightBoundaryCondition"]
-        decayDurationParameter          = tree["decayDuration"]
-        scanSpeedParameter              = tree["scanSpeed"]
-        positionParameter               = tree["position"]
-        strikeVelocityParameter         = tree["strikeVelocity"]
-        strikeWidthParameter            = tree["strikeWidth"]
+        decayDurationParameter = tree["decayDuration"]
+        scanSpeedParameter = tree["scanSpeed"]
+        positionParameter = tree["position"]
+        strikeVelocityParameter = tree["strikeVelocity"]
+        strikeWidthParameter = tree["strikeWidth"]
 
-        token = tree.token (byAddingParameterObserver: {
-            address, value in
+        token = tree.token(byAddingParameterObserver: { [weak self] _, _ in
 
+            guard let _ = self else {
+                AKLog("Unable to create strong reference to self")
+                return
+            } // Replace _ with strongSelf if needed
             DispatchQueue.main.async {
-                if address == self.leftBoundaryConditionParameter!.address {
-                    self.leftBoundaryCondition = Double(value)
-                } else if address == self.rightBoundaryConditionParameter!.address {
-                    self.rightBoundaryCondition = Double(value)
-                } else if address == self.decayDurationParameter!.address {
-                    self.decayDuration = Double(value)
-                } else if address == self.scanSpeedParameter!.address {
-                    self.scanSpeed = Double(value)
-                } else if address == self.positionParameter!.address {
-                    self.position = Double(value)
-                } else if address == self.strikeVelocityParameter!.address {
-                    self.strikeVelocity = Double(value)
-                } else if address == self.strikeWidthParameter!.address {
-                    self.strikeWidth = Double(value)
-                }
+                // This node does not change its own values so we won't add any
+                // value observing, but if you need to, this is where that goes.
             }
         })
         internalAU?.leftBoundaryCondition = Float(leftBoundaryCondition)
@@ -211,17 +196,17 @@ open class AKMetalBar: AKNode, AKComponent {
     /// Trigger the sound with an optional set of parameters
     ///
     open func trigger() {
-        self.internalAU!.start()
-        self.internalAU!.trigger()
+        internalAU?.start()
+        internalAU?.trigger()
     }
 
     /// Function to start, play, or activate the node, all do the same thing
-    open func start() {
-        self.internalAU!.start()
+    @objc open func start() {
+        internalAU?.start()
     }
 
     /// Function to stop or bypass the node, both are equivalent
-    open func stop() {
-        self.internalAU!.stop()
+    @objc open func stop() {
+        internalAU?.stop()
     }
 }

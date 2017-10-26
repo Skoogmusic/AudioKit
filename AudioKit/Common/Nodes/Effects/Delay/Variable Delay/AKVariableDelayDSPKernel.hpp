@@ -3,13 +3,12 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright (c) 2016 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
 //
 
-#ifndef AKVariableDelayDSPKernel_hpp
-#define AKVariableDelayDSPKernel_hpp
+#pragma once
 
-#import "DSPKernel.hpp"
+#import "AKSoundpipeKernel.hpp"
 #import "ParameterRamper.hpp"
 
 #import <AudioKit/AudioKit-Swift.h>
@@ -23,20 +22,15 @@ enum {
     feedbackAddress = 1
 };
 
-class AKVariableDelayDSPKernel : public DSPKernel {
+class AKVariableDelayDSPKernel : public AKSoundpipeKernel, public AKBuffered {
 public:
     // MARK: Member Functions
-
+    
     AKVariableDelayDSPKernel() {}
-
-    void init(int channelCount, double inSampleRate) {
-        channels = channelCount;
-
-        sampleRate = float(inSampleRate);
-
-        sp_create(&sp);
-        sp->sr = sampleRate;
-        sp->nchan = channels;
+    
+    void init(int _channels, double _sampleRate) override {
+        AKSoundpipeKernel::init(_channels, _sampleRate);
+        
         plumber_register(&pd);
         plumber_init(&pd);
         pd.sp = sp;
@@ -44,30 +38,30 @@ public:
         char *sporthCode = (char *)[sporth UTF8String];
         plumber_parse_string(&pd, sporthCode);
         plumber_compute(&pd, PLUMBER_INIT);
-
+        
         timeRamper.init();
         feedbackRamper.init();
     }
-
+    
     void start() {
         started = true;
     }
-
+    
     void stop() {
         started = false;
     }
-
+    
     void destroy() {
         plumber_clean(&pd);
-        sp_destroy(&sp);
+        AKSoundpipeKernel::destroy();
     }
-
+    
     void reset() {
         resetted = true;
         timeRamper.reset();
         feedbackRamper.reset();
     }
-
+    
     void setMaxDelayTime(float duration) {
         internalMaxDelay = duration;
     }
@@ -76,65 +70,60 @@ public:
         time = clamp(value, 0.0f, 10.0f);
         timeRamper.setImmediate(time);
     }
-
+    
     void setFeedback(float value) {
         feedback = clamp(value, 0.0f, 1.0f);
         feedbackRamper.setImmediate(feedback);
     }
-
-
+    
+    
     void setParameter(AUParameterAddress address, AUValue value) {
         switch (address) {
             case timeAddress:
                 timeRamper.setUIValue(clamp(value, 0.0f, 10.0f));
                 break;
-
+                
             case feedbackAddress:
                 feedbackRamper.setUIValue(clamp(value, 0.0f, 1.0f));
                 break;
-
+                
         }
     }
-
+    
     AUValue getParameter(AUParameterAddress address) {
         switch (address) {
             case timeAddress:
                 return timeRamper.getUIValue();
-
+                
             case feedbackAddress:
                 return feedbackRamper.getUIValue();
-
+                
             default: return 0.0f;
         }
     }
-
+    
     void startRamp(AUParameterAddress address, AUValue value, AUAudioFrameCount duration) override {
         switch (address) {
             case timeAddress:
                 timeRamper.startRamp(clamp(value, 0.0f, 10.0f), duration);
                 break;
-
+                
             case feedbackAddress:
                 feedbackRamper.startRamp(clamp(value, 0.0f, 1.0f), duration);
                 break;
-
+                
         }
     }
-
-    void setBuffers(AudioBufferList *inBufferList, AudioBufferList *outBufferList) {
-        inBufferListPtr = inBufferList;
-        outBufferListPtr = outBufferList;
-    }
-
+    
     void process(AUAudioFrameCount frameCount, AUAudioFrameCount bufferOffset) override {
-
+        
         for (int frameIndex = 0; frameIndex < frameCount; ++frameIndex) {
-
+            
             int frameOffset = int(frameIndex + bufferOffset);
-
+            
             time = timeRamper.getAndStep();
             feedback = feedbackRamper.getAndStep();
-
+            
             if (!started) {
                 outBufferListPtr->mBuffers[0] = inBufferListPtr->mBuffers[0];
                 outBufferListPtr->mBuffers[1] = inBufferListPtr->mBuffers[1];
@@ -156,24 +145,18 @@ public:
             }
         }
     }
-
+    
     // MARK: Member Variables
-
+    
 private:
-    int channels = AKSettings.numberOfChannels;
-    float sampleRate = AKSettings.sampleRate;
-
-    AudioBufferList *inBufferListPtr = nullptr;
-    AudioBufferList *outBufferListPtr = nullptr;
-
-    sp_data *sp;
+    
     plumber_data pd;
     
     float internalMaxDelay = 5.0;
-
+    
     float time = 1;
     float feedback = 0;
-
+    
 public:
     bool started = true;
     bool resetted = false;
@@ -181,4 +164,3 @@ public:
     ParameterRamper feedbackRamper = 0;
 };
 
-#endif /* AKVariableDelayDSPKernel_hpp */

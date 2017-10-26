@@ -3,18 +3,36 @@
 //  AudioKitTestSuite
 //
 //  Created by Aurelius Prochazka on 8/9/16.
-//  Copyright © 2016 AudioKit. All rights reserved.
+//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
 //
 
-import XCTest
 import AudioKit
+import XCTest
 
 class AKLowShelfParametricEqualizerFilterTests: AKTestCase {
 
+    func testCornerFrequency() {
+        output = AKLowShelfParametricEqualizerFilter(input, cornerFrequency: 500)
+        AKTestMD5("840f10822bf080a52e1b5a9b9fe7d766")
+    }
+
     func testDefault() {
-        let input = AKOscillator()
         output = AKLowShelfParametricEqualizerFilter(input)
-        input.start()
-        AKTestMD5("fe5cdbf4b76e8d2c26c10ef8f93b042e")
+        AKTestMD5("946b5151d61b571cc4c4aa50e05683e4")
+    }
+
+    func testGain() {
+        output = AKLowShelfParametricEqualizerFilter(input, gain: 2)
+        AKTestMD5("b174d2830cc74bf2424992aaecee08cc")
+    }
+
+    func testParameters() {
+        output = AKLowShelfParametricEqualizerFilter(input, cornerFrequency: 500, gain: 2, q: 1.414)
+        AKTestMD5("c8a5001e857c84d73a740bf3a922fa08")
+    }
+
+    func testQ() {
+        output = AKLowShelfParametricEqualizerFilter(input, q: 1.415)
+        AKTestMD5("b2a998b3183f238770df05bec367d162")
     }
 }

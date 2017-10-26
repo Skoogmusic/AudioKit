@@ -9,42 +9,53 @@
 #import "ViewController.h"
 
 @import AudioKit;
+@import AudioKitUI;
 
 @interface ViewController () {
-    AKOscillator *oscillator;
+    AKOscillator *oscillator1;
+    AKOscillator *oscillator2;
+    AKMixer *mixer;
 }
+
+@property (weak, nonatomic) IBOutlet AKNodeOutputPlot *nodeOutputPlot;
+
 @end
 
 @implementation ViewController
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
+- (id)initWithCoder:(NSCoder *)aDecoder {
+    self = [super initWithCoder:aDecoder];
     
-    oscillator = [[AKOscillator alloc] init];
-    AudioKit.output = oscillator;
+    oscillator1 = [[AKOscillator alloc] init];
+    oscillator2 = [[AKOscillator alloc] init];
+    mixer = [[AKMixer alloc] init: @[oscillator1, oscillator2]];
+    mixer.volume = 0.5;
+
+    AudioKit.output = mixer;
     [AudioKit start];
+
+    return self;
+}
+
+- (void) viewDidLoad {
+    [super viewDidLoad];
+    self.nodeOutputPlot.node = mixer;
 }
 
 - (IBAction)toggleSound:(UIButton *)sender {
-
-    if (oscillator.isStarted) {
-        [oscillator stop];
-        [sender setTitle:@"Play Sine Wave" forState:UIControlStateNormal];
+    if (oscillator1.isStarted) {
+        [oscillator1 stop];
+        [oscillator2 stop];
+        [sender setTitle:@"Play Random Sine Waves" forState:UIControlStateNormal];
     } else {
-        oscillator.amplitude = ((float)rand() / RAND_MAX) * 0.5 + 0.5;
-        oscillator.frequency = ((float)rand() / RAND_MAX) * 660.0 + 220.0;
-        [oscillator start];
-        NSString *title = [NSString stringWithFormat:@"Stop Sine Wave at %0.2fHz", oscillator.frequency];
+        oscillator1.frequency = ((float)rand() / RAND_MAX) * 660.0 + 220.0;
+        oscillator2.frequency = ((float)rand() / RAND_MAX) * 660.0 + 220.0;
+        [oscillator1 start];
+        [oscillator2 start];
+        NSString *title = [NSString stringWithFormat:@"Stop %0.2fHz & %0.2fHz", oscillator1.frequency, oscillator2.frequency];
         [sender setTitle:title forState:UIControlStateNormal];
     }
     [sender setNeedsDisplay];
-    
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 @end

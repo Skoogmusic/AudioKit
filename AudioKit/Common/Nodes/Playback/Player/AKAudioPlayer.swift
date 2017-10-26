@@ -2,21 +2,17 @@
 //  AKAudioPlayer.swift
 //  AudioKit
 //
-//  Created by Aurelius Prochazka and Laurent Veliscek, revision history on Github.
-//  Copyright © 2016 AudioKit. All rights reserved.
+//  Created by Aurelius Prochazka, Laurent Veliscek & Ryan Francesconi, revision history on Github.
+//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
 //
-
-import Foundation
-import AVFoundation
 
 /// Not so simple audio playback class
 open class AKAudioPlayer: AKNode, AKToggleable {
-    
+
     // MARK: - Private variables
-    
     fileprivate var internalAudioFile: AKAudioFile
     fileprivate var internalPlayer = AVAudioPlayerNode()
-    fileprivate var audioFileBuffer: AVAudioPCMBuffer?
+    fileprivate var internalMixer = AVAudioMixerNode()
     fileprivate var totalFrameCount: UInt32 = 0
     fileprivate var startingFrame: UInt32 = 0
     fileprivate var endingFrame: UInt32 = 0
@@ -26,67 +22,112 @@ open class AKAudioPlayer: AKNode, AKToggleable {
     fileprivate var playing = false
     fileprivate var internalStartTime: Double = 0
     fileprivate var internalEndTime: Double = 0
-    
+    fileprivate var scheduledStopAction: AKScheduledAction?
+
     // MARK: - Properties
-    
+
+    /// Buffer to be played
+    @objc fileprivate var _audioFileBuffer: AVAudioPCMBuffer?
+    @objc open dynamic var audioFileBuffer: AVAudioPCMBuffer? {
+        get {
+            if _audioFileBuffer == nil { updatePCMBuffer() }
+            return _audioFileBuffer
+        }
+        set {
+            _audioFileBuffer = newValue
+        }
+    }
+
     /// Will be triggered when AKAudioPlayer has finished to play.
     /// (will not as long as loop is on)
-    open var completionHandler: AKCallback?
-    
-    /// Boolean indicating whether or not to loop the playback
-    open var looping: Bool = false
-    
-    
-    /// return the current played AKAudioFile
-    open var audioFile: AKAudioFile {
+    @objc open dynamic var completionHandler: AKCallback?
+
+    private var _looping: Bool = false {
+        didSet {
+            updateBufferLooping()
+        }
+    }
+
+    /// Boolean indicating whether or not to loop the playback (Default false)
+    @objc open dynamic var looping: Bool {
+        set {
+            guard  newValue != _looping else {
+                return
+            }
+            _looping = newValue
+        }
+        get { return _looping }
+    }
+
+    /// Boolean indicating to play the buffer in reverse
+    @objc open dynamic var reversed: Bool = false {
+        didSet {
+            updatePCMBuffer()
+        }
+    }
+
+    /// Fade in duration
+    @objc open dynamic var fadeInTime: Double = 0 {
+        didSet {
+            updatePCMBuffer()
+        }
+    }
+
+    /// Fade out duration
+    @objc open dynamic var fadeOutTime: Double = 0 {
+        didSet {
+            updatePCMBuffer()
+        }
+    }
+
+    /// The current played AKAudioFile
+    @objc open dynamic var audioFile: AKAudioFile {
         return internalAudioFile
     }
-    
-    // path to the currently loaded AKAudioFile
-    open var path: String {
+
+    /// Path to the currently loaded AKAudioFile
+    @objc open dynamic var path: String {
         return audioFile.url.path
     }
-    
+
     /// Total duration of one loop through of the file
-    open var duration: Double {
+    @objc open dynamic var duration: Double {
         return Double(totalFrameCount) / Double(internalAudioFile.sampleRate)
     }
-    
+
     /// Output Volume (Default 1)
-    open var volume: Double = 1.0 {
+    @objc open dynamic var volume: Double = 1.0 {
         didSet {
             volume = max(volume, 0)
             internalPlayer.volume = Float(volume)
         }
     }
-    
+
     /// Whether or not the audio player is currently started
-    open var isStarted: Bool {
+    @objc open dynamic var isStarted: Bool {
         return  internalPlayer.isPlaying
     }
-    
-    
+
     /// Current playback time (in seconds)
-    open var currentTime: Double {
+    @objc open dynamic var currentTime: Double {
         if playing {
             if let nodeTime = internalPlayer.lastRenderTime,
                 let playerTime = internalPlayer.playerTime(forNodeTime: nodeTime) {
-                //return   Double(Double(startingFrame) / sampleRate)  +  Double(Double(playerTime.sampleTime) / playerTime.sampleRate)
-                return Double(Double(playerTime.sampleTime) / playerTime.sampleRate)
+                return Double(playerTime.sampleTime) / playerTime.sampleRate
             }
-            
+
         }
         return lastCurrentTime
     }
-    
+
     /// Time within the audio file at the current time
-    open var playhead: Double {
-        
-        let endTime = Double(Double(endingFrame) / internalAudioFile.sampleRate)
-        let startTime = Double(Double(startingFrame) / internalAudioFile.sampleRate)
-        
+    @objc open dynamic var playhead: Double {
+
+        let endTime = Double(endingFrame) / internalAudioFile.sampleRate
+        let startTime = Double(startingFrame) / internalAudioFile.sampleRate
+
         if endTime > startTime {
-            
+
             if looping {
                 return  startTime + currentTime.truncatingRemainder(dividingBy: (endTime - startTime))
             } else {
@@ -100,101 +141,93 @@ open class AKAudioPlayer: AKNode, AKToggleable {
             return 0
         }
     }
-    
+
     /// Pan (Default Center = 0)
-    open var pan: Double = 0.0 {
+    @objc open dynamic var pan: Double = 0.0 {
         didSet {
             pan = (-1...1).clamp(pan)
             internalPlayer.pan = Float(pan)
         }
     }
-    
+
     /// sets the start time, If it is playing, player will
     /// restart playing from the start time each time end time is set
-    open var startTime: Double {
+    @objc open dynamic var startTime: Double {
         get {
             return Double(startingFrame) / internalAudioFile.sampleRate
-            
+
         }
         set {
-            //let wasPlaying = playing
-            
             // since setting startTime will fill the buffer again, we only want to do this if the
             // data really needs to be updated
-            if newValue == internalStartTime {
-                //print("startTime is the same, so returning: \(newValue)")
-                return
-                
-            } else if newValue > Double(endingFrame) / internalAudioFile.sampleRate && endingFrame > 0 {
-                print("ERROR: AKAudioPlayer cannot set a startTime bigger than the endTime: \(Double(endingFrame) / internalAudioFile.sampleRate) seconds")
-                
+            if newValue > Double(endingFrame) / internalAudioFile.sampleRate && endingFrame > 0 {
+                AKLog("ERROR: AKAudioPlayer cannot set a startTime bigger than the endTime: " +
+                    "\(Double(endingFrame) / internalAudioFile.sampleRate) seconds")
+
             } else {
                 startingFrame = UInt32(newValue * internalAudioFile.sampleRate)
-                
-                Swift.print("AKAudioPlayer.startTime = \(newValue), startingFrame: \(startingFrame)")
-                
+
+                AKLog("AKAudioPlayer.startTime = \(newValue), startingFrame: \(startingFrame)")
+
                 // now update the buffer
                 updatePCMBuffer()
-                //stop()
-                
+
                 // remember this value for ease of checking redundancy later
                 internalStartTime = newValue
             }
-            // RF: I don't think this is a good idea. There are many cases where you don't want it to restart on you without
-            //explicitly meaning to.
-            //            if wasPlaying {
-            //                play()
-            //            }
+
         }
     }
-    
+
     /// sets the end time, If it is playing, player will
     /// restart playing from the start time each time end time is set
-    open var endTime: Double {
+    @objc open dynamic var endTime: Double {
         get {
             return Double(endingFrame) / internalAudioFile.sampleRate
-            
+
         }
         set {
-            //let wasPlaying = playing
-            
             // since setting startTime will fill the buffer again, we only want to do this if the
             // data really needs to be updated
             if newValue == internalEndTime {
-                //print("endTime is the same, so returning: \(newValue)")
+                //AKLog("endTime is the same, so returning: \(newValue)")
                 return
-                
+
             } else if newValue == 0 {
                 endingFrame = totalFrameCount
-                
+
             } else if newValue < Double(startingFrame) / internalAudioFile.sampleRate
                 || newValue > Double(Double(totalFrameCount) / internalAudioFile.sampleRate) {
-                print("ERROR: AKAudioPlayer cannot set an endTime more than file's duration: \(duration) seconds or less than startTime: \(Double(startingFrame) / internalAudioFile.sampleRate) seconds")
+                AKLog("ERROR: AKAudioPlayer cannot set an endTime more than file's duration: \(duration) seconds or " +
+                    "less than startTime: \(Double(startingFrame) / internalAudioFile.sampleRate) seconds")
             } else {
                 endingFrame = UInt32(newValue * internalAudioFile.sampleRate)
-                
-                Swift.print("AKAudioPlayer.endTime = \(newValue), endingFrame: \(endingFrame)")
-                
+
+                AKLog("AKAudioPlayer.endTime = \(newValue), endingFrame: \(endingFrame)")
+
                 // now update the buffer
                 updatePCMBuffer()
-                //stop()
-                
+
                 // remember this value for ease of checking redundancy later
                 internalEndTime = newValue
             }
-            //            if wasPlaying {
-            //                play()
-            //            }
         }
     }
-    
-    /// Sets the time in the future when playback will commence. For immediately playback, leave it 0.
-    open var scheduledTime: Double = 0
-    
-    
+
+    /// Sets the time in the future when playback will commence. Recommend using play(from:to:avTime) instead.
+    /// this will be deprecated
+    @objc open dynamic var scheduledTime: Double = 0 {
+        didSet {
+            let hostTime = mach_absolute_time()
+            scheduledAVTime = AKAudioPlayer.secondsToAVAudioTime(hostTime: hostTime, time: scheduledTime)
+        }
+    }
+
+    /// Sheduled time
+    @objc open dynamic var scheduledAVTime: AVAudioTime?
+
     // MARK: - Initialization
-    
-    
+
     /// Initialize the audio player
     ///
     ///
@@ -209,236 +242,460 @@ open class AKAudioPlayer: AKNode, AKToggleable {
     ///
     /// - Parameters:
     ///   - file: the AKAudioFile to play
-    ///   - looping : will loop play if set to true, or stop when play ends, so it can trig the completionHandler callback. Default is false (non looping)
-    ///   - completionHandler : AKCallback that will be triggered when the player end playing (useful for refreshing UI so we're not playing anymore, we stopped playing...
+    ///   - looping: will loop play if set to true, or stop when play ends, so it can trig the 
+    ///              completionHandler callback. Default is false (non looping)
+    ///   - completionHandler: AKCallback that will be triggered when the player end playing (useful for refreshing 
+    ///                        UI so we're not playing anymore, we stopped playing...)
     ///
-    /// - Returns: an AKAudioPlayer if init succeeds, or nil if init fails. If fails, errors may be catched as it is a throwing init.
+    /// - Returns: an AKAudioPlayer if init succeeds, or nil if init fails. If fails, errors may be caught.
     ///
-    public init(file: AKAudioFile, looping:Bool = false, completionHandler: AKCallback? = nil) throws {
-        
-        let readFile:AKAudioFile
-        
+    @objc public init(file: AKAudioFile,
+                      looping: Bool = false,
+                      lazyBuffering: Bool = false,
+                      completionHandler: AKCallback? = nil) throws {
+
+        let readFile: AKAudioFile
+
         // Open the file for reading to avoid a crash when setting frame position
         // if the file was instantiated for writing
         do {
             readFile = try AKAudioFile(forReading: file.url)
-            
+
         } catch let error as NSError {
-            print("AKAudioPlayer Error: cannot open file \(file.fileNamePlusExtension) for reading!...")
-            print("Error: \(error)")
+            AKLog("AKAudioPlayer Error: cannot open file \(file.fileNamePlusExtension) for reading")
+            AKLog("Error: \(error)")
             throw error
         }
-        self.internalAudioFile = readFile
+        internalAudioFile = readFile
         self.completionHandler = completionHandler
-        self.looping = looping
-        
+
         super.init()
+        self.looping = looping
         AudioKit.engine.attach(internalPlayer)
-        let mixer = AVAudioMixerNode()
-        AudioKit.engine.attach(mixer)
-        let format = AVAudioFormat(standardFormatWithSampleRate: self.internalAudioFile.sampleRate, channels: self.internalAudioFile.channelCount)
-        AudioKit.engine.connect(internalPlayer, to: mixer, format: format)
-        self.avAudioNode = mixer
+        AudioKit.engine.attach(internalMixer)
+        let format = AVAudioFormat(standardFormatWithSampleRate: internalAudioFile.sampleRate,
+                                   channels: internalAudioFile.channelCount)
+        AudioKit.engine.connect(internalPlayer, to: internalMixer, format: format)
+        avAudioNode = internalMixer
         internalPlayer.volume = 1.0
-        
-        initialize()
+
+        initialize(lazyBuffering: lazyBuffering)
     }
-    
+
+    fileprivate var defaultBufferOptions: AVAudioPlayerNodeBufferOptions {
+        return looping ? [.loops, .interrupts] : [.interrupts]
+    }
+
     // MARK: - Methods
-    
+
     /// Start playback
-    open func start() {
-        
-        if !playing {
+    @objc open func start() {
+        play(at:nil)
+    }
+
+    open func play(at when: AVAudioTime?) {
+
+        if ❗️playing {
             if audioFileBuffer != nil {
                 // schedule it at some point in the future / or immediately if 0
-                scheduleBuffer( secondsToAVAudioTime(scheduledTime) )
-                
+                // don't schedule the buffer if it is paused as it will overwrite what is in it
+                if ❗️paused {
+                    scheduleBuffer(atTime: scheduledAVTime, options: defaultBufferOptions)
+                }
+
+                internalPlayer.play(at: when)
+
                 playing = true
                 paused = false
-                internalPlayer.play()
-                
+
             } else {
-                print("AKAudioPlayer Warning: cannot play an empty buffer!...")
+                AKLog("AKAudioPlayer Warning: cannot play an empty buffer")
             }
         } else {
-            print("AKAudioPlayer Warning: already playing!...")
+            AKLog("AKAudioPlayer Warning: already playing")
         }
     }
-    
+
     /// Stop playback
-    open func stop() {
-        if !playing {
+    @objc open func stop() {
+        scheduledStopAction = nil
+
+        if ❗️playing {
             return
         }
-        
-        print("AKAudioPlayer.stop()")
-        
+
         lastCurrentTime = Double(startTime / internalAudioFile.sampleRate)
         playing = false
         paused = false
+
         internalPlayer.stop()
-        
-        //updatePCMBuffer()
-        
-        //if you pre-schedule the buffer it's not possible to schedule it in the future
-        //scheduleBuffer()
     }
-    
+
     /// Pause playback
     open func pause() {
         if playing {
-            if !paused {
+            if ❗️paused {
                 lastCurrentTime = currentTime
                 playing = false
                 paused = true
                 internalPlayer.pause()
-            }
-            else {
-                print("AKAudioPlayer Warning: already paused!...")
+            } else {
+                AKLog("AKAudioPlayer Warning: already paused")
             }
         } else {
-            print("AKAudioPlayer Warning: Cannot pause when not playing!...")
+            AKLog("AKAudioPlayer Warning: Cannot pause when not playing")
         }
     }
-    
+
+    /// Restart playback from current position
+    open func resume() {
+        if paused {
+            self.play()
+        }
+    }
+
     /// resets in and out times for playing
     open func reloadFile() throws {
-        let wasPlaying  = playing
+        let wasPlaying = playing
         if wasPlaying {
             stop()
         }
         var newAudioFile: AKAudioFile?
-        
+
         do {
             newAudioFile = try AKAudioFile(forReading: internalAudioFile.url)
         } catch let error as NSError {
-            print("AKAudioPlayer Error:Couldn't reLoadFile !...")
-            print("Error: \(error)")
+            AKLog("AKAudioPlayer Error: Couldn't reLoadFile")
+            AKLog("Error: \(error)")
             throw error
         }
-        
-        internalAudioFile = newAudioFile!
+
+        if let newFile = newAudioFile {
+            internalAudioFile = newFile
+        }
         internalPlayer.reset()
+
+        let format = AVAudioFormat(standardFormatWithSampleRate: internalAudioFile.sampleRate, channels: internalAudioFile.channelCount)
+        AudioKit.engine.connect(internalPlayer, to: internalMixer, format: format)
+
         initialize()
-        
+
         if wasPlaying {
-            play()
+            start()
         }
     }
-    
+
     /// Replace player's file with a new AKAudioFile file
-    open func replace(file: AKAudioFile) throws {
+    @objc open func replace(file: AKAudioFile) throws {
         internalAudioFile = file
         do {
             try reloadFile()
         } catch let error as NSError {
-            print("AKAudioPlayer Error: Couldn't reload replaced File: \"\(file.fileNamePlusExtension)\" !...")
-            print("Error: \(error)")
+            AKLog("AKAudioPlayer Error: Couldn't reload replaced File: \"\(file.fileNamePlusExtension)\"")
+            AKLog("Error: \(error)")
         }
-        print("AKAudioPlayer -> File with \"\(internalAudioFile.fileNamePlusExtension)\" Reloaded")
+        AKLog("AKAudioPlayer -> File with \"\(internalAudioFile.fileNamePlusExtension)\" Reloaded")
     }
 
-    /// Play the file back from a certain time, to an end time (if set). You can optionally set a scheduled time to play (in seconds).
+    /// Default play that will use the previously set startTime and endTime properties or the full file if both are 0
+    open func play() {
+        play(from: self.startTime, to: self.endTime, avTime: nil)
+    }
+
+    /// Play from startTime to endTime
+    @objc open func play(from startTime: Double, to endTime: Double) {
+        play(from: startTime, to: endTime, avTime: nil)
+    }
+
+    /// Play the file back from a certain time, to an end time (if set).
+    /// You can optionally set a scheduled time to play (in seconds).
     ///
     ///  - Parameters:
-    ///    - time: Time into the file at which to start playing back
+    ///    - startTime: Time into the file at which to start playing back
     ///    - endTime: Time into the file at which to playing back will stop / Loop
-    ///    - scheduledTime: Time in the future to start playback. This is useful for scheduling a group of sounds to
-    ///         start concurrently, or to simply schedule the start time.
+    ///    - scheduledTime: use this when scheduled playback doesn't need to be in sync with other players
+    ///         otherwise use the avTime signature.
     ///
-    open func play(from time: Double, to endTime: Double = 0, when scheduledTime: Double = 0) {
-        
+    open func play(from startTime: Double, to endTime: Double, when scheduledTime: Double) {
+        let hostTime = mach_absolute_time()
+        let avTime = AKAudioPlayer.secondsToAVAudioTime(hostTime: hostTime, time: scheduledTime)
+        play(from: startTime, to: endTime, avTime: avTime)
+    }
+
+    /// Play the file back from a certain time, to an end time (if set). You can optionally set a scheduled time 
+    /// to play (in seconds).
+    ///
+    ///  - Parameters:
+    ///    - startTime: Time into the file at which to start playing back
+    ///    - endTime: Time into the file at which to playing back will stop / Loop
+    ///    - avTime: an AVAudioTime object specifying when to schedule the playback. You can create this using the 
+    ///              helper function AKAudioPlayer.secondToAVAudioTime(hostTime:time). hostTime is a call to 
+    ///              mach_absolute_time(). When you have a group of players which you want to sync together it's 
+    ///              important that this value be the same for all of them as a reference point.
+    ///
+    open func play(from startTime: Double, to endTime: Double, avTime: AVAudioTime? ) {
+        schedule(from: startTime, to: endTime, avTime: avTime)
+        if endingFrame > startingFrame {
+            start()
+        } else {
+            AKLog("ERROR AKaudioPlayer: cannot play, \(internalAudioFile.fileNamePlusExtension) " +
+                "is empty or segment is too short")
+        }
+    }
+
+    open func schedule(from startTime: Double, to endTime: Double, avTime: AVAudioTime? ) {
+        stop()
+
         if endTime > 0 {
             self.endTime = endTime
         }
-        
-        self.startTime = time
-        
-        if endingFrame > startingFrame {
-            stop()
-            self.scheduledTime = scheduledTime
-            start()
-        } else {
-            print("ERROR AKaudioPlayer:  cannot play, \(internalAudioFile.fileNamePlusExtension) is empty or segment is too short!")
-        }
+        self.startTime = startTime
+        scheduledAVTime = avTime
     }
-    
+
+    /// return the peak time in the currently loaded buffer
+    open func getPeakTime() -> Double {
+        guard let buffer = audioFileBuffer else { return 0 }
+        return AKAudioFile.findPeak(pcmBuffer: buffer)
+    }
+
+    // MARK: - Static Methods
+
+    /// Convert to AVAudioTime
+    open class func secondsToAVAudioTime(hostTime: UInt64, time: Double) -> AVAudioTime {
+        // Find the conversion factor from host ticks to seconds
+        var timebaseInfo = mach_timebase_info()
+        mach_timebase_info(&timebaseInfo)
+        let hostTimeToSecFactor = Double(timebaseInfo.numer) / Double(timebaseInfo.denom) / Double(NSEC_PER_SEC)
+
+        let out = AVAudioTime(hostTime: hostTime + UInt64(time / hostTimeToSecFactor))
+        return out
+    }
+
     // MARK: - Private Methods
-    
-    fileprivate func initialize() {
-        
+
+    fileprivate func initialize(lazyBuffering: Bool = false) {
         audioFileBuffer = nil
         totalFrameCount = UInt32(internalAudioFile.length)
         startingFrame = 0
         endingFrame = totalFrameCount
-        
-        // RF: Actually, this is incorrect. The audio will be played correctly now.
-        // Warning if file's samplerate don't match with AKSettings.samplesRate
-        //        if internalAudioFile.sampleRate != AKSettings.sampleRate {
-        //            print("AKAudioPlayer Warning:  \"\(internalAudioFile.fileNamePlusExtension)\" has a different sample rate from AudioKit's Settings !")
-        //            print("Audio will be played at a bad pitch/speed, in / out time will not be set properly !")
-        //        }
-        
-        if internalAudioFile.length > 0 {
+
+        if !lazyBuffering {
             updatePCMBuffer()
-            
-            // Setting this here doesn't make sense to me, if you pre-schedule the
-            // buffer it's not possible to schedule it in the future
-            //scheduleBuffer()
-            
-        } else {
-            print("AKAudioPlayer Warning:  \"\(internalAudioFile.fileNamePlusExtension)\" is an empty file")
         }
     }
-    
-    fileprivate func secondsToAVAudioTime(_ time: Double) -> AVAudioTime {
-        let sampleTime = AVAudioFramePosition(time * internalAudioFile.sampleRate)
-        return AVAudioTime(hostTime: mach_absolute_time(), sampleTime: sampleTime, atRate: internalAudioFile.sampleRate)
-    }
-    
-    fileprivate func scheduleBuffer(_ atTime: AVAudioTime? = nil) {
-        if audioFileBuffer != nil {
-            //internalPlayer.scheduleBuffer(audioFileBuffer!, completionHandler: internalCompletionHandler)
-            internalPlayer.scheduleBuffer(audioFileBuffer!, at: atTime, options: .interrupts, completionHandler: internalCompletionHandler)
-            
+
+    fileprivate func scheduleBuffer(atTime: AVAudioTime?, options: AVAudioPlayerNodeBufferOptions) {
+        scheduledStopAction = nil
+
+        if let buffer = audioFileBuffer {
+            scheduledStopAction = nil
+            internalPlayer.scheduleBuffer(buffer,
+                                          at: atTime,
+                                          options: options,
+                                          completionHandler: looping ? nil : internalCompletionHandler)
+
             if atTime != nil {
                 internalPlayer.prepare(withFrameCount: framesToPlayCount)
             }
         }
     }
-    
+
+    fileprivate func updateBufferLooping() {
+        guard playing else {
+            return
+        }
+        if looping {
+            // Looping is toggled on: schedule the buffer to loop at the next loop interval.
+            let options: AVAudioPlayerNodeBufferOptions = [.loops, .interruptsAtLoop]
+            scheduleBuffer(atTime: nil, options: options)
+        } else {
+            // Looping is toggled off: schedule to stop at the end of the current loop.
+            stopAtNextLoopEnd()
+        }
+    }
+
+    /// Stop playback after next loop completes
+    @objc open func stopAtNextLoopEnd() {
+        guard playing else {
+            return
+        }
+        scheduledStopAction = AKScheduledAction(interval: endTime - currentTime) {
+            self.stop()
+            self.completionHandler?()
+        }
+    }
+
+    /// Fills the buffer with data read from internalAudioFile
     fileprivate func updatePCMBuffer() {
+
+        guard internalAudioFile.length > 0 else {
+            AKLog("AKAudioPlayer Warning:  \"\(internalAudioFile.fileNamePlusExtension)\" is an empty file")
+            return
+        }
+
+        var theStartFrame = startingFrame
+        var theEndFrame = endingFrame
+
+        // if we are going to be reversing the buffer, we need to think ahead a bit
+        // since the edit points would be reversed as well, we swap them here:
+        if reversed {
+            let revEndTime = duration - startTime
+            let revStartTime = endTime > 0 ? duration - endTime : duration
+
+            theStartFrame = UInt32(revStartTime * internalAudioFile.sampleRate)
+            theEndFrame = UInt32(revEndTime * internalAudioFile.sampleRate)
+        }
+
         if internalAudioFile.samplesCount > 0 {
-            internalAudioFile.framePosition = Int64(startingFrame)
-            framesToPlayCount = endingFrame - startingFrame
+            internalAudioFile.framePosition = Int64(theStartFrame)
+            framesToPlayCount = theEndFrame - theStartFrame
+
+            //AKLog("framesToPlayCount: \(framesToPlayCount) frameCapacity \(totalFrameCount)")
+
             audioFileBuffer = AVAudioPCMBuffer(
                 pcmFormat: internalAudioFile.processingFormat,
                 frameCapacity: AVAudioFrameCount(totalFrameCount) )
+
             do {
+                // read the requested frame count from the file
                 try internalAudioFile.read(into: audioFileBuffer!, frameCount: framesToPlayCount)
-                
-                // print("AKAudioPlayer.updatePCMBuffer() \(audioFileBuffer!.frameLength)")
+
+                AKLog("read \(audioFileBuffer?.frameLength ?? 0) frames into buffer")
+
             } catch {
-                print("ERROR AKaudioPlayer: Could not read data into buffer.")
+                AKLog("ERROR AKaudioPlayer: Could not read data into buffer.")
                 return
             }
+
+            // Now, we'll reverse the data in the buffer if desired...
+            if reversed {
+                reverseBuffer()
+            }
+
+            if fadeInTime > 0 || fadeOutTime > 0 {
+                fadeBuffer(inTime: fadeInTime, outTime: fadeOutTime)
+            }
+
         } else {
-            print("ERROR updatePCMBuffer: Could not set PCM buffer -> \(internalAudioFile.fileNamePlusExtension) samplesCount = 0.")
+            AKLog("ERROR updatePCMBuffer: Could not set PCM buffer -> " +
+                "\(internalAudioFile.fileNamePlusExtension) samplesCount = 0.")
         }
     }
-    
+
+    /// Turn the buffer around!
+    fileprivate func reverseBuffer() {
+        guard let buffer = audioFileBuffer else {
+            AKLog("Unable to create buffer in reverseBuffer")
+            return
+        }
+
+        let reverseBuffer = AVAudioPCMBuffer(
+            pcmFormat: internalAudioFile.processingFormat,
+            frameCapacity: buffer.frameCapacity
+        )
+
+        var j: Int = 0
+        let length = buffer.frameLength
+        //AKLog("reverse() preparing \(length) frames")
+
+        // i represents the normal buffer read in reverse
+        for i in (0 ..< Int(length)).reversed() {
+            // n is the channel
+            for n in 0 ..< Int(buffer.format.channelCount) {
+                // we write the reverseBuffer via the j index
+                reverseBuffer?.floatChannelData?[n][j] = buffer.floatChannelData?[n][i] ?? 0.0
+            }
+            j += 1
+        }
+        // set the buffer now to be the reverse one
+        audioFileBuffer = reverseBuffer
+        // update this to the new value
+        audioFileBuffer?.frameLength = length
+    }
+
+    /// Apply sample level fades to the internal buffer.
+    ///  - Parameters:
+    ///     - inTime specified in seconds, 0 if no fade
+    ///     - outTime specified in seconds, 0 if no fade
+    fileprivate func fadeBuffer(inTime: Double = 0, outTime: Double = 0) {
+        guard audioFileBuffer != nil else {
+            AKLog("audioFileBuffer is nil")
+            return
+        }
+
+        // do nothing in this case
+        if inTime == 0 && outTime == 0 {
+            AKLog("no fades specified.")
+            return
+        }
+
+        let fadeBuffer = AVAudioPCMBuffer(
+            pcmFormat: internalAudioFile.processingFormat,
+            frameCapacity: audioFileBuffer!.frameCapacity )
+
+        let length: UInt32 = audioFileBuffer!.frameLength
+        AKLog("fadeBuffer() inTime: \(inTime) outTime: \(outTime)")
+
+        // initial starting point for the gain, if there is a fade in, start it at .01 otherwise at 1
+        var gain: Double = inTime > 0 ? 0.01 : 1
+
+        let sampleTime: Double = 1.0 / internalAudioFile.processingFormat.sampleRate
+
+        // from -20db?
+        let fadeInPower: Double = exp(log(10) * sampleTime / inTime)
+
+        // for decay to x% amplitude (-dB) over the given decay time
+        let fadeOutPower: Double = exp(-log(25) * sampleTime / outTime)
+
+        // where in the buffer to end the fade in
+        let fadeInSamples = Int(internalAudioFile.processingFormat.sampleRate * inTime)
+        // where in the buffer to start the fade out
+        let fadeOutSamples = Int(Double(length) - (internalAudioFile.processingFormat.sampleRate * outTime))
+
+        //Swift.print("fadeInPower \(fadeInPower) fadeOutPower \(fadeOutPower)")
+
+        // i is the index in the buffer
+        for i in 0 ..< Int(length) {
+            // n is the channel
+            for n in 0 ..< Int(audioFileBuffer!.format.channelCount) {
+
+                if i < fadeInSamples && inTime > 0 {
+                    gain *= fadeInPower
+                } else if i > fadeOutSamples && outTime > 0 {
+                    gain *= fadeOutPower
+                } else {
+                    gain = 1.0
+                }
+
+                //sanity check
+                if gain > 1 {
+                    gain = 1
+                }
+
+                let sample = audioFileBuffer!.floatChannelData![n][i] * Float(gain)
+                fadeBuffer?.floatChannelData?[n][i] = sample
+            }
+        }
+        // set the buffer now to be the faded one
+        audioFileBuffer = fadeBuffer
+        // update this
+        audioFileBuffer?.frameLength = length
+    }
+
     /// Triggered when the player reaches the end of its playing range
     fileprivate func internalCompletionHandler() {
-        if playing {
-            if looping {
-                scheduleBuffer()
-            } else {
-                stop()
+        DispatchQueue.main.async {
+            if self.isPlaying {
+                self.stop()
                 self.completionHandler?()
             }
         }
     }
-    
-    
+
+    // Disconnect the node
+    override open func disconnect() {
+        AudioKit.detach(nodes: [self.avAudioNode])
+        AudioKit.engine.detach(self.internalPlayer)
+    }
 }

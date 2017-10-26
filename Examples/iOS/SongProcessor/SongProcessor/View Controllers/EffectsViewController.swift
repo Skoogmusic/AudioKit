@@ -6,34 +6,46 @@
 //  Copyright © 2016 AudioKit. All rights reserved.
 //
 
-import UIKit
 import AudioKit
+import AudioKitUI
+import UIKit
 
 class EffectsViewController: UIViewController {
 
-    @IBOutlet weak var volumeSlider: AKPropertySlider!
-    
+    @IBOutlet private var volumeSlider: AKSlider!
+
+    var docController: UIDocumentInteractionController?
+
     let songProcessor = SongProcessor.sharedInstance
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        volumeSlider.maximum = 10.0
 
-        if let volume = songProcessor.playerBooster?.gain {
-            volumeSlider.value = volume
-        }
+        AKStylist.sharedInstance.theme = .basic
+
+        volumeSlider.range = 0 ... 10.0
+
+        volumeSlider.value = songProcessor.playerBooster.gain
         volumeSlider.callback = updateVolume
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Share", style: .plain, target: self, action: #selector(share(barButton:)))
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
+
     func updateVolume(value: Double) {
-        songProcessor.playerBooster?.gain = value
+        songProcessor.playerBooster.gain = value
     }
 
+    @objc func share(barButton: UIBarButtonItem) {
+        renderAndShare { docController in
+            guard let canOpen = docController?.presentOpenInMenu(from: barButton, animated: true) else { return }
+            if !canOpen {
+                self.present(self.alertForShareFail(), animated: true, completion: nil)
+            }
+        }
+    }
 
 }

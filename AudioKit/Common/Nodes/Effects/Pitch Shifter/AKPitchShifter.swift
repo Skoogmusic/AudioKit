@@ -3,49 +3,40 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright (c) 2016 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
 //
 
-import AVFoundation
-
-/// Faust-based pitch shfiter
+/// Faust-based pitch shifter
 ///
-/// - Parameters:
-///   - input: Input node to process
-///   - shift: Pitch shift (in semitones)
-///   - windowSize: Window size (in samples)
-///   - crossfade: Crossfade (in samples)
-///
-open class AKPitchShifter: AKNode, AKToggleable, AKComponent {
+open class AKPitchShifter: AKNode, AKToggleable, AKComponent, AKInput {
     public typealias AKAudioUnitType = AKPitchShifterAudioUnit
-    static let ComponentDescription = AudioComponentDescription(effect: "pshf")
-
+    /// Four letter unique description of the node
+    public static let ComponentDescription = AudioComponentDescription(effect: "pshf")
 
     // MARK: - Properties
 
-    internal var internalAU: AKAudioUnitType?
-    internal var token: AUParameterObserverToken?
+    private var internalAU: AKAudioUnitType?
+    private var token: AUParameterObserverToken?
 
     fileprivate var shiftParameter: AUParameter?
     fileprivate var windowSizeParameter: AUParameter?
     fileprivate var crossfadeParameter: AUParameter?
 
     /// Ramp Time represents the speed at which parameters are allowed to change
-    open var rampTime: Double = AKSettings.rampTime {
+    @objc open dynamic var rampTime: Double = AKSettings.rampTime {
         willSet {
-            if rampTime != newValue {
-                internalAU?.rampTime = newValue
-                internalAU?.setUpParameterRamp()
-            }
+            internalAU?.rampTime = newValue
         }
     }
 
     /// Pitch shift (in semitones)
-    open var shift: Double = 0 {
+    @objc open dynamic var shift: Double = 0 {
         willSet {
             if shift != newValue {
-                if internalAU!.isSetUp() {
-                    shiftParameter?.setValue(Float(newValue), originator: token!)
+                if internalAU?.isSetUp() ?? false {
+                    if let existingToken = token {
+                        shiftParameter?.setValue(Float(newValue), originator: existingToken)
+                    }
                 } else {
                     internalAU?.shift = Float(newValue)
                 }
@@ -53,11 +44,13 @@ open class AKPitchShifter: AKNode, AKToggleable, AKComponent {
         }
     }
     /// Window size (in samples)
-    open var windowSize: Double = 1024 {
+    @objc open dynamic var windowSize: Double = 1_024 {
         willSet {
             if windowSize != newValue {
-                if internalAU!.isSetUp() {
-                    windowSizeParameter?.setValue(Float(newValue), originator: token!)
+                if internalAU?.isSetUp() ?? false {
+                    if let existingToken = token {
+                        windowSizeParameter?.setValue(Float(newValue), originator: existingToken)
+                    }
                 } else {
                     internalAU?.windowSize = Float(newValue)
                 }
@@ -65,11 +58,13 @@ open class AKPitchShifter: AKNode, AKToggleable, AKComponent {
         }
     }
     /// Crossfade (in samples)
-    open var crossfade: Double = 512 {
+    @objc open dynamic var crossfade: Double = 512 {
         willSet {
             if crossfade != newValue {
-                if internalAU!.isSetUp() {
-                    crossfadeParameter?.setValue(Float(newValue), originator: token!)
+                if internalAU?.isSetUp() ?? false {
+                    if let existingToken = token {
+                        crossfadeParameter?.setValue(Float(newValue), originator: existingToken)
+                    }
                 } else {
                     internalAU?.crossfade = Float(newValue)
                 }
@@ -78,8 +73,8 @@ open class AKPitchShifter: AKNode, AKToggleable, AKComponent {
     }
 
     /// Tells whether the node is processing (ie. started, playing, or active)
-    open var isStarted: Bool {
-        return internalAU!.isPlaying()
+    @objc open dynamic var isStarted: Bool {
+        return internalAU?.isPlaying() ?? false
     }
 
     // MARK: - Initialization
@@ -93,9 +88,9 @@ open class AKPitchShifter: AKNode, AKToggleable, AKComponent {
     ///   - crossfade: Crossfade (in samples)
     ///
     public init(
-        _ input: AKNode,
+        _ input: AKNode? = nil,
         shift: Double = 0,
-        windowSize: Double = 1024,
+        windowSize: Double = 1_024,
         crossfade: Double = 512) {
 
         self.shift = shift
@@ -105,35 +100,32 @@ open class AKPitchShifter: AKNode, AKToggleable, AKComponent {
         _Self.register()
 
         super.init()
-        AVAudioUnit.instantiate(with: _Self.ComponentDescription, options: []) {
-            avAudioUnit, error in
+        AVAudioUnit._instantiate(with: _Self.ComponentDescription) { [weak self] avAudioUnit in
 
-            guard let avAudioUnitEffect = avAudioUnit else { return }
+            self?.avAudioNode = avAudioUnit
+            self?.internalAU = avAudioUnit.auAudioUnit as? AKAudioUnitType
 
-            self.avAudioNode = avAudioUnitEffect
-            self.internalAU = avAudioUnitEffect.auAudioUnit as? AKAudioUnitType
-
-            AudioKit.engine.attach(self.avAudioNode)
-            input.addConnectionPoint(self)
+            input?.connect(to: self!)
         }
 
-        guard let tree = internalAU?.parameterTree else { return }
+        guard let tree = internalAU?.parameterTree else {
+            AKLog("Parameter Tree Failed")
+            return
+        }
 
-        shiftParameter      = tree["shift"]
+        shiftParameter = tree["shift"]
         windowSizeParameter = tree["windowSize"]
-        crossfadeParameter  = tree["crossfade"]
+        crossfadeParameter = tree["crossfade"]
 
-        token = tree.token (byAddingParameterObserver: {
-            address, value in
+        token = tree.token(byAddingParameterObserver: { [weak self] _, _ in
 
+            guard let _ = self else {
+                AKLog("Unable to create strong reference to self")
+                return
+            } // Replace _ with strongSelf if needed
             DispatchQueue.main.async {
-                if address == self.shiftParameter!.address {
-                    self.shift = Double(value)
-                } else if address == self.windowSizeParameter!.address {
-                    self.windowSize = Double(value)
-                } else if address == self.crossfadeParameter!.address {
-                    self.crossfade = Double(value)
-                }
+                // This node does not change its own values so we won't add any
+                // value observing, but if you need to, this is where that goes.
             }
         })
 
@@ -145,12 +137,12 @@ open class AKPitchShifter: AKNode, AKToggleable, AKComponent {
     // MARK: - Control
 
     /// Function to start, play, or activate the node, all do the same thing
-    open func start() {
-        self.internalAU!.start()
+    @objc open func start() {
+        internalAU?.start()
     }
 
     /// Function to stop or bypass the node, both are equivalent
-    open func stop() {
-        self.internalAU!.stop()
+    @objc open func stop() {
+        internalAU?.stop()
     }
 }

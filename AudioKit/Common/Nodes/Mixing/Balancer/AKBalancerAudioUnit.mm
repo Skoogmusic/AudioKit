@@ -3,13 +3,12 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright (c) 2015 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
 //
 
 #import "AKBalancerAudioUnit.h"
 #import "AKBalancerDSPKernel.hpp"
 
-#import <AVFoundation/AVFoundation.h>
 #import "BufferedAudioBus.hpp"
 
 #import <AudioKit/AudioKit-Swift.h>
@@ -19,8 +18,6 @@
 @property AUAudioUnitBus *outputBus;
 @property AUAudioUnitBusArray *inputBusArray;
 @property AUAudioUnitBusArray *outputBusArray;
-
-@property (nonatomic, readwrite) AUParameterTree *parameterTree;
 
 @end
 
@@ -67,7 +64,7 @@
 
     // Create the parameter tree.
     _parameterTree = [AUParameterTree createTreeWithChildren:@[
-    ]];
+                                                               ]];
 
     // Create the input and output busses.
     _inputBus.init(defaultFormat, 8);

@@ -16,7 +16,7 @@ import AVFoundation
 ///
 open class AKFluteInstrument: AKPolyphonicNode, AKComponent {
     public typealias AKAudioUnitType = AKFluteInstrumentAudioUnit
-    static let ComponentDescription = AudioComponentDescription(generator: "skfl")
+    public static let ComponentDescription = AudioComponentDescription(generator: "skfl")
 
     // MARK: - Properties
 

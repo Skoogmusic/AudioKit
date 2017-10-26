@@ -6,10 +6,13 @@
 //  Copyright (c) 2016 Aurelius Prochazka. All rights reserved.
 //
 
-#ifndef AKFluteInstrumentAudioUnit_h
-#define AKFluteInstrumentAudioUnit_h
+//#ifndef AKFluteInstrumentAudioUnit_h
+//#define AKFluteInstrumentAudioUnit_h
+//
+//#import <AudioToolbox/AudioToolbox.h>
 
-#import <AudioToolbox/AudioToolbox.h>
+#pragma once
+#import "AKAudioUnit.h"
 
 @interface AKFluteInstrumentAudioUnit : AUAudioUnit
 @property (nonatomic) float frequency;
@@ -29,4 +32,5 @@
 
 @end
 
-#endif /* AKFluteInstrumentAudioUnit_h */
+//#endif /* AKFluteInstrumentAudioUnit_h */
+

@@ -3,10 +3,8 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright © 2016 AudioKit. All rights reserved.
+//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
 //
-
-import Foundation
 
 extension AKOperation {
 
@@ -29,6 +27,6 @@ extension AKOperation {
 
         return AKOperation(module: "3 / 0 \"sine\" \"square\" \"sawtooth\" \"revsaw\" oscmorph4",
                            setup: "\(sine) \(square) \(sawtooth) \(revsaw)",
-                           inputs: frequency, amplitude, index)
+            inputs: frequency, amplitude, index)
     }
 }

@@ -3,14 +3,13 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka on 8/9/16.
-//  Copyright © 2016 AudioKit. All rights reserved.
+//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
 //
 
+import AudioKit
 import XCTest
 
-import AudioKit
-
-class distortTests: AKTestCase {
+class DistortTests: AKTestCase {
 
     override func setUp() {
         super.setUp()
@@ -18,12 +17,10 @@ class distortTests: AKTestCase {
     }
 
     func testDefault() {
-        let input = AKOscillator()
-        input.start()
         output = AKOperationEffect(input) { input, _ in
             return input.distort()
         }
-        AKTestMD5("cf2d30b232f4a234730d1594055c32d3")
+        AKTestMD5("5f38e5319cad3899cae5f4d5e7cef11b")
     }
 
 }

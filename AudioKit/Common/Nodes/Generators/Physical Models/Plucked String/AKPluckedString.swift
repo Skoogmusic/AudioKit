@@ -3,63 +3,57 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright (c) 2016 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
 //
-
-import AVFoundation
 
 /// Karplus-Strong plucked string instrument.
 ///
-/// - Parameters:
-///   - frequency: Variable frequency. Values less than the initial frequency will be doubled until it is greater than that.
-///   - amplitude: Amplitude
-///   - lowestFrequency: This frequency is used to allocate all the buffers needed for the delay. This should be the lowest frequency you plan on using.
-///
 open class AKPluckedString: AKNode, AKToggleable, AKComponent {
     public typealias AKAudioUnitType = AKPluckedStringAudioUnit
-    static let ComponentDescription = AudioComponentDescription(generator: "pluk")
+    /// Four letter unique description of the node
+    public static let ComponentDescription = AudioComponentDescription(generator: "pluk")
 
     // MARK: - Properties
 
-    internal var internalAU: AKAudioUnitType?
-    internal var token: AUParameterObserverToken?
-
+    private var internalAU: AKAudioUnitType?
+    private var token: AUParameterObserverToken?
 
     fileprivate var frequencyParameter: AUParameter?
     fileprivate var amplitudeParameter: AUParameter?
     fileprivate var lowestFrequency: Double
 
     /// Ramp Time represents the speed at which parameters are allowed to change
-    open var rampTime: Double = AKSettings.rampTime {
+    @objc open dynamic var rampTime: Double = AKSettings.rampTime {
         willSet {
-            if rampTime != newValue {
-                internalAU?.rampTime = newValue
-                internalAU?.setUpParameterRamp()
-            }
+            internalAU?.rampTime = newValue
         }
     }
 
     /// Variable frequency. Values less than the initial frequency will be doubled until it is greater than that.
-    open var frequency: Double = 110 {
+    @objc open dynamic var frequency: Double = 110 {
         willSet {
             if frequency != newValue {
-                frequencyParameter?.setValue(Float(newValue), originator: token!)
+                if let existingToken = token {
+                    frequencyParameter?.setValue(Float(newValue), originator: existingToken)
+                }
             }
         }
     }
 
     /// Amplitude
-    open var amplitude: Double = 0.5 {
+    @objc open dynamic var amplitude: Double = 0.5 {
         willSet {
             if amplitude != newValue {
-                amplitudeParameter?.setValue(Float(newValue), originator: token!)
+                if let existingToken = token {
+                    amplitudeParameter?.setValue(Float(newValue), originator: existingToken)
+                }
             }
         }
     }
 
     /// Tells whether the node is processing (ie. started, playing, or active)
-    open var isStarted: Bool {
-        return internalAU!.isPlaying()
+    @objc open dynamic var isStarted: Bool {
+        return internalAU?.isPlaying() ?? false
     }
 
     // MARK: - Initialization
@@ -72,15 +66,16 @@ open class AKPluckedString: AKNode, AKToggleable, AKComponent {
     /// Initialize this pluck node
     ///
     /// - Parameters:
-    ///   - frequency: Variable frequency. Values less than the initial frequency will be doubled until it is greater than that.
+    ///   - frequency: Variable frequency. Values less than the initial frequency will be
+    ///                doubled until it is greater than that.
     ///   - amplitude: Amplitude
-    ///   - lowestFrequency: This frequency is used to allocate all the buffers needed for the delay. This should be the lowest frequency you plan on using.
+    ///   - lowestFrequency: This frequency is used to allocate all the buffers needed for the delay.
+    ///                      This should be the lowest frequency you plan on using.
     ///
     public init(
         frequency: Double = 440,
         amplitude: Double = 0.5,
         lowestFrequency: Double = 110) {
-
 
         self.frequency = frequency
         self.amplitude = amplitude
@@ -89,31 +84,29 @@ open class AKPluckedString: AKNode, AKToggleable, AKComponent {
         _Self.register()
 
         super.init()
-        AVAudioUnit.instantiate(with: _Self.ComponentDescription, options: []) {
-            avAudioUnit, error in
+        AVAudioUnit._instantiate(with: _Self.ComponentDescription) { [weak self] avAudioUnit in
 
-            guard let avAudioUnitGenerator = avAudioUnit else { return }
-
-            self.avAudioNode = avAudioUnitGenerator
-            self.internalAU = avAudioUnitGenerator.auAudioUnit as? AKAudioUnitType
-
-            AudioKit.engine.attach(self.avAudioNode)
+            self?.avAudioNode = avAudioUnit
+            self?.internalAU = avAudioUnit.auAudioUnit as? AKAudioUnitType
         }
 
-        guard let tree = internalAU?.parameterTree else { return }
+        guard let tree = internalAU?.parameterTree else {
+            AKLog("Parameter Tree Failed")
+            return
+        }
 
-        frequencyParameter       = tree["frequency"]
-        amplitudeParameter       = tree["amplitude"]
+        frequencyParameter = tree["frequency"]
+        amplitudeParameter = tree["amplitude"]
 
-        token = tree.token (byAddingParameterObserver: {
-            address, value in
+        token = tree.token(byAddingParameterObserver: { [weak self] _, _ in
 
+            guard let _ = self else {
+                AKLog("Unable to create strong reference to self")
+                return
+            } // Replace _ with strongSelf if needed
             DispatchQueue.main.async {
-                if address == self.frequencyParameter!.address {
-                    self.frequency = Double(value)
-                } else if address == self.amplitudeParameter!.address {
-                    self.amplitude = Double(value)
-                }
+                // This node does not change its own values so we won't add any
+                // value observing, but if you need to, this is where that goes.
             }
         })
         internalAU?.frequency = Float(frequency)
@@ -127,17 +120,17 @@ open class AKPluckedString: AKNode, AKToggleable, AKComponent {
     open func trigger(frequency: Double, amplitude: Double = 1) {
         self.frequency = frequency
         self.amplitude = amplitude
-        self.internalAU!.start()
-        self.internalAU!.triggerFrequency(Float(frequency), amplitude: Float(amplitude))
+        internalAU?.start()
+        internalAU?.triggerFrequency(Float(frequency), amplitude: Float(amplitude))
     }
 
     /// Function to start, play, or activate the node, all do the same thing
-    open func start() {
-        self.internalAU!.start()
+    @objc open func start() {
+        internalAU?.start()
     }
 
     /// Function to stop or bypass the node, both are equivalent
-    open func stop() {
-        self.internalAU!.stop()
+    @objc open func stop() {
+        internalAU?.stop()
     }
 }

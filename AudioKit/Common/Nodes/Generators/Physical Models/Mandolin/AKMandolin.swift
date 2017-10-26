@@ -3,51 +3,45 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright (c) 2016 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
 //
-
-import AVFoundation
 
 /// Physical model of a 4 course mandolin
 ///
-/// - Parameters:
-///   - detune:   Detuning of second string in the course (1=Unison (deault), 2=Octave)
-///   - bodySize: Relative size of the mandoline (Default: 1, ranges ~ 0.5 - 2)
-///
 open class AKMandolin: AKNode, AKComponent {
     public typealias AKAudioUnitType = AKMandolinAudioUnit
-    static let ComponentDescription = AudioComponentDescription(generator: "mand")
+    /// Four letter unique description of the node
+    public static let ComponentDescription = AudioComponentDescription(generator: "mand")
 
     // MARK: - Properties
 
-    internal var internalAU: AKAudioUnitType?
-    internal var token: AUParameterObserverToken?
+    private var internalAU: AKAudioUnitType?
+    private var token: AUParameterObserverToken?
 
     fileprivate var detuneParameter: AUParameter?
     fileprivate var bodySizeParameter: AUParameter?
 
     // Maybe eventually allow each string to have a rampable frequency
-//    private var course1FrequencyParameter: AUParameter?
-//    private var course2FrequencyParameter: AUParameter?
-//    private var course3FrequencyParameter: AUParameter?
-//    private var course4FrequencyParameter: AUParameter?
+    //    private var course1FrequencyParameter: AUParameter?
+    //    private var course2FrequencyParameter: AUParameter?
+    //    private var course3FrequencyParameter: AUParameter?
+    //    private var course4FrequencyParameter: AUParameter?
 
     /// Ramp Time represents the speed at which parameters are allowed to change
-    open var rampTime: Double = AKSettings.rampTime {
+    @objc open dynamic var rampTime: Double = AKSettings.rampTime {
         willSet {
-            if rampTime != newValue {
-                internalAU?.rampTime = newValue
-                internalAU?.setUpParameterRamp()
-            }
+            internalAU?.rampTime = newValue
         }
     }
 
     /// Detuning of second string in the course (1=Unison (deault), 2=Octave)
-    open var detune: Double = 1 {
+    @objc open dynamic var detune: Double = 1 {
         willSet {
             if detune != newValue {
-                if internalAU!.isSetUp() {
-                    detuneParameter?.setValue(Float(newValue), originator: token!)
+                if internalAU?.isSetUp() ?? false {
+                    if let existingToken = token {
+                        detuneParameter?.setValue(Float(newValue), originator: existingToken)
+                    }
                 } else {
                     internalAU?.detune = Float(newValue)
                 }
@@ -56,11 +50,13 @@ open class AKMandolin: AKNode, AKComponent {
     }
 
     /// Relative size of the mandoline (Default: 1, ranges ~ 0.5 - 2)
-    open var bodySize: Double = 1 {
+    @objc open dynamic var bodySize: Double = 1 {
         willSet {
             if bodySize != newValue {
-                if internalAU!.isSetUp() {
-                    bodySizeParameter?.setValue(Float(newValue), originator: token!)
+                if internalAU?.isSetUp() ?? false {
+                    if let existingToken = token {
+                        bodySizeParameter?.setValue(Float(newValue), originator: existingToken)
+                    }
                 } else {
                     internalAU?.bodySize = Float(newValue)
                 }
@@ -86,31 +82,29 @@ open class AKMandolin: AKNode, AKComponent {
         _Self.register()
 
         super.init()
-        AVAudioUnit.instantiate(with: _Self.ComponentDescription, options: []) {
-            avAudioUnit, error in
+        AVAudioUnit._instantiate(with: _Self.ComponentDescription) { [weak self] avAudioUnit in
 
-            guard let avAudioUnitGenerator = avAudioUnit else { return }
-
-            self.avAudioNode = avAudioUnitGenerator
-            self.internalAU = avAudioUnitGenerator.auAudioUnit as? AKAudioUnitType
-
-            AudioKit.engine.attach(self.avAudioNode)
+            self?.avAudioNode = avAudioUnit
+            self?.internalAU = avAudioUnit.auAudioUnit as? AKAudioUnitType
         }
 
-        guard let tree = internalAU?.parameterTree else { return }
+        guard let tree = internalAU?.parameterTree else {
+            AKLog("Parameter Tree Failed")
+            return
+        }
 
-        detuneParameter   = tree["detune"]
+        detuneParameter = tree["detune"]
         bodySizeParameter = tree["bodySize"]
 
-        token = tree.token (byAddingParameterObserver: {
-            address, value in
+        token = tree.token(byAddingParameterObserver: { [weak self] _, _ in
 
+            guard let _ = self else {
+                AKLog("Unable to create strong reference to self")
+                return
+            } // Replace _ with strongSelf if needed
             DispatchQueue.main.async {
-                if address == self.detuneParameter!.address {
-                    self.detune = Double(value)
-                } else if address == self.bodySizeParameter!.address {
-                    self.bodySize = Double(value)
-                }
+                // This node does not change its own values so we won't add any
+                // value observing, but if you need to, this is where that goes.
             }
         })
         internalAU?.detune = Float(detune)
@@ -125,9 +119,9 @@ open class AKMandolin: AKNode, AKComponent {
     ///   - course3Note: MIDI note number for course 3
     ///   - course4Note: MIDI note number for course 4
     open func prepareChord(_ course1Note: MIDINoteNumber,
-                      _ course2Note: MIDINoteNumber,
-                      _ course3Note: MIDINoteNumber,
-                      _ course4Note: MIDINoteNumber) {
+                           _ course2Note: MIDINoteNumber,
+                           _ course3Note: MIDINoteNumber,
+                           _ course4Note: MIDINoteNumber) {
         fret(noteNumber: course1Note, course: 0)
         fret(noteNumber: course2Note, course: 1)
         fret(noteNumber: course3Note, course: 2)
@@ -161,22 +155,22 @@ open class AKMandolin: AKNode, AKComponent {
     ///   - position: Position lengthwise along the string to pluck (0 - 1)
     ///   - velocity: MIDI Velocity as an amplitude of the pluck (0 - 127)
     ///
-    open func strum(_ position: Double, velocity: MIDIVelocity) {
+    @objc open func strum(_ position: Double, velocity: MIDIVelocity) {
         pluck(course: 0, position: position, velocity: velocity)
         pluck(course: 1, position: position, velocity: velocity)
         pluck(course: 2, position: position, velocity: velocity)
         pluck(course: 3, position: position, velocity: velocity)
     }
 
-// TODO: - Add Mute Functionality
-//
-//    public func mute(course course: Int) {
-//    }
-//
-//    public func muteAllStrings() {
-//        mute(course: 0)
-//        mute(course: 1)
-//        mute(course: 2)
-//        mute(course: 3)
-//    }
+    // Add Mute Functionality
+    //
+    //    public func mute(course course: Int) {
+    //    }
+    //
+    //    public func muteAllStrings() {
+    //        mute(course: 0)
+    //        mute(course: 1)
+    //        mute(course: 2)
+    //        mute(course: 3)
+    //    }
 }

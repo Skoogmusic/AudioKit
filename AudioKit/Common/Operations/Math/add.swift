@@ -3,10 +3,8 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright © 2016 AudioKit. All rights reserved.
+//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
 //
-
-import Foundation
 
 extension AKOperation {
     /// Addition/Summation of operations
@@ -32,17 +30,19 @@ extension AKOperation {
 ///   - left: 1st parameter
 ///   - right: 2nd parameter
 ///
-public func +(left: AKParameter, right: AKParameter) -> AKOperation {
+public func + (left: AKParameter, right: AKParameter) -> AKOperation {
     return left.toMono().plus(right)
 }
 
-/// Helper function for addition
-///
-/// - Parameters:
-///   - first: 1st parameter
-///   - second: 2nd parameter
-///
-public func +(first: AKStereoOperation, second: AKStereoOperation) -> AKStereoOperation {
-    return AKStereoOperation(module: "rot + rot rot +",
-                             inputs: first.left(), first.right(), second.left(), second.right())
+extension AKStereoOperation {
+    /// Helper function for addition
+    ///
+    /// - Parameters:
+    ///   - first: 1st parameter
+    ///   - second: 2nd parameter
+    ///
+    public static func + (first: AKStereoOperation, second: AKStereoOperation) -> AKStereoOperation {
+        return AKStereoOperation(module: "rot + rot rot +",
+                                 inputs: first.left(), first.right(), second.left(), second.right())
+    }
 }

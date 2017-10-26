@@ -22,7 +22,7 @@ import AVFoundation
 ///
 open class MogoInstrument: AKPolyphonicNode, AKComponent {
     public typealias AKAudioUnitType = MogoInstrumentAudioUnit
-    static let ComponentDescription = AudioComponentDescription(generator: "mogo")
+    public static let ComponentDescription = AudioComponentDescription(generator: "mogo")
 
     // MARK: - Properties
 

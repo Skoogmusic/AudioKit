@@ -3,13 +3,14 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright (c) 2015 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
 //
 
-#ifndef AKOperationEffectDSPKernel_hpp
-#define AKOperationEffectDSPKernel_hpp
+#pragma once
 
-#import "DSPKernel.hpp"
+#import <vector>
+
+#import "AKSoundpipeKernel.hpp"
 #import "ParameterRamper.hpp"
 
 #import <AudioKit/AudioKit-Swift.h>
@@ -18,23 +19,23 @@ extern "C" {
 #include "plumber.h"
 }
 
+#import "AKCustomUgenInfo.h"
 
-class AKOperationEffectDSPKernel : public DSPKernel {
+class AKOperationEffectDSPKernel : public AKSoundpipeKernel, public AKBuffered {
 public:
     // MARK: Member Functions
-
+    
     AKOperationEffectDSPKernel() {}
-
-    void init(int channelCount, double inSampleRate) {
-        channels = channelCount;
-
-        sampleRate = float(inSampleRate);
-
-        sp_create(&sp);
-        sp->sr = sampleRate;
-        sp->nchan = channels;
+    
+    void init(int _channels, double _sampleRate) override {
+        AKSoundpipeKernel::init(_channels, _sampleRate);
         plumber_register(&pd);
         plumber_init(&pd);
+        
+        for (auto info : customUgens) {
+            plumber_ftmap_add_function(&pd, info.name, info.func, info.userData);
+        }
+        
         pd.sp = sp;
         if (sporthCode != nil) {
             plumber_parse_string(&pd, sporthCode);
@@ -43,8 +44,15 @@ public:
         
     }
     
-    void setSporth(char *sporth) {
-        sporthCode = sporth;
+    void setSporth(char *sporth, int length) {
+        if (sporthCode) {
+            free(sporthCode);
+            sporthCode = NULL;
+        }
+        if (length) {
+            sporthCode = (char *)malloc(length);
+            memcpy(sporthCode, sporth, length);
+        }
     }
     
     void setParameters(float params[]) {
@@ -53,6 +61,10 @@ public:
         }
     };
     
+    void addCustomUgen(AKCustomUgenInfo info) {
+        customUgens.push_back(info);
+    }
+    
     void start() {
         started = true;
     }
@@ -60,36 +72,34 @@ public:
     void stop() {
         started = false;
     }
-
+    
     void destroy() {
         plumber_clean(&pd);
-        sp_destroy(&sp);
+        AKSoundpipeKernel::destroy();
+        if (sporthCode) {
+            free(sporthCode);
+        }
     }
     
     void reset() {
     }
-
+    
     void setParameter(AUParameterAddress address, AUValue value) {
         switch (address) {
         }
     }
-
+    
     AUValue getParameter(AUParameterAddress address) {
         switch (address) {
             default: return 0.0f;
         }
     }
-
+    
     void startRamp(AUParameterAddress address, AUValue value, AUAudioFrameCount duration) override {
         switch (address) {
         }
     }
-
-    void setBuffers(AudioBufferList *inBufferList, AudioBufferList *outBufferList) {
-        inBufferListPtr = inBufferList;
-        outBufferListPtr = outBufferList;
-    }
-
+    
     void process(AUAudioFrameCount frameCount, AUAudioFrameCount bufferOffset) override {
         
         if (!started) {
@@ -97,9 +107,9 @@ public:
             outBufferListPtr->mBuffers[1] = inBufferListPtr->mBuffers[1];
             return;
         }
-
+        
         for (int frameIndex = 0; frameIndex < frameCount; ++frameIndex) {
-
+            
             int frameOffset = int(frameIndex + bufferOffset);
             
             for (int channel = 0; channel < channels; ++channel) {
@@ -114,7 +124,7 @@ public:
             }
             
             plumber_compute(&pd, PLUMBER_COMPUTE);
-
+            
             for (int channel = 0; channel < channels; ++channel) {
                 float *out = (float *)outBufferListPtr->mBuffers[channel].mData + frameOffset;
                 *out = sporth_stack_pop_float(&pd.sporth.stack);
@@ -125,23 +135,16 @@ public:
             }
         }
     }
-
-    // MARK: Member Variables
-
-private:
-
-    int channels = AKSettings.numberOfChannels;
-    float sampleRate = AKSettings.sampleRate;
     
-    AudioBufferList *inBufferListPtr = nullptr;
-    AudioBufferList *outBufferListPtr = nullptr;
-
-    sp_data *sp;
+    // MARK: Member Variables
+    
+private:
+    
     plumber_data pd;
     char *sporthCode = nil;
+    std::vector<AKCustomUgenInfo> customUgens;
 public:
     float parameters[14] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     bool started = true;
 };
 
-#endif /* AKOperationEffectDSPKernel_hpp */

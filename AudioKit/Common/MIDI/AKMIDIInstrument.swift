@@ -3,7 +3,7 @@
 //  AudioKit
 //
 //  Created by Jeff Cooper, revision history on Github.
-//  Copyright © 2016 AudioKit. All rights reserved.
+//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
 //
 
 import AVFoundation
@@ -21,16 +21,21 @@ open class AKMIDIInstrument: AKPolyphonicNode, AKMIDIListener {
     /// Name of the instrument
     open var name = "AKMIDIInstrument"
 
+    /// Initialize the MIDI Instrument
+    public override init() {
+        super.init()
+        enableMIDI()
+    }
+
     /// Enable MIDI input from a given MIDI client
-    /// This is not in the init function because it must be called AFTER you start audiokit
     ///
     /// - Parameters:
     ///   - midiClient: A refernce to the midi client
     ///   - name: Name to connect with
     ///
-    open func enableMIDI(_ midiClient: MIDIClientRef, name: String) {
-        CheckError(MIDIDestinationCreateWithBlock(midiClient, name as CFString, &midiIn) {
-            packetList, _ in
+    open func enableMIDI(_ midiClient: MIDIClientRef = AKMIDI().client,
+                         name: String = "Unnamed") {
+        CheckError(MIDIDestinationCreateWithBlock(midiClient, name as CFString, &midiIn) { packetList, _ in
             for e in packetList.pointee {
                 let event = AKMIDIEvent(packet: e)
                 self.handle(event: event)
@@ -39,9 +44,9 @@ open class AKMIDIInstrument: AKPolyphonicNode, AKMIDIListener {
     }
 
     private func handle(event: AKMIDIEvent) {
-        self.handleMIDI(data1: UInt32(event.internalData[0]),
-                        data2: UInt32(event.internalData[1]),
-                        data3: UInt32(event.internalData[2]))
+        self.handleMIDI(data1: MIDIByte(event.internalData[0]),
+                        data2: MIDIByte(event.internalData[1]),
+                        data3: MIDIByte(event.internalData[2]))
     }
 
     // MARK: - Handling MIDI Data
@@ -54,15 +59,15 @@ open class AKMIDIInstrument: AKPolyphonicNode, AKMIDIListener {
     ///   - channel:    MIDI channel
     ///
     open func receivedMIDINoteOn(_ noteNumber: MIDINoteNumber,
-                                   velocity: MIDIVelocity,
-                                   channel: MIDIChannel) {
+                                 velocity: MIDIVelocity,
+                                 channel: MIDIChannel) {
         if velocity > 0 {
             start(noteNumber: noteNumber, velocity: velocity, channel: channel)
         } else {
             stop(noteNumber: noteNumber, channel: channel)
         }
     }
-    
+
     /// Handle MIDI commands that come in externally
     ///
     /// - Parameters:
@@ -73,7 +78,7 @@ open class AKMIDIInstrument: AKPolyphonicNode, AKMIDIListener {
     open func receivedMIDINoteOff(noteNumber: MIDINoteNumber, velocity: MIDIVelocity, channel: MIDIChannel) {
         stop(noteNumber: noteNumber, channel: channel)
     }
-    
+
     // MARK: - MIDI Note Start/Stop
 
     /// Start a note
@@ -83,9 +88,9 @@ open class AKMIDIInstrument: AKPolyphonicNode, AKMIDIListener {
     ///   - velocity:   Velocity at which to play the note (0 - 127)
     ///   - channel:    Channel on which to play the note
     ///
-    open func start(noteNumber: MIDINoteNumber,
-                                 velocity: MIDIVelocity,
-                                 channel: MIDIChannel) {
+    @objc open func start(noteNumber: MIDINoteNumber,
+                          velocity: MIDIVelocity,
+                          channel: MIDIChannel) {
         play(noteNumber: noteNumber, velocity: velocity)
     }
 
@@ -95,17 +100,17 @@ open class AKMIDIInstrument: AKPolyphonicNode, AKMIDIListener {
     ///   - noteNumber: Note number to stop
     ///   - channel:    Channel on which to stop the note
     ///
-    open func stop(noteNumber: MIDINoteNumber, channel: MIDIChannel) {
+    @objc open func stop(noteNumber: MIDINoteNumber, channel: MIDIChannel) {
         // OVerride in subclass
     }
-    
+
     // MARK: - Private functions
-    
+
     // Send MIDI data to the audio unit
-    func handleMIDI(data1: UInt32, data2: UInt32, data3: UInt32) {
+    func handleMIDI(data1: MIDIByte, data2: MIDIByte, data3: MIDIByte) {
         let status = data1 >> 4
         let channel = data1 & 0xF
-        if(Int(status) == AKMIDIStatus.noteOn.rawValue && data3 > 0) {
+        if Int(status) == AKMIDIStatus.noteOn.rawValue && data3 > 0 {
             start(noteNumber: MIDINoteNumber(data2),
                   velocity: MIDIVelocity(data3),
                   channel: MIDIChannel(channel))

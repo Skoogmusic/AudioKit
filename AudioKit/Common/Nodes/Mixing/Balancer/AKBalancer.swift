@@ -3,10 +3,8 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright (c) 2015 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
 //
-
-import AVFoundation
 
 /// This node outputs a version of the audio source, amplitude-modified so
 /// that its rms power is equal to that of the comparator audio source. Thus a
@@ -15,21 +13,17 @@ import AVFoundation
 /// should be noted that this modifies amplitude only; output signal is not
 /// altered in any other respect.
 ///
-/// - Parameters:
-///   - input: Input node to process
-///   - comparator: Audio to match power with
-///
-open class AKBalancer: AKNode, AKToggleable, AKComponent {
+open class AKBalancer: AKNode, AKToggleable, AKComponent, AKInput {
     public typealias AKAudioUnitType = AKBalancerAudioUnit
-    static let ComponentDescription = AudioComponentDescription(mixer: "blnc")
+    /// Four letter unique description of the node
+    public static let ComponentDescription = AudioComponentDescription(mixer: "blnc")
 
     // MARK: - Properties
-    
-    internal var internalAU: AKAudioUnitType?
+    private var internalAU: AKAudioUnitType?
 
     /// Tells whether the node is processing (ie. started, playing, or active)
-    open var isStarted: Bool {
-        return internalAU!.isPlaying()
+    @objc open dynamic var isStarted: Bool {
+        return internalAU?.isPlaying() ?? false
     }
 
     // MARK: - Initialization
@@ -40,32 +34,27 @@ open class AKBalancer: AKNode, AKToggleable, AKComponent {
     ///   - input: Input node to process
     ///   - comparator: Audio to match power with
     ///
-    public init( _ input: AKNode, comparator: AKNode) {
+    public init( _ input: AKNode? = nil, comparator: AKNode) {
         _Self.register()
         super.init()
-        AVAudioUnit.instantiate(with: _Self.ComponentDescription, options: []) {
-            avAudioUnit, error in
+        AVAudioUnit._instantiate(with: _Self.ComponentDescription) { [weak self] avAudioUnit in
 
-            guard let avAudioUnitEffect = avAudioUnit else { return }
+            self?.avAudioNode = avAudioUnit
+            self?.internalAU = avAudioUnit.auAudioUnit as? AKAudioUnitType
 
-            self.avAudioNode = avAudioUnitEffect
-            self.internalAU = avAudioUnitEffect.auAudioUnit as? AKAudioUnitType
+            input?.connect(to: self!)
 
-            AudioKit.engine.attach(self.avAudioNode)
-            input.addConnectionPoint(self)
-
-            comparator.connectionPoints.append(AVAudioConnectionPoint(node: self.avAudioNode, bus: 1))
-            AudioKit.engine.connect(comparator.avAudioNode, to: comparator.connectionPoints, fromBus: 0, format: nil)
+            comparator.connectionPoints.append(AVAudioConnectionPoint(node: self!.avAudioNode, bus: 1))
         }
     }
 
     /// Function to start, play, or activate the node, all do the same thing
-    open func start() {
-        self.internalAU!.start()
+    @objc open func start() {
+        internalAU?.start()
     }
 
     /// Function to stop or bypass the node, both are equivalent
-    open func stop() {
-        self.internalAU!.stop()
+    @objc open func stop() {
+        internalAU?.stop()
     }
 }

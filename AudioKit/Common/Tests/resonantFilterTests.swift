@@ -3,14 +3,13 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka on 8/9/16.
-//  Copyright © 2016 AudioKit. All rights reserved.
+//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
 //
 
+import AudioKit
 import XCTest
 
-import AudioKit
-
-class resonantFilterTests: AKTestCase {
+class ResonantFilterTests: AKTestCase {
 
     override func setUp() {
         super.setUp()
@@ -18,12 +17,10 @@ class resonantFilterTests: AKTestCase {
     }
 
     func testDefault() {
-        let input = AKOscillator()
-        input.start()
         output = AKOperationEffect(input) { input, _ in
             return input.resonantFilter()
         }
-        AKTestMD5("467ff2e714a8ead024cee521d959cb87")
+        AKTestMD5("63b1c6599a5efafd457cc9464073943f")
     }
 
 }

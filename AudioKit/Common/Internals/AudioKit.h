@@ -3,11 +3,14 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright © 2016 AudioKit. All rights reserved.
+//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
+#if !TARGET_OS_TV
+#import <CoreAudioKit/CoreAudioKit.h>
+#endif
 
 //! Project version number for AudioKit.
 FOUNDATION_EXPORT double AudioKitVersionNumber;
@@ -18,9 +21,13 @@ FOUNDATION_EXPORT const unsigned char AudioKitVersionString[];
 // Analysis
 #import "AKAmplitudeTrackerAudioUnit.h"
 #import "AKFrequencyTrackerAudioUnit.h"
+#if !TARGET_OS_TV
+#import "AKMicrophoneTrackerEngine.h"
+#endif
 
 // Effects
 #import "AKOperationEffectAudioUnit.h"
+#import "AKSporthStack.h"
 
 // Effects / Delay
 #import "AKVariableDelayAudioUnit.h"
@@ -29,6 +36,10 @@ FOUNDATION_EXPORT const unsigned char AudioKitVersionString[];
 #import "AKBitCrusherAudioUnit.h"
 #import "AKClipperAudioUnit.h"
 #import "AKTanhDistortionAudioUnit.h"
+
+// Effects / Dynamics
+#import "AKDynamicRangeCompressorAudioUnit.h"
+#import "AKDynaRageCompressorAudioUnit.h"
 
 // Effects / Envelopes
 #import "AKAmplitudeEnvelopeAudioUnit.h"
@@ -57,26 +68,35 @@ FOUNDATION_EXPORT const unsigned char AudioKitVersionString[];
 #import "AKToneComplementFilterAudioUnit.h"
 #import "AKToneFilterAudioUnit.h"
 
+// Effects / Guitar Processors
+#import "AKRhinoGuitarProcessorAudioUnit.h"
+
+// Effects / Phaser
+#import "AKPhaserAudioUnit.h"
+
 // Effects / Pitch Shifter
 #import "AKPitchShifterAudioUnit.h"
 
 // Effects / Reverb
 #import "AKChowningReverbAudioUnit.h"
+#import "AK4ChowningReverbAudioUnit.h"
 #import "AKConvolutionAudioUnit.h"
 #import "AKCostelloReverbAudioUnit.h"
 #import "AKFlatFrequencyResponseReverbAudioUnit.h"
+#import "AKZitaReverbAudioUnit.h"
 
 // Generators
 #import "AKOperationGeneratorAudioUnit.h"
 
 // Generators / Noise
+#import "AKBrownianNoiseAudioUnit.h"
 #import "AKPinkNoiseAudioUnit.h"
 #import "AKWhiteNoiseAudioUnit.h"
 
 // Generators / Oscillators
 #import "AKFMOscillatorAudioUnit.h"
 #import "AKFMOscillatorBankAudioUnit.h"
-#import "AKFMOscillatorBank2AudioUnit.h" 
+//#import "AKFMOscillatorBank2AudioUnit.h" // commenting out for now just to remove errors
 #import "AKMorphingOscillatorAudioUnit.h"
 #import "AKMorphingOscillatorBankAudioUnit.h"
 #import "AKOscillatorAudioUnit.h"
@@ -87,12 +107,16 @@ FOUNDATION_EXPORT const unsigned char AudioKitVersionString[];
 #import "AKPWMOscillatorBankAudioUnit.h"
 
 // Generators / Physical Models
+#import "AKClarinetAudioUnit.h"
 #import "AKDripAudioUnit.h"
 #import "AKFluteAudioUnit.h"
 #import "AKMandolinAudioUnit.h"
 #import "AKMetalBarAudioUnit.h"
 #import "AKPluckedStringAudioUnit.h"
-#import "AKClarinetAudioUnit.h"
+#import "AKRhodesPianoAudioUnit.h"
+#import "AKShakerAudioUnit.h"
+#import "AKTubularBellsAudioUnit.h"
+#import "AKVocalTractAudioUnit.h"
 #import "MogoInstrumentAudioUnit.h"
 #import "AKFluteInstrumentAudioUnit.h"
 #import "StringInstrumentAudioUnit.h"
@@ -100,17 +124,42 @@ FOUNDATION_EXPORT const unsigned char AudioKitVersionString[];
 // Mixing
 #import "AKBalancerAudioUnit.h"
 #import "AKBoosterAudioUnit.h"
+#import "GainAudioUnit.h"
 #import "AKPannerAudioUnit.h"
+#import "AKStereoFieldLimiterAudioUnit.h"
 
 // Playback
 #import "AKPhaseLockedVocoderAudioUnit.h"
+#import "AKSamplePlayerAudioUnit.h"
+#import "AKPresetManager.h"
 
 // Testing
-#import "AKOfflineRenderer.h"
 #import "AKTesterAudioUnit.h"
 
-// Plots
+// EZAudio
 #import "EZAudio.h"
 
-// Protocols
-#import "AKAudioUnitType.h"
+// Offline
+#import "AKOfflineRenderAudioUnit.h"
+
+// Taps
+#import "AKRenderTap.h"
+#import "AKLazyTap.h"
+#import "AKTimelineTap.h"
+
+// Utilities
+#import "TPCircularBuffer.h"
+#import "TPCircularBuffer+Unit.h"
+#import "TPCircularBuffer+AudioBufferList.h"
+#import "AKTimeline.h"
+
+// Sequencer
+#import "AKSamplerMetronome.h"
+
+#ifdef JAZZY_HACK
+// Hack to get jazzy to see the UI classes, please ignore
+#import "EZPlot.h"
+#import "EZAudioDisplayLink.h"
+#import "EZAudioPlot.h"
+#import "EZAudioPlotGL.h"
+#endif

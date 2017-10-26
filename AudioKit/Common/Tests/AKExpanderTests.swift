@@ -3,18 +3,16 @@
 //  AudioKitTestSuite
 //
 //  Created by Aurelius Prochazka on 8/9/16.
-//  Copyright © 2016 AudioKit. All rights reserved.
+//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
 //
 
-import XCTest
 import AudioKit
+import XCTest
 
 class AKExpanderTests: AKTestCase {
 
     func testDefault() {
-        let input = AKOscillator()
         output = AKExpander(input)
-        input.start()
-        AKTestMD5("64f8f52327db105a23030c77227e3167")
+        AKTestMD5("b118304cd9c733200b0e2b6f99a41efa")
     }
 }

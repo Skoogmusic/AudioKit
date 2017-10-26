@@ -3,14 +3,13 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka on 8/9/16.
-//  Copyright © 2016 AudioKit. All rights reserved.
+//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
 //
 
+import AudioKit
 import XCTest
 
-import AudioKit
-
-class highPassFilterTests: AKTestCase {
+class HighPassFilterTests: AKTestCase {
 
     override func setUp() {
         super.setUp()
@@ -18,12 +17,10 @@ class highPassFilterTests: AKTestCase {
     }
 
     func testDefault() {
-        let input = AKOscillator()
-        input.start()
         output = AKOperationEffect(input) { input, _ in
             return input.highPassFilter()
         }
-        AKTestMD5("6c9d7f2e0dfe8f4359f578143454ab46")
+        AKTestMD5("8233910ec0ca0f293541f7ec2ae9f2c8")
     }
 
 }

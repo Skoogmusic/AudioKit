@@ -3,14 +3,13 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka on 8/9/16.
-//  Copyright © 2016 AudioKit. All rights reserved.
+//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
 //
 
+import AudioKit
 import XCTest
 
-import AudioKit
-
-class korgLowPassFilterTests: AKTestCase {
+class KorgLowPassFilterTests: AKTestCase {
 
     override func setUp() {
         super.setUp()
@@ -18,21 +17,17 @@ class korgLowPassFilterTests: AKTestCase {
     }
 
     func testDefault() {
-        let input = AKOscillator()
-        input.start()
         output = AKOperationEffect(input) { input, _ in
             return input.korgLowPassFilter()
         }
-        AKTestMD5("d2d404096ebe8a473e0b547c4a9898ec")
+        AKTestMD5("aeb433486d45f43ca56fc2129b6e139b")
     }
-    
+
     func testParameters() {
-        let input = AKOscillator()
-        input.start()
         output = AKOperationEffect(input) { input, _ in
-            return input.korgLowPassFilter(cutoffFrequency: 2000, resonance: 0.9, saturation: 0.5)
+            return input.korgLowPassFilter(cutoffFrequency: 2_000, resonance: 0.9, saturation: 0.5)
         }
-        AKTestMD5("7723ef0eef2decc29c88696f11f98a9c")
+        AKTestMD5("a4acbe1dd84c0075659f10f9e48d45dd")
     }
 
 }

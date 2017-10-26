@@ -3,13 +3,12 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright (c) 2016 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
 //
 
-#ifndef AKClarinetDSPKernel_hpp
-#define AKClarinetDSPKernel_hpp
+#pragma once
 
-#import "DSPKernel.hpp"
+#import "AKDSPKernel.hpp"
 #import "ParameterRamper.hpp"
 
 #import <AudioKit/AudioKit-Swift.h>
@@ -21,17 +20,14 @@ enum {
     amplitudeAddress = 1
 };
 
-class AKClarinetDSPKernel : public DSPKernel {
+class AKClarinetDSPKernel : public AKDSPKernel, public AKOutputBuffered {
 public:
     // MARK: Member Functions
-
+    
     AKClarinetDSPKernel() {}
-
-    void init(int channelCount, double inSampleRate) {
-        channels = channelCount;
-
-        sampleRate = float(inSampleRate);
-
+    
+    void init(int _channels, double _sampleRate) override {
+        AKDSPKernel::init(_channels, _sampleRate);
         // iOS Hack
         NSBundle *frameworkBundle = [NSBundle bundleForClass:[AKOscillator class]];
         NSString *resourcePath = [frameworkBundle resourcePath];
@@ -40,88 +36,84 @@ public:
         stk::Stk::setSampleRate(sampleRate);
         clarinet = new stk::Clarinet(100);
     }
-
+    
     void start() {
         started = true;
     }
-
+    
     void stop() {
         started = false;
     }
-
+    
     void destroy() {
         delete clarinet;
     }
-
+    
     void reset() {
         resetted = true;
     }
-
+    
     void setFrequency(float freq) {
         frequency = freq;
         frequencyRamper.setImmediate(freq);
     }
-
+    
     void setAmplitude(float amp) {
         amplitude = amp;
         amplitudeRamper.setImmediate(amp);
     }
-
+    
     void trigger() {
         internalTrigger = 1;
     }
-
+    
     void setParameter(AUParameterAddress address, AUValue value) {
         switch (address) {
             case frequencyAddress:
                 frequencyRamper.setUIValue(clamp(value, (float)0, (float)22000));
                 break;
-
+                
             case amplitudeAddress:
                 amplitudeRamper.setUIValue(clamp(value, (float)0, (float)1));
                 break;
-
+                
         }
     }
-
+    
     AUValue getParameter(AUParameterAddress address) {
         switch (address) {
             case frequencyAddress:
                 return frequencyRamper.getUIValue();
-
+                
             case amplitudeAddress:
                 return amplitudeRamper.getUIValue();
-
+                
             default: return 0.0f;
         }
     }
-
+    
     void startRamp(AUParameterAddress address, AUValue value, AUAudioFrameCount duration) override {
         switch (address) {
             case frequencyAddress:
                 frequencyRamper.startRamp(clamp(value, (float)0, (float)22000), duration);
                 break;
-
+                
             case amplitudeAddress:
                 amplitudeRamper.startRamp(clamp(value, (float)0, (float)1), duration);
                 break;
-
+                
         }
     }
-
-    void setBuffers(AudioBufferList *outBufferList) {
-        outBufferListPtr = outBufferList;
-    }
-
+    
     void process(AUAudioFrameCount frameCount, AUAudioFrameCount bufferOffset) override {
-
+        
         for (int frameIndex = 0; frameIndex < frameCount; ++frameIndex) {
-
+            
             int frameOffset = int(frameIndex + bufferOffset);
-
+            
             frequency = frequencyRamper.getAndStep();
             amplitude = amplitudeRamper.getAndStep();
-
+            
             for (int channel = 0; channel < channels; ++channel) {
                 float *out = (float *)outBufferListPtr->mBuffers[channel].mData + frameOffset;
                 if (started) {
@@ -138,22 +130,18 @@ public:
             internalTrigger = 0;
         }
     }
-
+    
     // MARK: Member Variables
-
+    
 private:
-
-    int channels = AKSettings.numberOfChannels;
-    float sampleRate = AKSettings.sampleRate;
+    
     float internalTrigger = 0;
-
-    AudioBufferList *outBufferListPtr = nullptr;
-
+    
     stk::Clarinet *clarinet;
     
     float frequency = 110;
     float amplitude = 0.5;
-
+    
 public:
     bool started = false;
     bool resetted = false;
@@ -161,4 +149,3 @@ public:
     ParameterRamper amplitudeRamper = 0.5;
 };
 
-#endif /* AKClarinetDSPKernel_hpp */

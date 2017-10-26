@@ -6,41 +6,36 @@
 //  Copyright © 2016 AudioKit. All rights reserved.
 //
 
-import UIKit
 import AudioKit
+import AudioKitUI
+import UIKit
 
 class PitchShifterViewController: UIViewController {
-    
-    @IBOutlet weak var pitchSlider: AKPropertySlider!
-    @IBOutlet weak var mixSlider: AKPropertySlider!
-    
+
+    @IBOutlet private weak var pitchSlider: AKSlider!
+    @IBOutlet private weak var mixSlider: AKSlider!
+
     let songProcessor = SongProcessor.sharedInstance
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        pitchSlider.minimum = -24
-        pitchSlider.maximum = 24
-        
-        if let pitch = songProcessor.pitchShifter?.shift {
-            pitchSlider.value = pitch
-        }
-        if let balance = songProcessor.pitchMixer?.balance {
-            mixSlider.value = balance
-        }
-        
+
+        pitchSlider.range = -24 ... 24
+
+        pitchSlider.value = songProcessor.pitchShifter.shift
+
+        mixSlider.value = songProcessor.pitchMixer.balance
         mixSlider.callback = updateMix
         pitchSlider.callback = updatePitch
 
     }
-    
+
     func updatePitch(value: Double) {
-        songProcessor.pitchShifter?.shift = value
+        songProcessor.pitchShifter.shift = value
     }
-    
+
     func updateMix(value: Double) {
-        songProcessor.pitchMixer?.balance = value
+        songProcessor.pitchMixer.balance = value
     }
-    
 
 }

@@ -11,8 +11,8 @@ int sporth_gen_sporth(sporth_stack *stack, void *ud)
     uint32_t size;
     sp_data *sp;
     sp_ftbl *ft;
-    char *ftname;
-    char *filename;
+    const char *ftname;
+    const char *filename;
     uint32_t n;
 
     switch(pd->mode){
@@ -20,7 +20,7 @@ int sporth_gen_sporth(sporth_stack *stack, void *ud)
             plumber_add_ugen(pd, SPORTH_GEN_SPORTH, NULL);
 
             if(sporth_check_args(stack, "sfs") != SPORTH_OK) {
-                fprintf(stderr, "Init: not enough arguments for gen_sine\n");
+                plumber_print(pd, "Init: not enough arguments for gen_sine\n");
                 return PLUMBER_NOTOK;
             }
             filename = sporth_stack_pop_string(stack);
@@ -29,7 +29,7 @@ int sporth_gen_sporth(sporth_stack *stack, void *ud)
             sp_ftbl_create(pd->sp, &ft, size);
             plumber_ftmap_add(pd, ftname, ft);
 #ifdef DEBUG_MODE
-            fprintf(stderr, "gen_sporth: compiling file %s to table of size %d\n", 
+            plumber_print(pd, "gen_sporth: compiling file %s to table of size %d\n", 
                     filename, size);
 #endif
             plumber_register(&my_pd);

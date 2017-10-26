@@ -3,22 +3,35 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright © 2016 AudioKit. All rights reserved.
+//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
 //
 
-import Foundation
-
-protocol AUComponent: class {
+/// Helpful in reducing repetitive code in AudioKit
+public protocol Aliased {
     associatedtype _Self = Self
+}
+
+/// Helpful in reducing repetitive code in AudioKit
+public protocol AUComponent: class, Aliased {
     static var ComponentDescription: AudioComponentDescription { get }
 }
 
-protocol AKComponent: AUComponent {
+protocol AUEffect: AUComponent { }
+
+extension AUEffect {
+    static var effect: AVAudioUnitEffect {
+        return AVAudioUnitEffect(audioComponentDescription: ComponentDescription)
+    }
+}
+
+/// Helpful in reducing repetitive code in AudioKit
+public protocol AKComponent: AUComponent {
     associatedtype AKAudioUnitType: AnyObject
 }
 
 extension AKComponent {
-    static func register() {
+    /// Register the audio unit subclass
+    public static func register() {
         AUAudioUnit.registerSubclass(Self.AKAudioUnitType.self,
                                      as: Self.ComponentDescription,
                                      name: "Local \(Self.self)",
@@ -27,13 +40,15 @@ extension AKComponent {
 }
 
 extension AUParameterTree {
-    internal subscript (key: String) -> AUParameter? {
+    public subscript (key: String) -> AUParameter? {
         return value(forKey: key) as? AUParameter
     }
 }
 
+/// Adding convenience initializers
 extension AudioComponentDescription {
-    internal init(type: OSType, subType: OSType) {
+    /// Initialize with type and sub-type
+    public init(type: OSType, subType: OSType) {
         self.init(componentType: type,
                   componentSubType: subType,
                   componentManufacturer: fourCC("AuKt"),
@@ -41,7 +56,8 @@ extension AudioComponentDescription {
                   componentFlagsMask: 0)
     }
 
-    internal init(appleEffect subType: OSType) {
+    /// Initialize with an Apple effect
+    public init(appleEffect subType: OSType) {
         self.init(componentType: kAudioUnitType_Effect,
                   componentSubType: subType,
                   componentManufacturer: kAudioUnitManufacturer_Apple,
@@ -49,20 +65,29 @@ extension AudioComponentDescription {
                   componentFlagsMask: 0)
     }
 
-    internal init(effect subType: OSType) {
+    /// Initialize as an effect with sub-type
+    public init(effect subType: OSType) {
         self.init(type: kAudioUnitType_Effect, subType: subType)
     }
-    
-    internal init(effect subType: String) {
+
+    /// Initialize as an effect with sub-type string
+    public init(effect subType: String) {
         self.init(effect: fourCC(subType))
     }
-    
-    internal init(mixer subType: String) {
+
+    /// Initialize as a mixer with a sub-type string
+    public init(mixer subType: String) {
         self.init(type: kAudioUnitType_Mixer, subType: fourCC(subType))
     }
-    
-    internal init(generator subType: String) {
+
+    /// Initialize as a generator with a sub-type string
+    public init(generator subType: String) {
         self.init(type: kAudioUnitType_Generator, subType: fourCC(subType))
     }
-}
 
+    /// Initialize as an instrument with a sub-type string
+    public init(instrument subType: String) {
+        self.init(type: kAudioUnitType_MusicDevice, subType: fourCC(subType))
+    }
+
+}

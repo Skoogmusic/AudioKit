@@ -3,25 +3,15 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright (c) 2016 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
 //
 
-#ifndef AKBoosterAudioUnit_h
-#define AKBoosterAudioUnit_h
+#pragma once
+#import "AKAudioUnit.h"
 
-#import <AudioToolbox/AudioToolbox.h>
-
-@interface AKBoosterAudioUnit : AUAudioUnit
-@property (nonatomic) float gain;
-
-- (void)start;
-- (void)stop;
-- (BOOL)isPlaying;
-- (void)setUpParameterRamp;
-- (BOOL)isSetUp;
-
-@property double rampTime;
-
+@interface AKBoosterAudioUnit : AKAudioUnit
+@property (nonatomic) float leftGain;
+@property (nonatomic) float rightGain;
 @end
 
-#endif /* AKBoosterAudioUnit_h */
+

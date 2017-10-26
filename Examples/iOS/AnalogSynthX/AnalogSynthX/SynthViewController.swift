@@ -6,8 +6,9 @@
 //  Copyright © 2016 AudioKit. All rights reserved.
 //
 
-import UIKit
 import AudioKit
+import AudioKitUI
+import UIKit
 
 class SynthViewController: UIViewController {
 
@@ -15,42 +16,42 @@ class SynthViewController: UIViewController {
     // MARK: - Instance Properties
     // *********************************************************
 
-    @IBOutlet weak var statusLabel: UILabel!
-    @IBOutlet weak var octavePositionLabel: UILabel!
-    @IBOutlet weak var oscMixKnob: KnobMedium!
-    @IBOutlet weak var osc1SemitonesKnob: KnobMedium!
-    @IBOutlet weak var osc2SemitonesKnob: KnobMedium!
-    @IBOutlet weak var osc2DetuneKnob: KnobMedium!
-    @IBOutlet weak var lfoAmtKnob: KnobMedium!
-    @IBOutlet weak var lfoRateKnob: KnobMedium!
-    @IBOutlet weak var crushAmtKnob: KnobMedium!
-    @IBOutlet weak var delayTimeKnob: KnobMedium!
-    @IBOutlet weak var delayMixKnob: KnobMedium!
-    @IBOutlet weak var reverbAmtKnob: KnobMedium!
-    @IBOutlet weak var reverbMixKnob: KnobMedium!
-    @IBOutlet weak var cutoffKnob: KnobLarge!
-    @IBOutlet weak var rezKnob: KnobSmall!
-    @IBOutlet weak var subMixKnob: KnobSmall!
-    @IBOutlet weak var fmMixKnob: KnobSmall!
-    @IBOutlet weak var fmModKnob: KnobSmall!
-    @IBOutlet weak var noiseMixKnob: KnobSmall!
-    @IBOutlet weak var morphKnob: KnobSmall!
-    @IBOutlet weak var masterVolKnob: KnobSmall!
-    @IBOutlet weak var attackSlider: VerticalSlider!
-    @IBOutlet weak var decaySlider: VerticalSlider!
-    @IBOutlet weak var sustainSlider: VerticalSlider!
-    @IBOutlet weak var releaseSlider: VerticalSlider!
-    @IBOutlet weak var vco1Toggle: UIButton!
-    @IBOutlet weak var vco2Toggle: UIButton!
-    @IBOutlet weak var bitcrushToggle: UIButton!
-    @IBOutlet weak var filterToggle: UIButton!
-    @IBOutlet weak var delayToggle: UIButton!
-    @IBOutlet weak var reverbToggle: UIButton!
-    @IBOutlet weak var fattenToggle: UIButton!
-    @IBOutlet weak var holdToggle: UIButton!
-    @IBOutlet weak var monoToggle: UIButton!
-    @IBOutlet weak var audioPlot: AKOutputWaveformPlot!
-    @IBOutlet weak var plotToggle: UIButton!
+    @IBOutlet fileprivate weak var statusLabel: UILabel!
+    @IBOutlet fileprivate weak var octavePositionLabel: UILabel!
+    @IBOutlet fileprivate weak var oscMixKnob: Knob!
+    @IBOutlet fileprivate weak var osc1SemitonesKnob: Knob!
+    @IBOutlet fileprivate weak var osc2SemitonesKnob: Knob!
+    @IBOutlet fileprivate weak var osc2DetuneKnob: Knob!
+    @IBOutlet fileprivate weak var lfoAmtKnob: Knob!
+    @IBOutlet fileprivate weak var lfoRateKnob: Knob!
+    @IBOutlet fileprivate weak var crushAmtKnob: Knob!
+    @IBOutlet fileprivate weak var delayTimeKnob: Knob!
+    @IBOutlet fileprivate weak var delayMixKnob: Knob!
+    @IBOutlet fileprivate weak var reverbAmtKnob: Knob!
+    @IBOutlet fileprivate weak var reverbMixKnob: Knob!
+    @IBOutlet fileprivate weak var cutoffKnob: Knob!
+    @IBOutlet fileprivate weak var rezKnob: Knob!
+    @IBOutlet fileprivate weak var subMixKnob: Knob!
+    @IBOutlet fileprivate weak var fmMixKnob: Knob!
+    @IBOutlet fileprivate weak var fmModKnob: Knob!
+    @IBOutlet fileprivate weak var noiseMixKnob: Knob!
+    @IBOutlet fileprivate weak var morphKnob: Knob!
+    @IBOutlet fileprivate weak var masterVolKnob: Knob!
+    @IBOutlet fileprivate weak var attackSlider: VerticalSlider!
+    @IBOutlet fileprivate weak var decaySlider: VerticalSlider!
+    @IBOutlet fileprivate weak var sustainSlider: VerticalSlider!
+    @IBOutlet fileprivate weak var releaseSlider: VerticalSlider!
+    @IBOutlet fileprivate weak var vco1Toggle: UIButton!
+    @IBOutlet fileprivate weak var vco2Toggle: UIButton!
+    @IBOutlet fileprivate weak var bitcrushToggle: UIButton!
+    @IBOutlet fileprivate weak var filterToggle: UIButton!
+    @IBOutlet fileprivate weak var delayToggle: UIButton!
+    @IBOutlet fileprivate weak var reverbToggle: UIButton!
+    @IBOutlet fileprivate weak var fattenToggle: UIButton!
+    @IBOutlet fileprivate weak var holdToggle: UIButton!
+    @IBOutlet fileprivate weak var monoToggle: UIButton!
+    @IBOutlet weak var audioPlot: AKNodeOutputPlot!
+    @IBOutlet fileprivate weak var plotToggle: UIButton!
 
     enum ControlTag: Int {
         case cutoff = 101
@@ -85,7 +86,7 @@ class SynthViewController: UIViewController {
     var lastKey: UIButton?
     var monoMode: Bool = false
     var holdMode: Bool = false
-    var midiNotesHeld = [Int]()
+    var midiNotesHeld = [MIDINoteNumber]()
     let blackKeys = [49, 51, 54, 56, 58, 61, 63, 66, 68, 70]
 
     var conductor = Conductor.sharedInstance
@@ -118,9 +119,9 @@ class SynthViewController: UIViewController {
 
         // Set Preset Values
         conductor.masterVolume.volume = 1.0 // Master Volume
-        conductor.core.vco1.detuningOffset = 0 // VCO1 Semitones
         conductor.core.offset2 = 0 // VCO2 Semitones
-        conductor.core.vco2.detuningOffset = 0.0 // VCO2 Detune (Hz)
+        conductor.core.vco2.vibratoDepth = 0.0 // VCO2 Detune (Hz)
+        conductor.core.vco2.vibratoRate = 1.0 // VCO2 Detune (Hz)
         conductor.core.vcoBalancer.balance = 0.5 // VCO1/VCO2 Mix
         conductor.core.subOscMixer.volume = 0.0 // SubOsc Mix
         conductor.core.fmOscMixer.volume = 0.0 // FM Mix
@@ -168,9 +169,9 @@ class SynthViewController: UIViewController {
         osc2SemitonesKnob.maximum = 12
         osc2SemitonesKnob.value = Double(conductor.core.offset2)
 
-        osc2DetuneKnob.minimum = -4
-        osc2DetuneKnob.maximum = 4
-        osc2DetuneKnob.value = conductor.core.vco2.detuningOffset
+        osc2DetuneKnob.minimum = -0.25
+        osc2DetuneKnob.maximum = 0.25
+        osc2DetuneKnob.value = conductor.core.vco2.vibratoDepth
 
         subMixKnob.maximum = 1.0
         subMixKnob.value = conductor.core.subOscMixer.volume
@@ -188,7 +189,7 @@ class SynthViewController: UIViewController {
 
         oscMixKnob.value = conductor.core.vcoBalancer.balance
 
-        lfoAmtKnob.maximum = 1200
+        lfoAmtKnob.maximum = 1_200
         lfoAmtKnob.value = conductor.filterSection.lfoAmplitude
 
         lfoRateKnob.maximum = 5
@@ -382,18 +383,6 @@ class SynthViewController: UIViewController {
         }
     }
 
-
-    @IBAction func cpuEfficientToggled(_ sender: UIButton) {
-        if sender.isSelected {
-            sender.isSelected = false
-            statusLabel.text = "CPU Efficient Mode Off"
-        } else {
-            sender.isSelected = true
-            statusLabel.text = "CPU Efficient Mode On"
-            // TODO: CPU Efficient CODE HERE
-        }
-    }
-
     // About App
     @IBAction func buildThisSynth(_ sender: RoundedButton) {
         openURL("http://audiokit.io/examples/AnalogSynthX")
@@ -459,7 +448,7 @@ class SynthViewController: UIViewController {
         updateAllKeysToUpPosition()
 
         for note in 0...127 {
-            conductor.core.stop(noteNumber: note)
+            conductor.core.stop(noteNumber: MIDINoteNumber(note))
         }
         midiNotesHeld.removeAll(keepingCapacity: false)
     }
@@ -477,9 +466,11 @@ class SynthViewController: UIViewController {
     func redisplayHeldKeys() {
 
         // Determine new keyboard bounds
-        let lowerMidiNote = 48  + (keyboardOctavePosition * 12)
+        let lowerMidiNote = MIDINoteNumber(48 + (keyboardOctavePosition * 12))
         let upperMidiNote = lowerMidiNote + 24
-        statusLabel.text = "Keyboard Range: \(noteNameFromMidiNote(lowerMidiNote)) to \(noteNameFromMidiNote(upperMidiNote))"
+        statusLabel.text = "Keyboard Range: " +
+                           "\(noteNameFromMidiNote(lowerMidiNote)) to " +
+                           "\(noteNameFromMidiNote(upperMidiNote))"
 
         guard !monoMode else {
             turnOffHeldKeys()
@@ -492,7 +483,7 @@ class SynthViewController: UIViewController {
         // Check notes currently in view and turn on if held
         for note in lowerMidiNote...upperMidiNote {
             if midiNotesHeld.contains(note) {
-                let keyTag = (note - (keyboardOctavePosition * 12)) + 200
+                let keyTag = (Int(note) - (keyboardOctavePosition * 12)) + 200
                 guard let key = self.view.viewWithTag(keyTag) as? UIButton else {
                     return
                 }
@@ -521,36 +512,35 @@ class SynthViewController: UIViewController {
     func updateKeyToUpPosition(_ key: UIButton) {
         let index = key.tag - 200
         if blackKeys.contains(index) {
-            key.setImage(UIImage(named: "blackkey"), for: UIControlState())
+            key.setImage(#imageLiteral(resourceName: "blackkey"), for: UIControlState())
         } else {
-            key.setImage(UIImage(named: "whitekey"), for: UIControlState())
+            key.setImage(#imageLiteral(resourceName: "whitekey"), for: UIControlState())
         }
     }
 
     func updateKeyToDownPosition(_ key: UIButton) {
         let index = key.tag - 200
         if blackKeys.contains(index) {
-            key.setImage(UIImage(named: "blackkey_selected"), for: UIControlState())
+            key.setImage(#imageLiteral(resourceName:"blackkey_selected"), for: UIControlState())
         } else {
-            key.setImage(UIImage(named: "whitekey_selected"), for: UIControlState())
+            key.setImage(#imageLiteral(resourceName: "whitekey_selected"), for: UIControlState())
         }
     }
 
-    func midiNoteFromTag(_ tag: Int) -> Int {
-        return (tag - 200) + (keyboardOctavePosition * 12)
+    func midiNoteFromTag(_ tag: Int) -> MIDINoteNumber {
+        return MIDINoteNumber((tag - 200) + (keyboardOctavePosition * 12))
     }
 }
-
 
 //*****************************************************************
 // MARK: - 🎛 Knob Delegates
 //*****************************************************************
 
-extension SynthViewController: KnobSmallDelegate, KnobMediumDelegate, KnobLargeDelegate {
+extension SynthViewController: KnobDelegate {
 
     func updateKnobValue(_ value: Double, tag: Int) {
 
-        switch (tag) {
+        switch tag {
 
         // VCOs
         case ControlTag.vco1Semitones.rawValue:
@@ -565,7 +555,7 @@ extension SynthViewController: KnobSmallDelegate, KnobMediumDelegate, KnobLargeD
 
         case ControlTag.vco2Detune.rawValue:
             statusLabel.text = "Detune: \(value.decimalString) Hz"
-            conductor.core.vco2.detuningOffset = value
+            conductor.core.vco2.vibratoDepth = value
 
         case ControlTag.oscMix.rawValue:
             statusLabel.text = "OscMix: \(value.decimalString)"
@@ -657,7 +647,7 @@ extension SynthViewController: KnobSmallDelegate, KnobMediumDelegate, KnobLargeD
 extension SynthViewController: VerticalSliderDelegate {
     func sliderValueDidChange(_ value: Double, tag: Int) {
 
-        switch (tag) {
+        switch tag {
         case ControlTag.adsrAttack.rawValue:
             statusLabel.text = "Attack: \(attackSlider.sliderValue.percentageString)"
             conductor.core.attackDuration = value
@@ -689,7 +679,7 @@ extension SynthViewController: SMSegmentViewDelegate {
     // SMSegment Delegate
     func segmentView(_ segmentView: SMBasicSegmentView, didSelectSegmentAtIndex index: Int) {
 
-        switch (segmentView.tag) {
+        switch segmentView.tag {
         case ControlTag.vco1Waveform.rawValue:
             conductor.core.waveform1 = Double(index)
             statusLabel.text = "VCO1 Waveform Changed"
@@ -708,4 +698,35 @@ extension SynthViewController: SMSegmentViewDelegate {
     }
 }
 
+//*****************************************************************
+// MARK: - Set Delegates
+//*****************************************************************
 
+extension SynthViewController {
+
+    func setDelegates() {
+        oscMixKnob.delegate = self
+        cutoffKnob.delegate = self
+        rezKnob.delegate = self
+        osc1SemitonesKnob.delegate = self
+        osc2SemitonesKnob.delegate = self
+        osc2DetuneKnob.delegate = self
+        lfoAmtKnob.delegate = self
+        lfoRateKnob.delegate = self
+        crushAmtKnob.delegate = self
+        delayTimeKnob.delegate = self
+        delayMixKnob.delegate = self
+        reverbAmtKnob.delegate = self
+        reverbMixKnob.delegate = self
+        subMixKnob.delegate = self
+        fmMixKnob.delegate = self
+        fmModKnob.delegate = self
+        morphKnob.delegate = self
+        noiseMixKnob.delegate = self
+        masterVolKnob.delegate = self
+        attackSlider.delegate = self
+        decaySlider.delegate = self
+        sustainSlider.delegate = self
+        releaseSlider.delegate = self
+    }
+}

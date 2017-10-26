@@ -3,37 +3,42 @@
 //  AudioKitTestSuite
 //
 //  Created by Aurelius Prochazka on 8/9/16.
-//  Copyright © 2016 AudioKit. All rights reserved.
+//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
 //
 
-import XCTest
 import AudioKit
+import XCTest
 
 class AKCostelloReverbTests: AKTestCase {
-    
+
+    func testCutoffFrequency() {
+        output = AKCostelloReverb(input, cutoffFrequency: 1_234)
+        AKTestMD5("08e2b24e7fe92c33490d47b796192ef2")
+    }
+
     func testDefault() {
-        let input = AKOscillator()
         output = AKCostelloReverb(input)
-        input.start()
-        AKTestMD5("369cf95067da35910aae0c65a4b81eb7")
+        AKTestMD5("f886152c9b97ae66e42d3d5d9c821fc2")
     }
-    
-    func testParametersSetOnInit() {
-        let input = AKOscillator()
-        output = AKCostelloReverb(input,
-                                  feedback: 0.95,
-                                  cutoffFrequency: 1234)
-        input.start()
-        AKTestMD5("4ac9c83b90ce86327198c3c428bf6922")
+
+    func testFeedback() {
+        output = AKCostelloReverb(input, feedback: 0.95)
+        AKTestMD5("c8b8fa22214adcfd6ea28ef3d5403c78")
     }
-    
+
     func testParametersSetAfterInit() {
-        let input = AKOscillator()
         let effect = AKCostelloReverb(input)
-        effect.cutoffFrequency = 1234
+        effect.cutoffFrequency = 1_234
         effect.feedback = 0.95
         output = effect
-        input.start()
-        AKTestMD5("4ac9c83b90ce86327198c3c428bf6922")
+        AKTestMD5("e0a028d0b2118a3b4e96d04c1bbf08e3")
     }
+
+    func testParametersSetOnInit() {
+        output = AKCostelloReverb(input,
+                                  feedback: 0.95,
+                                  cutoffFrequency: 1_234)
+        AKTestMD5("e0a028d0b2118a3b4e96d04c1bbf08e3")
+    }
+
 }

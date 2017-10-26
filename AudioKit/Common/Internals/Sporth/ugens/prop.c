@@ -10,13 +10,13 @@ int sporth_prop(sporth_stack *stack, void *ud)
     SPFLOAT bpm;
     SPFLOAT out;
     sp_prop *data;
-    char *str;
+    const char *str;
     switch(pd->mode){
         case PLUMBER_CREATE:
             sp_prop_create(&data);
             plumber_add_ugen(pd, SPORTH_PROP, data);
             if(sporth_check_args(stack, "fs") != SPORTH_OK) {
-                fprintf(stderr, "Not enough arguments for prop\n");
+                plumber_print(pd, "Not enough arguments for prop\n");
                 stack->error++;
                 return PLUMBER_NOTOK;
             }
@@ -61,13 +61,13 @@ int sporth_tprop(sporth_stack *stack, void *ud)
     SPFLOAT out;
     SPFLOAT trig;
     sp_prop *data;
-    char *str;
+    const char *str;
     switch(pd->mode){
         case PLUMBER_CREATE:
             sp_prop_create(&data);
             plumber_add_ugen(pd, SPORTH_TPROP, data);
             if(sporth_check_args(stack, "ffs") != SPORTH_OK) {
-                fprintf(stderr, "Not enough arguments for tprop\n");
+                plumber_print(pd, "Not enough arguments for tprop\n");
                 stack->error++;
                 return PLUMBER_NOTOK;
             }

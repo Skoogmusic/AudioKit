@@ -3,13 +3,12 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright (c) 2015 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
 //
 
-#ifndef AKTesterDSPKernel_hpp
-#define AKTesterDSPKernel_hpp
+#pragma once
 
-#import "DSPKernel.hpp"
+#import "AKSoundpipeKernel.hpp"
 #import "ParameterRamper.hpp"
 
 #import <AudioKit/AudioKit-Swift.h>
@@ -21,17 +20,16 @@ extern "C" {
 }
 
 
-class AKTesterDSPKernel : public DSPKernel {
+class AKTesterDSPKernel : public AKDSPKernel, public AKBuffered {
 public:
     // MARK: Member Functions
 
     AKTesterDSPKernel() {}
 
-    void init(int channelCount, double inSampleRate) {
-        channels = channelCount;
+    void init(int _channels, double _sampleRate) override {
+        AKDSPKernel::init(_channels, _sampleRate);
 
         sp_create(&sp);
-        sampleRate = float(inSampleRate);
         sp_srand(sp, 12345);
     }
 
@@ -80,11 +78,6 @@ public:
         }
     }
 
-    void setBuffers(AudioBufferList *inBufferList, AudioBufferList *outBufferList) {
-        inBufferListPtr = inBufferList;
-        outBufferListPtr = outBufferList;
-    }
-
     void process(AUAudioFrameCount frameCount, AUAudioFrameCount bufferOffset) override {
         // For each sample.
 
@@ -109,12 +102,6 @@ public:
 
 private:
 
-    int channels = AKSettings.numberOfChannels;
-    float sampleRate = AKSettings.sampleRate;
-
-    AudioBufferList *inBufferListPtr = nullptr;
-    AudioBufferList *outBufferListPtr = nullptr;
-
     sp_data *sp = nil;
     sp_test *sp_test = nil;
     UInt32 samples = 0;
@@ -125,4 +112,4 @@ public:
     bool started = true;
 };
 
-#endif /* AKTesterDSPKernel_hpp */
+

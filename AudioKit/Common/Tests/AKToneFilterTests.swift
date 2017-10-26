@@ -3,18 +3,21 @@
 //  AudioKitTestSuite
 //
 //  Created by Aurelius Prochazka on 8/9/16.
-//  Copyright © 2016 AudioKit. All rights reserved.
+//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
 //
 
-import XCTest
 import AudioKit
+import XCTest
 
 class AKToneFilterTests: AKTestCase {
 
     func testDefault() {
-        let input = AKOscillator()
         output = AKToneFilter(input)
-        input.start()
-        AKTestMD5("71f8df21291940cef3ae5ba58b62d08c")
+        AKTestMD5("c8e4d376f935ac52046d3b23a19024ba")
+    }
+
+    func testHalfPowerPoint() {
+        output = AKToneFilter(input, halfPowerPoint: 599)
+        AKTestMD5("ce9a025c219731a670522a33057d4e64")
     }
 }

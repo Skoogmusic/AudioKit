@@ -3,40 +3,26 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright (c) 2016 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
 //
 
-#ifndef AKPluckedStringDSPKernel_hpp
-#define AKPluckedStringDSPKernel_hpp
+#pragma once
 
-#import "DSPKernel.hpp"
-#import "ParameterRamper.hpp"
-
-#import <AudioKit/AudioKit-Swift.h>
-
-extern "C" {
-#include "soundpipe.h"
-}
+#import "AKSoundpipeKernel.hpp"
 
 enum {
     frequencyAddress = 0,
     amplitudeAddress = 1
 };
 
-class AKPluckedStringDSPKernel : public DSPKernel {
+class AKPluckedStringDSPKernel : public AKSoundpipeKernel, public AKOutputBuffered {
 public:
     // MARK: Member Functions
 
     AKPluckedStringDSPKernel() {}
 
-    void init(int channelCount, double inSampleRate) {
-        channels = channelCount;
-
-        sampleRate = float(inSampleRate);
-
-        sp_create(&sp);
-        sp->sr = sampleRate;
-        sp->nchan = channels;
+    void init(int _channels, double _sampleRate) override {
+        AKSoundpipeKernel::init(_channels, _sampleRate);
         sp_pluck_create(&pluck);
         sp_pluck_init(sp, pluck, 110);
         pluck->freq = 110;
@@ -53,7 +39,7 @@ public:
 
     void destroy() {
         sp_pluck_destroy(&pluck);
-        sp_destroy(&sp);
+        AKSoundpipeKernel::destroy();
     }
 
     void reset() {
@@ -112,10 +98,6 @@ public:
         }
     }
 
-    void setBuffers(AudioBufferList *outBufferList) {
-        outBufferListPtr = outBufferList;
-    }
-
     void process(AUAudioFrameCount frameCount, AUAudioFrameCount bufferOffset) override {
 
         for (int frameIndex = 0; frameIndex < frameCount; ++frameIndex) {
@@ -146,13 +128,8 @@ public:
 
 private:
 
-    int channels = AKSettings.numberOfChannels;
-    float sampleRate = AKSettings.sampleRate;
     float internalTrigger = 0;
-
-    AudioBufferList *outBufferListPtr = nullptr;
-
-    sp_data *sp;
+    
     sp_pluck *pluck;
 
     float frequency = 110;
@@ -165,4 +142,3 @@ public:
     ParameterRamper amplitudeRamper = 0.5;
 };
 
-#endif /* AKPluckedStringDSPKernel_hpp */

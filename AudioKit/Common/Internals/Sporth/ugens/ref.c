@@ -2,13 +2,13 @@
 int sporth_ref(sporth_stack *stack, void *ud)
 {
     plumber_data *pd = ud;
-    char *str;
+    const char *str;
     switch(pd->mode) {
         case PLUMBER_CREATE: 
             plumber_add_ugen(pd, SPORTH_REF, NULL);
             if(sporth_check_args(stack, "s") != SPORTH_OK) {
                 stack->error++;
-                fprintf(stderr, "ref: Invalid arguments.");
+                plumber_print(pd, "ref: Invalid arguments.");
                 return PLUMBER_NOTOK;
             }
             sporth_stack_pop_string(stack);

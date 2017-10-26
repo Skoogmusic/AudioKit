@@ -9,21 +9,21 @@ int sporth_load(sporth_stack *stack, void *ud)
     plumbing *pipes;
 
     FILE *tmp, *fp;
-    char *filename;
+    const char *filename;
     int rc = PLUMBER_OK;
 
     switch(pd->mode){
         case PLUMBER_CREATE:
             plumber_add_ugen(pd, SPORTH_LOAD, NULL);
             if(sporth_check_args(stack, "s") != SPORTH_OK) {
-                fprintf(stderr, "Not enough arguments for load.\n");
+                plumber_print(pd, "Not enough arguments for load.\n");
                 return PLUMBER_NOTOK;
             }
 
             filename = sporth_stack_pop_string(stack);
             fp = fopen(filename, "r");
             if(fp == NULL) {
-                fprintf(stderr, 
+                plumber_print(pd, 
                         "There was an issue opening the file \"%s\"\n",
                         filename);
                 return PLUMBER_NOTOK;
