@@ -81,6 +81,13 @@
 		53FB49121FA2420000C367E7 /* Delay.h in Headers */ = {isa = PBXBuildFile; fileRef = 53FB49111FA2420000C367E7 /* Delay.h */; };
 		53FB49141FA2420B00C367E7 /* Delay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53FB49131FA2420A00C367E7 /* Delay.cpp */; };
 		53FB49151FA2430B00C367E7 /* CDelay.h in Headers */ = {isa = PBXBuildFile; fileRef = 52145B231F3C5B1A0069C88B /* CDelay.h */; };
+		53FB495D1FA3419800C367E7 /* BiQuad.h in Headers */ = {isa = PBXBuildFile; fileRef = 53FB495C1FA3419800C367E7 /* BiQuad.h */; };
+		53FB49601FA341B500C367E7 /* Modal.h in Headers */ = {isa = PBXBuildFile; fileRef = 53FB495E1FA341B500C367E7 /* Modal.h */; };
+		53FB49611FA341B500C367E7 /* ModalBar.h in Headers */ = {isa = PBXBuildFile; fileRef = 53FB495F1FA341B500C367E7 /* ModalBar.h */; };
+		53FB49631FA341DB00C367E7 /* BiQuad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53FB49621FA341DB00C367E7 /* BiQuad.cpp */; };
+		53FB49661FA3425900C367E7 /* ModalBar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53FB49641FA3425800C367E7 /* ModalBar.cpp */; };
+		53FB49671FA3425900C367E7 /* Modal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53FB49651FA3425900C367E7 /* Modal.cpp */; };
+		53FB49691FA3434B00C367E7 /* Plucking_a_guitar_string_with_a_buzz_5b.raw in Resources */ = {isa = PBXBuildFile; fileRef = 53FB49681FA3434B00C367E7 /* Plucking_a_guitar_string_with_a_buzz_5b.raw */; };
 		551AAC261F61F24700A14C0D /* AVAudioTimeShim.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551AAC241F61F24500A14C0D /* AVAudioTimeShim.swift */; };
 		551AAC271F61F24700A14C0D /* AVAudioBufferConvenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551AAC251F61F24600A14C0D /* AVAudioBufferConvenience.swift */; };
 		551AAC5E1F620A7500A14C0D /* AKClip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551AAC2C1F61F59500A14C0D /* AKClip.swift */; };
@@ -1060,6 +1067,13 @@
 		53FB490A1FA241E500C367E7 /* Mando12.lpc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mando12.lpc.h; sourceTree = "<group>"; };
 		53FB49111FA2420000C367E7 /* Delay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Delay.h; sourceTree = "<group>"; };
 		53FB49131FA2420A00C367E7 /* Delay.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Delay.cpp; sourceTree = "<group>"; };
+		53FB495C1FA3419800C367E7 /* BiQuad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BiQuad.h; sourceTree = "<group>"; };
+		53FB495E1FA341B500C367E7 /* Modal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Modal.h; sourceTree = "<group>"; };
+		53FB495F1FA341B500C367E7 /* ModalBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModalBar.h; sourceTree = "<group>"; };
+		53FB49621FA341DB00C367E7 /* BiQuad.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BiQuad.cpp; sourceTree = "<group>"; };
+		53FB49641FA3425800C367E7 /* ModalBar.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ModalBar.cpp; sourceTree = "<group>"; };
+		53FB49651FA3425900C367E7 /* Modal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Modal.cpp; sourceTree = "<group>"; };
+		53FB49681FA3434B00C367E7 /* Plucking_a_guitar_string_with_a_buzz_5b.raw */ = {isa = PBXFileReference; lastKnownFileType = file; path = Plucking_a_guitar_string_with_a_buzz_5b.raw; sourceTree = "<group>"; };
 		551AAC241F61F24500A14C0D /* AVAudioTimeShim.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVAudioTimeShim.swift; sourceTree = "<group>"; };
 		551AAC251F61F24600A14C0D /* AVAudioBufferConvenience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVAudioBufferConvenience.swift; sourceTree = "<group>"; };
 		551AAC2A1F61F48300A14C0D /* AKTiming.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AKTiming.swift; sourceTree = "<group>"; };
@@ -2149,29 +2163,31 @@
 			isa = PBXGroup;
 			children = (
 				53FB49061FA241E500C367E7 /* Abreu12.lpc.h */,
-				53FB49071FA241E500C367E7 /* Arch12.lpc.h */,
-				53FB49051FA241E500C367E7 /* Dunlap12.lpc.h */,
-				53FB49081FA241E500C367E7 /* Fiddle12.lpc.h */,
-				53FB490A1FA241E500C367E7 /* Mando12.lpc.h */,
-				53FB49091FA241E500C367E7 /* Violin12.lpc.h */,
-				53FB48FD1FA2401500C367E7 /* ModString.h */,
-				C487B60B1DD9236900C56B59 /* OneZero.h */,
-				C487B60D1DD9236E00C56B59 /* Envelope.h */,
 				C40718151D211A4100665C02 /* ADSR.h */,
+				53FB49071FA241E500C367E7 /* Arch12.lpc.h */,
+				53FB495C1FA3419800C367E7 /* BiQuad.h */,
 				C487B6091DD9235F00C56B59 /* Clarinet.h */,
 				53FB49111FA2420000C367E7 /* Delay.h */,
 				C40718011D21199100665C02 /* DelayA.h */,
 				C40718131D211A3300665C02 /* DelayL.h */,
+				53FB49051FA241E500C367E7 /* Dunlap12.lpc.h */,
+				C487B60D1DD9236E00C56B59 /* Envelope.h */,
+				53FB49081FA241E500C367E7 /* Fiddle12.lpc.h */,
 				C470478F1E76995900D9906F /* FileLoop.h */,
 				C407180B1D2119F600665C02 /* FileRead.h */,
 				C40718191D211A5E00665C02 /* FileWvIn.h */,
 				C407180D1D211A0600665C02 /* Fir.h */,
 				C40717501D21195000665C02 /* Flute.h */,
 				C470478B1E76993300D9906F /* FM.h */,
+				53FB490A1FA241E500C367E7 /* Mando12.lpc.h */,
 				C40717631D21195000665C02 /* Mandolin.h */,
+				53FB495E1FA341B500C367E7 /* Modal.h */,
+				53FB495F1FA341B500C367E7 /* ModalBar.h */,
+				53FB48FD1FA2401500C367E7 /* ModString.h */,
 				53FB49031FA2419000C367E7 /* NBody.h */,
 				C40718171D211A4F00665C02 /* Noise.h */,
 				C40718071D2119D500665C02 /* OnePole.h */,
+				C487B60B1DD9236900C56B59 /* OneZero.h */,
 				C407180F1D211A1700665C02 /* PoleZero.h */,
 				C47047871E76988B00D9906F /* Rhodey.h */,
 				C47047711E7685BE00D9906F /* Shakers.h */,
@@ -2181,6 +2197,7 @@
 				C47047AD1E76A2FD00D9906F /* TubeBell.h */,
 				C40718111D211A2300665C02 /* Twang.h */,
 				C47047931E76998600D9906F /* TwoZero.h */,
+				53FB49091FA241E500C367E7 /* Violin12.lpc.h */,
 			);
 			path = include;
 			sourceTree = "<group>";
@@ -4088,8 +4105,8 @@
 		C4A927951D1343AE0095E429 /* STK */ = {
 			isa = PBXGroup;
 			children = (
-				C40717301D21195000665C02 /* include */,
 				C40716371D21160C00665C02 /* ADSR.cpp */,
+				53FB49621FA341DB00C367E7 /* BiQuad.cpp */,
 				C487B6071DD9234F00C56B59 /* Clarinet.cpp */,
 				53FB49131FA2420A00C367E7 /* Delay.cpp */,
 				C40716451D21169E00665C02 /* DelayA.cpp */,
@@ -4101,6 +4118,8 @@
 				C407163B1D21164E00665C02 /* Fir.cpp */,
 				C4A927B01D1343AE0095E429 /* Flute.cpp */,
 				C47047891E76992100D9906F /* FM.cpp */,
+				53FB49651FA3425900C367E7 /* Modal.cpp */,
+				53FB49641FA3425800C367E7 /* ModalBar.cpp */,
 				C4A928371D1343AE0095E429 /* Mandolin.cpp */,
 				53FB48FF1FA2402600C367E7 /* ModString.cpp */,
 				53FB49011FA2418300C367E7 /* NBody.cpp */,
@@ -4115,6 +4134,7 @@
 				C47047AB1E76A2EE00D9906F /* TubeBell.cpp */,
 				C40716391D21162900665C02 /* Twang.cpp */,
 				C47047911E76997200D9906F /* TwoZero.cpp */,
+				C40717301D21195000665C02 /* include */,
 				C4A9284A1D1343AE0095E429 /* rawwaves */,
 			);
 			path = STK;
@@ -4123,6 +4143,7 @@
 		C4A9284A1D1343AE0095E429 /* rawwaves */ = {
 			isa = PBXGroup;
 			children = (
+				53FB49681FA3434B00C367E7 /* Plucking_a_guitar_string_with_a_buzz_5b.raw */,
 				C47047971E769A0F00D9906F /* fwavblnk.raw */,
 				C4A9285B1D1343AE0095E429 /* mand1.raw */,
 				C4A9285C1D1343AE0095E429 /* mand10.raw */,
@@ -4501,6 +4522,7 @@
 				C47047881E76988B00D9906F /* Rhodey.h in Headers */,
 				C4537FB41C3A438D00A51738 /* AKBandRejectButterworthFilterDSPKernel.hpp in Headers */,
 				C49F29251D162448000A2D2F /* AKFluteDSPKernel.hpp in Headers */,
+				53FB49611FA341B500C367E7 /* ModalBar.h in Headers */,
 				52145B531F3C5B1A0069C88B /* FFTReal.hpp in Headers */,
 				52145B191F3C58F20069C88B /* AKRhinoGuitarProcessorDSPKernel.hpp in Headers */,
 				C4537FE51C3A438D00A51738 /* AKPeakingParametricEqualizerFilterDSPKernel.hpp in Headers */,
@@ -4519,6 +4541,7 @@
 				52145B6A1F3C5B1A0069C88B /* RageProcessor.h in Headers */,
 				C4537F121C39D0B400A51738 /* AKVariableDelayDSPKernel.hpp in Headers */,
 				C4537FCE1C3A438D00A51738 /* AKHighShelfParametricEqualizerFilterDSPKernel.hpp in Headers */,
+				53FB49601FA341B500C367E7 /* Modal.h in Headers */,
 				C453804C1C3A59EA00A51738 /* AKOperationEffectDSPKernel.hpp in Headers */,
 				C45380431C3A599F00A51738 /* AKFrequencyTrackerDSPKernel.hpp in Headers */,
 				C47047791E76884C00D9906F /* AKShakerAudioUnit.h in Headers */,
@@ -4591,6 +4614,7 @@
 				F02767341E79D1D20099CA47 /* AKCustomUgenInfo.h in Headers */,
 				C4E8ED0B1C4391C70041965F /* AKConvolutionAudioUnit.h in Headers */,
 				C49D696E1D1F1DE300BF018A /* AKFMOscillatorBankAudioUnit.h in Headers */,
+				53FB495D1FA3419800C367E7 /* BiQuad.h in Headers */,
 				C4B192D11C3B637900C0F330 /* AKAmplitudeEnvelopeAudioUnit.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4699,6 +4723,7 @@
 				C4A929661D1343AE0095E429 /* mand7.raw in Resources */,
 				C47047981E769A1200D9906F /* fwavblnk.raw in Resources */,
 				C4A9295F1D1343AE0095E429 /* mand11.raw in Resources */,
+				53FB49691FA3434B00C367E7 /* Plucking_a_guitar_string_with_a_buzz_5b.raw in Resources */,
 				C4A929681D1343AE0095E429 /* mand9.raw in Resources */,
 				C4A929691D1343AE0095E429 /* mandpluk.raw in Resources */,
 				C4A929621D1343AE0095E429 /* mand3.raw in Resources */,
@@ -5027,6 +5052,7 @@
 				C48C6C531D3C15F1008EA51B /* adsr.c in Sources */,
 				C48C6C761D3C15F1008EA51B /* fog.c in Sources */,
 				C48C6C561D3C15F1008EA51B /* autowah.c in Sources */,
+				53FB49671FA3425900C367E7 /* Modal.cpp in Sources */,
 				C4F8C9181DCA8CE4001F38F2 /* slice.c in Sources */,
 				C4F8C9381DCA8CE4001F38F2 /* zitarev.c in Sources */,
 				C4F8C9251DCA8CE4001F38F2 /* tenvx.c in Sources */,
@@ -5115,6 +5141,7 @@
 				C48C6C501D3C15F1008EA51B /* kiss_fftr.c in Sources */,
 				C48C6C871D3C15F1008EA51B /* noise.c in Sources */,
 				C48C6CB21D3C15F1008EA51B /* thresh.c in Sources */,
+				53FB49661FA3425900C367E7 /* ModalBar.cpp in Sources */,
 				53FB48F21FA23F4900C367E7 /* MogoInstrumentAudioUnit.mm in Sources */,
 				C48C6C6D1D3C15F1008EA51B /* dmetro.c in Sources */,
 				C4F8C8BC1DCA8CE4001F38F2 /* butbp.c in Sources */,
@@ -5353,6 +5380,7 @@
 				C49F29221D162448000A2D2F /* AKFlute.swift in Sources */,
 				C40B0FFB1C463A32000BE96E /* AKMIDI.swift in Sources */,
 				C4E751A91C23557F00688A1B /* min.swift in Sources */,
+				53FB49631FA341DB00C367E7 /* BiQuad.cpp in Sources */,
 				C4F8C9081DCA8CE4001F38F2 /* ptrack.c in Sources */,
 				C4F8C8161DCA887A001F38F2 /* slice.c in Sources */,
 				C4B192D01C3B637900C0F330 /* AKAmplitudeEnvelope.swift in Sources */,
@@ -5466,7 +5494,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -5520,7 +5548,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OBJC_INTERFACE_HEADER_NAME = "AudioKit-Swift.h";
@@ -5552,7 +5580,7 @@
 				);
 				INFOPLIST_FILE = AudioKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = io.audiokit.AudioKit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5581,7 +5609,7 @@
 				);
 				INFOPLIST_FILE = AudioKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = io.audiokit.AudioKit;
 				PRODUCT_NAME = "$(TARGET_NAME)";

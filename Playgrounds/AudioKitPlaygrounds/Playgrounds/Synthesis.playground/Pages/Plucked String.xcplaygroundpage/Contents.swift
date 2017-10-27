@@ -6,8 +6,9 @@ import AudioKit
 let playRate = 2.0
 
 let pluckedString = AKPluckedString()
+let stringInstrument = StringInstrument()
 
-var delay = AKDelay(pluckedString)
+var delay = AKDelay(stringInstrument)
 delay.time = 1.5 / playRate
 delay.dryWetMix = 0.3
 delay.feedback = 0.2
@@ -23,6 +24,7 @@ let performance = AKPeriodicFunction(frequency: playRate) {
 
     let frequency = (note + octave).midiNoteToFrequency()
     if random(0, 6) > 1.0 {
+        stringInstrument.play(noteNumber: 40, velocity: 115)
         pluckedString.trigger(frequency: frequency)
     }
 }
