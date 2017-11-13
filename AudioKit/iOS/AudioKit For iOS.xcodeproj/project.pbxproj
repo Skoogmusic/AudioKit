@@ -56,6 +56,10 @@
 		52145B691F3C5B1A0069C88B /* RageProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52145B411F3C5B1A0069C88B /* RageProcessor.cpp */; };
 		52145B6A1F3C5B1A0069C88B /* RageProcessor.h in Headers */ = {isa = PBXBuildFile; fileRef = 52145B421F3C5B1A0069C88B /* RageProcessor.h */; };
 		5251477B1CC4AD7E00421C52 /* AKNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5251477A1CC4AD7E00421C52 /* AKNotifications.swift */; };
+		537ED2E51FB9F07A006ABCAE /* AKFMOscillatorBank2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 537ED2E11FB9F079006ABCAE /* AKFMOscillatorBank2.swift */; };
+		537ED2E61FB9F07A006ABCAE /* AKFMOscillatorBank2AudioUnit.mm in Sources */ = {isa = PBXBuildFile; fileRef = 537ED2E21FB9F079006ABCAE /* AKFMOscillatorBank2AudioUnit.mm */; };
+		537ED2E71FB9F07A006ABCAE /* AKFMOscillatorBank2DSPKernel.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 537ED2E31FB9F07A006ABCAE /* AKFMOscillatorBank2DSPKernel.hpp */; };
+		537ED2E81FB9F07A006ABCAE /* AKFMOscillatorBank2AudioUnit.h in Headers */ = {isa = PBXBuildFile; fileRef = 537ED2E41FB9F07A006ABCAE /* AKFMOscillatorBank2AudioUnit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		53FB48E71FA23F3400C367E7 /* AKFluteInstrument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53FB48E31FA23F3300C367E7 /* AKFluteInstrument.swift */; };
 		53FB48E81FA23F3400C367E7 /* AKFluteInstrumentAudioUnit.h in Headers */ = {isa = PBXBuildFile; fileRef = 53FB48E41FA23F3300C367E7 /* AKFluteInstrumentAudioUnit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		53FB48E91FA23F3400C367E7 /* AKFluteInstrumentAudioUnit.mm in Sources */ = {isa = PBXBuildFile; fileRef = 53FB48E51FA23F3300C367E7 /* AKFluteInstrumentAudioUnit.mm */; };
@@ -1043,6 +1047,10 @@
 		52145B411F3C5B1A0069C88B /* RageProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RageProcessor.cpp; sourceTree = "<group>"; };
 		52145B421F3C5B1A0069C88B /* RageProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RageProcessor.h; sourceTree = "<group>"; };
 		5251477A1CC4AD7E00421C52 /* AKNotifications.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AKNotifications.swift; sourceTree = "<group>"; };
+		537ED2E11FB9F079006ABCAE /* AKFMOscillatorBank2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AKFMOscillatorBank2.swift; path = "../Common/Nodes/Generators/Oscillators/FM Oscillator Bank 2/AKFMOscillatorBank2.swift"; sourceTree = SOURCE_ROOT; };
+		537ED2E21FB9F079006ABCAE /* AKFMOscillatorBank2AudioUnit.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AKFMOscillatorBank2AudioUnit.mm; sourceTree = "<group>"; };
+		537ED2E31FB9F07A006ABCAE /* AKFMOscillatorBank2DSPKernel.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AKFMOscillatorBank2DSPKernel.hpp; sourceTree = "<group>"; };
+		537ED2E41FB9F07A006ABCAE /* AKFMOscillatorBank2AudioUnit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AKFMOscillatorBank2AudioUnit.h; sourceTree = "<group>"; };
 		53FB48E31FA23F3300C367E7 /* AKFluteInstrument.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AKFluteInstrument.swift; sourceTree = "<group>"; };
 		53FB48E41FA23F3300C367E7 /* AKFluteInstrumentAudioUnit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AKFluteInstrumentAudioUnit.h; sourceTree = "<group>"; };
 		53FB48E51FA23F3300C367E7 /* AKFluteInstrumentAudioUnit.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AKFluteInstrumentAudioUnit.mm; sourceTree = "<group>"; };
@@ -2074,6 +2082,17 @@
 			path = Helpers;
 			sourceTree = "<group>";
 		};
+		537ED2E91FB9F081006ABCAE /* FM Oscillator Bank 2 */ = {
+			isa = PBXGroup;
+			children = (
+				537ED2E11FB9F079006ABCAE /* AKFMOscillatorBank2.swift */,
+				537ED2E41FB9F07A006ABCAE /* AKFMOscillatorBank2AudioUnit.h */,
+				537ED2E21FB9F079006ABCAE /* AKFMOscillatorBank2AudioUnit.mm */,
+				537ED2E31FB9F07A006ABCAE /* AKFMOscillatorBank2DSPKernel.hpp */,
+			);
+			path = "FM Oscillator Bank 2";
+			sourceTree = "<group>";
+		};
 		53FB48E21FA23F3300C367E7 /* FluteInstrument */ = {
 			isa = PBXGroup;
 			children = (
@@ -2609,6 +2628,7 @@
 			children = (
 				C45380561C3A5BDA00A51738 /* FM Oscillator */,
 				C49D695E1D1F1DE300BF018A /* FM Oscillator Bank */,
+				537ED2E91FB9F081006ABCAE /* FM Oscillator Bank 2 */,
 				C44B59701C4B5FA00008507F /* Morphing Oscillator */,
 				C49D69631D1F1DE300BF018A /* Morphing Oscillator Bank */,
 				C453805B1C3A5BDA00A51738 /* Oscillator */,
@@ -4419,6 +4439,7 @@
 				C40C415C1C40E3A5009D870B /* EZAudioPlayer.h in Headers */,
 				C487B5FD1DD9229900C56B59 /* AKClarinetDSPKernel.hpp in Headers */,
 				C4537FDE1C3A438D00A51738 /* AKMoogLadderAudioUnit.h in Headers */,
+				537ED2E81FB9F07A006ABCAE /* AKFMOscillatorBank2AudioUnit.h in Headers */,
 				C4537FD01C3A438D00A51738 /* AKLowPassButterworthFilterAudioUnit.h in Headers */,
 				C42859071E90B6BC009B737D /* AKZitaReverbDSPKernel.hpp in Headers */,
 				C4537FCC1C3A438D00A51738 /* AKHighShelfParametricEqualizerFilterAudioUnit.h in Headers */,
@@ -4550,6 +4571,7 @@
 				C4E8ED0D1C4391C70041965F /* AKConvolutionDSPKernel.hpp in Headers */,
 				C49390881E0889DB009FEAA1 /* AKStereoFieldLimiterDSPKernel.hpp in Headers */,
 				C4537F2F1C39D2A300A51738 /* AKClipperDSPKernel.hpp in Headers */,
+				537ED2E71FB9F07A006ABCAE /* AKFMOscillatorBank2DSPKernel.hpp in Headers */,
 				C421DCE21D39650000E15879 /* AKPhaseDistortionOscillatorDSPKernel.hpp in Headers */,
 				C4B192D31C3B637900C0F330 /* AKAmplitudeEnvelopeDSPKernel.hpp in Headers */,
 				C45380151C3A4CCE00A51738 /* AKCostelloReverbDSPKernel.hpp in Headers */,
@@ -4683,7 +4705,9 @@
 				TargetAttributes = {
 					C42F34FF1C057E03000E937C = {
 						CreatedOnToolsVersion = 7.2;
+						DevelopmentTeam = EH8R3WPRF8;
 						LastSwiftMigration = 0900;
+						ProvisioningStyle = Automatic;
 					};
 					EA7D07001F4E63C200707706 = {
 						CreatedOnToolsVersion = 9.0;
@@ -4783,6 +4807,7 @@
 				C40716561D2116ED00665C02 /* Noise.cpp in Sources */,
 				C40716581D21171000665C02 /* FileWvIn.cpp in Sources */,
 				C40C41671C40E3A5009D870B /* EZOutput.m in Sources */,
+				537ED2E61FB9F07A006ABCAE /* AKFMOscillatorBank2AudioUnit.mm in Sources */,
 				C47DDCC31F7CE2FC002520B9 /* AKBooster2.swift in Sources */,
 				C40C41631C40E3A5009D870B /* EZAudioUtilities.m in Sources */,
 				C4F8C8AE1DCA8CE4001F38F2 /* adsr.c in Sources */,
@@ -4892,6 +4917,7 @@
 				C4F8C8DF1DCA8CE4001F38F2 /* gen_sporth.c in Sources */,
 				C49D69771D1F1DE300BF018A /* AKOscillatorBankAudioUnit.mm in Sources */,
 				C40C42711C41B22A009D870B /* AKPluckedStringAudioUnit.mm in Sources */,
+				537ED2E51FB9F07A006ABCAE /* AKFMOscillatorBank2.swift in Sources */,
 				C4F8C9171DCA8CE4001F38F2 /* sdelay.c in Sources */,
 				C4537FC31C3A438D00A51738 /* AKFormantFilterAudioUnit.mm in Sources */,
 				551AAC601F620A7C00A14C0D /* AKClipPlayer.swift in Sources */,
@@ -5567,8 +5593,10 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
 				CLANG_ENABLE_MODULES = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = EH8R3WPRF8;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -5584,6 +5612,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = io.audiokit.AudioKit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SWIFT_INCLUDE_PATHS = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -5597,8 +5626,10 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
 				CLANG_ENABLE_MODULES = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = EH8R3WPRF8;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -5613,6 +5644,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = io.audiokit.AudioKit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SWIFT_INCLUDE_PATHS = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";

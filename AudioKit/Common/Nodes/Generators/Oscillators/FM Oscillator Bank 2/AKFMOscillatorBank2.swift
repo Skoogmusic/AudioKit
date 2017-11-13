@@ -24,7 +24,7 @@ import AVFoundation
 ///
 open class AKFMOscillatorBank2: AKPolyphonicNode, AKComponent {
     public typealias AKAudioUnitType = AKFMOscillatorBank2AudioUnit
-    static let ComponentDescription = AudioComponentDescription(generator: "f2ob")
+    static public let ComponentDescription = AudioComponentDescription(generator: "f2ob")
     
     // MARK: - Properties
     
