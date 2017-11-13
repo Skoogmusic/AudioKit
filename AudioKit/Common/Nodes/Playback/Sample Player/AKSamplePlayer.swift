@@ -28,6 +28,8 @@ open class AKSamplePlayer: AKNode, AKComponent {
 
     fileprivate var startPointParameter: AUParameter?
     fileprivate var endPointParameter: AUParameter?
+    fileprivate var loopStartPointParameter: AUParameter?
+    fileprivate var loopEndPointParameter: AUParameter?
     fileprivate var rateParameter: AUParameter?
     fileprivate var volumeParameter: AUParameter?
     fileprivate var offsetParameter: AUParameter? // Added by KN to skip/jump to a position in the sample
@@ -54,7 +56,7 @@ open class AKSamplePlayer: AKNode, AKComponent {
         }
     }
 
-    /// endPoint - this is where the sample will play to before stopping. 
+    /// endPoint - this is where the sample will play to before stopping.
     /// A value less than the start point will play the sample backwards.
     @objc open dynamic var endPoint: Sample = 0 {
         willSet {
@@ -65,6 +67,36 @@ open class AKSamplePlayer: AKNode, AKComponent {
                     }
                 } else {
                     internalAU?.endPoint = Float(safeSample(newValue))
+                }
+            }
+        }
+    }
+
+    /// loopStartPoint in samples - where to start playing the sample from
+    @objc open dynamic var loopStartPoint: Sample = 0 {
+        willSet {
+            if loopStartPoint != newValue {
+                if internalAU?.isSetUp() ?? false {
+                    if let existingToken = token {
+                        loopStartPointParameter?.setValue(Float(safeSample(newValue)), originator: existingToken)
+                    }
+                } else {
+                    internalAU?.loopStartPoint = Float(safeSample(newValue))
+                }
+            }
+        }
+    }
+
+    /// loopEndPoint - this is where the sample will play to before stopping.
+    @objc open dynamic var loopEndPoint: Sample = 0 {
+        willSet {
+            if endPoint != newValue {
+                if internalAU?.isSetUp() ?? false {
+                    if let existingToken = token {
+                        loopEndPointParameter?.setValue(Float(safeSample(newValue)), originator: existingToken)
+                    }
+                } else {
+                    internalAU?.loopEndPoint = Float(safeSample(newValue))
                 }
             }
         }
@@ -194,6 +226,8 @@ open class AKSamplePlayer: AKNode, AKComponent {
 
         startPointParameter = tree["startPoint"]
         endPointParameter = tree["endPoint"]
+        loopStartPointParameter = tree["startPoint"]
+        loopEndPointParameter = tree["endPoint"]
         rateParameter = tree["rate"]
         volumeParameter = tree["volume"]
         offsetParameter = tree["offset"] // added by KN
@@ -211,6 +245,8 @@ open class AKSamplePlayer: AKNode, AKComponent {
         })
         internalAU?.startPoint = Float(startPoint)
         internalAU?.endPoint = Float(self.endPoint)
+        internalAU?.loopStartPoint = Float(startPoint)
+        internalAU?.loopEndPoint = Float(self.endPoint)
         internalAU?.rate = Float(rate)
         internalAU?.volume = Float(volume)
         internalAU?.offset = Float(self.offset) // added by KN
@@ -227,6 +263,8 @@ open class AKSamplePlayer: AKNode, AKComponent {
     @objc open func start() {
         internalAU?.startPoint = Float(safeSample(startPoint))
         internalAU?.endPoint = Float(safeSample(endPoint))
+        internalAU?.loopStartPoint = Float(safeSample(loopStartPoint))
+        internalAU?.loopEndPoint = Float(safeSample(loopEndPoint))
         internalAU?.start()
     }
 
@@ -352,6 +390,8 @@ open class AKSamplePlayer: AKNode, AKComponent {
                     self.avAudiofile = file
                     self.startPoint = 0
                     self.endPoint = Sample(file.samplesCount)
+                    self.loopStartPoint = 0
+                    self.loopEndPoint = Sample(file.samplesCount)
                 } else {
                     // failure
                     AKLog("Error = \(err)"); break Exit
