@@ -34,6 +34,13 @@ int sp_phasor_init(sp_data *sp, sp_phasor *p, SPFLOAT iphs)
     return SP_OK;
 }
 
+// added by KN to quickly set the current phase
+int sp_phasor_set_phase(sp_phasor *p, SPFLOAT iphs)
+{
+    p->curphs = iphs;
+    return SP_OK;
+}
+
 int sp_phasor_compute(sp_data *sp, sp_phasor *p, SPFLOAT *in, SPFLOAT *out)
 {
     SPFLOAT phase;
@@ -41,13 +48,14 @@ int sp_phasor_compute(sp_data *sp, sp_phasor *p, SPFLOAT *in, SPFLOAT *out)
 
     phase = p->curphs;
     incr = p->freq * p->onedsr;
-    *out = phase;
+
     phase += incr;
     if (phase >= 1.0) {
         phase -= 1.0;
     } else if (phase < 0.0) {
         phase += 1.0;
     }
+    *out = phase; // KN moved this line from line 51
     p->curphs = phase;
     return SP_OK;
 }

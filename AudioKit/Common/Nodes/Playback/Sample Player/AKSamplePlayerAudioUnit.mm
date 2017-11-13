@@ -76,7 +76,7 @@ standardKernelPassthroughs()
     AUParameter *rateAUParameter = [AUParameter parameter:@"rate"
                                                      name:@"rate. A value of. 1  normal, 2 is double speed, 0.5 is halfspeed, etc."
                                                   address:rateAddress
-                                                      min:0
+                                                      min:-10 // adjusted by KN
                                                       max:10
                                                      unit:kAudioUnitParameterUnit_Generic];
     
@@ -87,23 +87,34 @@ standardKernelPassthroughs()
                                                         min:0
                                                         max:10
                                                        unit:kAudioUnitParameterUnit_Generic];
+    
+    // Create a parameter object for the offseet. Added by KN
+    AUParameter *offsetAUParameter = [AUParameter parameter:@"offset"
+                                                       name:@"offset"
+                                                    address:offsetAddress
+                                                        min:0
+                                                        max:1
+                                                       unit:kAudioUnitParameterUnit_Generic];
     // Initialize the parameter values.
     startPointAUParameter.value = 0;
     endPointAUParameter.value = 1;
     rateAUParameter.value = 1;
     volumeAUParameter.value = 1;
+    offsetAUParameter.value = 0; // added by KN
     
     _kernel.setParameter(startPointAddress,   startPointAUParameter.value);
     _kernel.setParameter(endPointAddress,  endPointAUParameter.value);
     _kernel.setParameter(rateAddress, rateAUParameter.value);
     _kernel.setParameter(volumeAddress, volumeAUParameter.value);
+    _kernel.setParameter(offsetAddress, offsetAUParameter.value); // Added by KN
     
     // Create the parameter tree.
     _parameterTree = [AUParameterTree tree:@[
                                              startPointAUParameter,
                                              endPointAUParameter,
                                              rateAUParameter,
-                                             volumeAUParameter
+                                             volumeAUParameter,
+                                             offsetAUParameter // added by KN
                                              ]];
     
     parameterTreeBlock(SamplePlayer)
