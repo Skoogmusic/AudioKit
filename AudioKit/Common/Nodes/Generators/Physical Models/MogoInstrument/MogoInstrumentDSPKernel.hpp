@@ -12,6 +12,7 @@
 #import "DSPKernel.hpp"
 #import "ParameterRamper.hpp"
 #import <vector>
+#include <iostream>
 
 #import <AudioKit/AudioKit-Swift.h>
 
@@ -194,7 +195,7 @@ public:
             freq_adsr->atk = 0.001;
             freq_adsr->dec = 0.0396;
 //            freq_adsr->sus = 0.66;
-            freq_adsr->rel = 0.00434;
+            freq_adsr->rel = (float)kernel->releaseDuration;
             
             cutoffFrequency = cutoffFrequencyRamper.getAndStep();
             moogladder->freq = (float)cutoffFrequency;
