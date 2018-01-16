@@ -3,7 +3,7 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2017 AudioKit. All rights reserved.
 //
 
 /// Table-lookup tremolo with linear interpolation
@@ -33,7 +33,7 @@ open class AKTremolo: AKNode, AKToggleable, AKComponent, AKInput {
     @objc open dynamic var frequency: Double = 10 {
         willSet {
             if frequency != newValue {
-                if internalAU?.isSetUp() ?? false {
+                if internalAU?.isSetUp ?? false {
                     if let existingToken = token {
                         frequencyParameter?.setValue(Float(newValue), originator: existingToken)
                     }
@@ -48,7 +48,7 @@ open class AKTremolo: AKNode, AKToggleable, AKComponent, AKInput {
     @objc open dynamic var depth: Double = 1 {
         willSet {
             if depth != newValue {
-                if internalAU?.isSetUp() ?? false {
+                if internalAU?.isSetUp ?? false {
                     if let existingToken = token {
                         depthParameter?.setValue(Float(newValue), originator: existingToken)
                     }
@@ -61,7 +61,7 @@ open class AKTremolo: AKNode, AKToggleable, AKComponent, AKInput {
 
     /// Tells whether the node is processing (ie. started, playing, or active)
     @objc open dynamic var isStarted: Bool {
-        return internalAU?.isPlaying() ?? false
+        return internalAU?.isPlaying ?? false
     }
 
     // MARK: - Initialization
@@ -74,11 +74,12 @@ open class AKTremolo: AKNode, AKToggleable, AKComponent, AKInput {
     ///   - depth: Depth
     ///   - waveform:  Shape of the tremolo (default to sine)
     ///
-    public init(
+    @objc public init(
         _ input: AKNode? = nil,
         frequency: Double = 10,
         depth: Double = 1.0,
-        waveform: AKTable = AKTable(.positiveSine)) {
+        waveform: AKTable = AKTable(.positiveSine)
+    ) {
 
         self.waveform = waveform
         self.frequency = frequency
@@ -87,14 +88,17 @@ open class AKTremolo: AKNode, AKToggleable, AKComponent, AKInput {
 
         super.init()
         AVAudioUnit._instantiate(with: _Self.ComponentDescription) { [weak self] avAudioUnit in
+            guard let strongSelf = self else {
+                AKLog("Error: self is nil")
+                return
+            }
+            strongSelf.avAudioNode = avAudioUnit
+            strongSelf.internalAU = avAudioUnit.auAudioUnit as? AKAudioUnitType
 
-            self?.avAudioNode = avAudioUnit
-            self?.internalAU = avAudioUnit.auAudioUnit as? AKAudioUnitType
-
-            input?.connect(to: self!)
-            self?.internalAU?.setupWaveform(Int32(waveform.count))
+            input?.connect(to: strongSelf)
+            strongSelf.internalAU?.setupWaveform(Int32(waveform.count))
             for (i, sample) in waveform.enumerated() {
-                self?.internalAU?.setWaveformValue(sample, at: UInt32(i))
+                strongSelf.internalAU?.setWaveformValue(sample, at: UInt32(i))
             }
         }
 
@@ -120,7 +124,7 @@ open class AKTremolo: AKNode, AKToggleable, AKComponent, AKInput {
 
         depthParameter = tree["depth"]
 
-        token = tree.token (byAddingParameterObserver: { [weak self] address, value in
+        token = tree.token(byAddingParameterObserver: { [weak self] address, value in
 
             DispatchQueue.main.async {
                 if address == self?.depthParameter?.address {

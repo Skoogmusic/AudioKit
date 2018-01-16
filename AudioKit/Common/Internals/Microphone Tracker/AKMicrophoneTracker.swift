@@ -2,7 +2,7 @@
 //  AKMicrophoneTracker.swift
 //  AudioKit
 //
-//  Created by Aurelius Prochazka on 5/9/17.
+//  Created by Aurelius Prochazka, revision history on GitHub.
 //  Copyright © 2017 AudioKit. All rights reserved.
 //
 
@@ -32,7 +32,7 @@ public class AKMicrophoneTracker {
     }
 
     /// Initialize the tracker
-    public init() {
+    @objc public init() {
         // Could automatically start the tracker here, but elected not to at BlackBox/Ryan McLeod's request
         // Subclass and change this if you like
     }

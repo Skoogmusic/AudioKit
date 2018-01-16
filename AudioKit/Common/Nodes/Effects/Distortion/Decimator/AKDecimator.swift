@@ -3,7 +3,7 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2017 AudioKit. All rights reserved.
 //
 
 /// AudioKit version of Apple's Decimator from the Distortion Audio Unit
@@ -54,7 +54,7 @@ open class AKDecimator: AKNode, AKToggleable, AUEffect, AKInput {
     ///   - rounding: Rounding (Normalized Value) ranges from 0 to 1 (Default: 0)
     ///   - mix: Mix (Normalized Value) ranges from 0 to 1 (Default: 1)
     ///
-    public init(
+    @objc public init(
         _ input: AKNode? = nil,
         decimation: Double = 0.5,
         rounding: Double = 0,

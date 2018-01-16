@@ -3,7 +3,7 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2017 AudioKit. All rights reserved.
 //
 
 /// AudioKit version of Apple's Distortion Audio Unit
@@ -172,7 +172,7 @@ open class AKDistortion: AKNode, AKToggleable, AUEffect, AKInput {
     ///   - softClipGain: Soft Clip Gain (dB) ranges from -80 to 20 (Default: -6)
     ///   - finalMix: Final Mix (Normalized Value) ranges from 0 to 1 (Default: 0.5)
     ///
-    public init(
+    @objc public init(
         _ input: AKNode? = nil,
         delay: Double = 0.1,
         decay: Double = 1.0,

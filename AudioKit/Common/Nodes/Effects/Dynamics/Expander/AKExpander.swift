@@ -3,7 +3,7 @@
 //  AudioKit
 //
 //  Created by Jeff Cooper, revision history on Github.
-//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2017 AudioKit. All rights reserved.
 //
 
 /// AudioKit Expander based on Apple's DynamicsProcessor Audio Unit
@@ -105,7 +105,7 @@ open class AKExpander: AKNode, AKToggleable, AUEffect, AKInput {
     ///   - releaseTime: Release Time (secs) ranges from 0.01 to 3 (Default: 0.05)
     ///   - masterGain: Master Gain (dB) ranges from -40 to 40 (Default: 0)
     ///
-    public init(
+    @objc public init(
         _ input: AKNode? = nil,
         threshold: Double = -20,
         headRoom: Double = 5,

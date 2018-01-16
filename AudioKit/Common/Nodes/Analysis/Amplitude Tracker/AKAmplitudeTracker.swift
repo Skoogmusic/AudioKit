@@ -3,7 +3,7 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2017 AudioKit. All rights reserved.
 //
 
 public typealias AKThresholdCallback = @convention(block) (Bool) -> Void
@@ -29,7 +29,7 @@ open class AKAmplitudeTracker: AKNode, AKToggleable, AKComponent, AKInput {
 
     /// Tells whether the node is processing (ie. started, playing, or active)
     @objc open dynamic var isStarted: Bool {
-        return internalAU?.isPlaying() ?? false
+        return internalAU?.isPlaying ?? false
     }
 
     /// Detected amplitude
@@ -70,7 +70,7 @@ open class AKAmplitudeTracker: AKNode, AKToggleable, AKComponent, AKInput {
     ///   - input: Input node to process
     ///   - halfPowerPoint: Half-power point (in Hz) of internal lowpass filter.
     ///
-    public init(
+    @objc public init(
         _ input: AKNode? = nil,
         halfPowerPoint: Double = 10,
         threshold: Double = 1,
@@ -80,16 +80,18 @@ open class AKAmplitudeTracker: AKNode, AKToggleable, AKComponent, AKInput {
 
         super.init()
         AVAudioUnit._instantiate(with: _Self.ComponentDescription) { [weak self] avAudioUnit in
+            guard let strongSelf = self else {
+                AKLog("Error: self is nil")
+                return
+            }
+            strongSelf.avAudioNode = avAudioUnit
+            strongSelf.internalAU = avAudioUnit.auAudioUnit as? AKAudioUnitType
+            strongSelf.internalAU?.thresholdCallback = thresholdCallback
 
-            self?.avAudioNode = avAudioUnit
-            self?.internalAU = avAudioUnit.auAudioUnit as? AKAudioUnitType
-            self!.internalAU!.thresholdCallback = thresholdCallback
-
-            if let au = self?.internalAU {
+            if let au = strongSelf.internalAU {
                 au.setHalfPowerPoint(Float(halfPowerPoint))
             }
-
-            input?.connect(to: self!)
+            input?.connect(to: strongSelf)
         }
 
     }

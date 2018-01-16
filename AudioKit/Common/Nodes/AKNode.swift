@@ -3,7 +3,7 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2017 AudioKit. All rights reserved.
 //
 
 extension AVAudioConnectionPoint {
@@ -24,7 +24,7 @@ extension AVAudioConnectionPoint {
     }
 
     /// Initialize the node
-    public init(avAudioNode: AVAudioNode, attach: Bool = false) {
+    @objc public init(avAudioNode: AVAudioNode, attach: Bool = false) {
         self.avAudioNode = avAudioNode
         if attach {
             AudioKit.engine.attach(avAudioNode)

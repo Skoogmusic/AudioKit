@@ -3,7 +3,7 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2017 AudioKit. All rights reserved.
 //
 
 /// Metal Bar Physical Model
@@ -112,7 +112,7 @@ open class AKMetalBar: AKNode, AKComponent {
 
     /// Tells whether the node is processing (ie. started, playing, or active)
     @objc open dynamic var isStarted: Bool {
-        return internalAU?.isPlaying() ?? false
+        return internalAU?.isPlaying ?? false
     }
 
     // MARK: - Initialization
@@ -130,7 +130,7 @@ open class AKMetalBar: AKNode, AKComponent {
     ///   - stiffness: Dimensionless stiffness parameter
     ///   - highFrequencyDamping: High-frequency loss parameter. Keep this small
     ///
-    public init(
+    @objc public init(
         leftBoundaryCondition: Double = 1,
         rightBoundaryCondition: Double = 1,
         decayDuration: Double = 3,

@@ -3,7 +3,7 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2017 AudioKit. All rights reserved.
 //
 
 #import "AKMorphingOscillatorBankAudioUnit.h"
@@ -40,10 +40,10 @@ standardBankFunctions()
 }
 
 - (void)createParameters {
-    
+
     standardGeneratorSetup(MorphingOscillatorBank)
     standardBankParameters()
-    
+
     // Create a parameter object for the index.
     AUParameter *indexAUParameter = [AUParameter parameter:@"index"
                                                       name:@"Index"
@@ -51,12 +51,12 @@ standardBankFunctions()
                                                        min:0.0
                                                        max:1.0
                                                       unit:kAudioUnitParameterUnit_Generic];
-    
+
     // Initialize the parameter values.
     indexAUParameter.value = 0.0;
-    
+
     _kernel.setParameter(indexAddress, indexAUParameter.value);
-    
+
     // Create the parameter tree.
     _parameterTree = [AUParameterTree createTreeWithChildren:@[
                                                                standardBankAUParameterList(),

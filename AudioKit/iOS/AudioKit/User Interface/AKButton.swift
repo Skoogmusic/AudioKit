@@ -3,7 +3,7 @@
 //  AudioKit for iOS
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2017 AudioKit. All rights reserved.
 //
 
 /// Different looks the button can have
@@ -110,10 +110,10 @@ public enum AKButtonStyle {
     }
 
     /// Initialize the button
-    public init(title: String,
-                color: AKColor = AKStylist.sharedInstance.nextColor,
-                frame: CGRect = CGRect(x: 0, y: 0, width: 440, height: 60),
-                callback: @escaping (AKButton) -> Void) {
+    @objc public init(title: String,
+                      color: AKColor = AKStylist.sharedInstance.nextColor,
+                      frame: CGRect = CGRect(x: 0, y: 0, width: 440, height: 60),
+                      callback: @escaping (AKButton) -> Void) {
         self.title = title
         self.color = color
         self.callback = callback

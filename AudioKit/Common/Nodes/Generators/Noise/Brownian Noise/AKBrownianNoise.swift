@@ -3,7 +3,7 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2017 AudioKit. All rights reserved.
 //
 
 /// Faust-based pink noise generator
@@ -39,7 +39,7 @@ open class AKBrownianNoise: AKNode, AKToggleable, AKComponent {
 
     /// Tells whether the node is processing (ie. started, playing, or active)
     @objc open dynamic var isStarted: Bool {
-        return internalAU?.isPlaying() ?? false
+        return internalAU?.isPlaying ?? false
     }
 
     // MARK: - Initialization
@@ -48,7 +48,7 @@ open class AKBrownianNoise: AKNode, AKToggleable, AKComponent {
     ///
     /// - parameter amplitude: Amplitude. (Value between 0-1).
     ///
-    public init(amplitude: Double = 1) {
+    @objc public init(amplitude: Double = 1) {
 
         self.amplitude = amplitude
 

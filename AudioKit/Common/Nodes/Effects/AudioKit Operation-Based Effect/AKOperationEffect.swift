@@ -3,7 +3,7 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2017 AudioKit. All rights reserved.
 //
 
 /// Operation-based effect
@@ -18,7 +18,7 @@ open class AKOperationEffect: AKNode, AKToggleable, AKComponent, AKInput {
 
     /// Tells whether the node is processing (ie. started, playing, or active)
     @objc open dynamic var isStarted: Bool {
-        return internalAU?.isPlaying() ?? false
+        return internalAU?.isPlaying ?? false
     }
 
     /// Parameters for changing internal operations
@@ -91,22 +91,25 @@ open class AKOperationEffect: AKNode, AKToggleable, AKComponent, AKInput {
     ///   - input: AKNode to use for processing
     ///   - sporth: String of valid Sporth code
     ///
-    public init(_ input: AKNode?, sporth: String, customUgens: [AKCustomUgen] = []) {
+    @objc public init(_ input: AKNode?, sporth: String, customUgens: [AKCustomUgen] = []) {
         self.customUgens = customUgens
 
         _Self.register()
 
         super.init()
         AVAudioUnit._instantiate(with: _Self.ComponentDescription) { [weak self] avAudioUnit in
-
-            self?.avAudioNode = avAudioUnit
-            self?.internalAU = avAudioUnit.auAudioUnit as? AKAudioUnitType
-
-            input?.connect(to: self!)
-            for ugen in self?.customUgens ?? [] {
-                self?.internalAU?.add(ugen)
+            guard let strongSelf = self else {
+                AKLog("Error: self is nil")
+                return
             }
-            self?.internalAU?.setSporth(sporth)
+            strongSelf.avAudioNode = avAudioUnit
+            strongSelf.internalAU = avAudioUnit.auAudioUnit as? AKAudioUnitType
+
+            input?.connect(to: strongSelf)
+            for ugen in strongSelf.customUgens {
+                strongSelf.internalAU?.add(ugen)
+            }
+            strongSelf.internalAU?.setSporth(sporth)
         }
     }
 

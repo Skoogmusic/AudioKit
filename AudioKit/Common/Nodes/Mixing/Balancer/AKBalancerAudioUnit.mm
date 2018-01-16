@@ -3,7 +3,7 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2017 AudioKit. All rights reserved.
 //
 
 #import "AKBalancerAudioUnit.h"
@@ -58,7 +58,7 @@
     // Create a DSP kernel to handle the signal processing.
     _kernel.init(defaultFormat.channelCount+2, defaultFormat.sampleRate);
 
-    
+
     // Initialize the parameter values.
 
 
@@ -179,12 +179,12 @@
         }
 
         AUAudioUnitStatus err2 = comparator->pullInput(&pullFlags, timestamp, frameCount, 1, pullInputBlock);
-        
+
         if (err2 != 0) {
             return err2;
         }
 
-        
+
         AudioBufferList *inAudioBufferList = input->mutableAudioBufferList;
         AudioBufferList *compAudioBufferList = comparator->mutableAudioBufferList;
 

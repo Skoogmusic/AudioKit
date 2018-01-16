@@ -3,7 +3,7 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2017 AudioKit. All rights reserved.
 //
 
 #pragma once
@@ -116,7 +116,7 @@ public:
                 } else {
                     *out = 0.0;
                 }
-                
+
             }
         }
         if (internalTrigger == 1) {
@@ -129,7 +129,7 @@ public:
 private:
 
     float internalTrigger = 0;
-    
+
     sp_pluck *pluck;
 
     float frequency = 110;

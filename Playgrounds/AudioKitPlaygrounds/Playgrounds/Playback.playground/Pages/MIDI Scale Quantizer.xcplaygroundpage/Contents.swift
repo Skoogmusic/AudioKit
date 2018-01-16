@@ -1,5 +1,5 @@
 //: ## MIDI Scale Quantizer
-//: This playground demonstrates how to use an AKMIDITransformer to force 
+//: This playground demonstrates how to use an AKMIDITransformer to force
 //: MIDI input to stay in a particular key
 import AudioKitPlaygrounds
 import AudioKit
@@ -68,7 +68,7 @@ enum Mode {
 var key = Key.C
 var mode = Mode.major
 
-let midi = AKMIDI()
+let midi = AudioKit.midi
 
 midi.inputNames
 midi.openInput()

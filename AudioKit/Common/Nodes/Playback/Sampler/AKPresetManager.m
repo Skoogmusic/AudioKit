@@ -1,7 +1,7 @@
 //
 //  AKPresetManager.m
 //
-//  Created by David O'Neill on 1/8/17.
+//  Created by David O'Neill, revision history on GitHub.
 //  Copyright © 2017 AudioKit. All rights reserved.
 //
 
@@ -147,8 +147,8 @@ NSMutableDictionary *mutableSkeleton() {
         NSCAssert([NSFileManager.defaultManager fileExistsAtPath:skeletonPath],@"Skeleton file not found");
         skeleton = [NSDictionary dictionaryWithContentsOfURL:[NSURL fileURLWithPath:skeletonPath]];
     }
-    
-    
+
+
     NSMutableDictionary *_preset = skeleton.mutableCopy;
     _preset[@"file-references"] = [NSMutableDictionary new];
     NSMutableDictionary *_instrument = _preset[@"Instrument"] = [_preset[@"Instrument"] mutableCopy];

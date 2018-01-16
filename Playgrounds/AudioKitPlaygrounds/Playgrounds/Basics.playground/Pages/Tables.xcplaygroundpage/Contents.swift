@@ -4,13 +4,12 @@
 //: ## Tables
 //:
 //: Tables are simply arrays of floats that can hold anything, but
-//: usually waveforms.  
+//: usually waveforms.
 import AudioKitPlaygrounds
 import AudioKit
 
 let square = AKTable(.square, count: 128)
 let triangle = AKTable(.triangle, count: 128)
-let sawtooth = AKTable(.sawtooth, count: 128)
 let sine = AKTable(.sine, count: 256)
 
 let file = try AKAudioFile(readFileName: "drumloop.wav")
@@ -34,9 +33,6 @@ class LiveView: AKLiveViewController {
 
         addLabel("Triangle")
         addView(AKTableView(triangle))
-
-        addLabel("Sawtooth")
-        addView(AKTableView(sawtooth))
 
         addLabel("Sine")
         addView(AKTableView(sine))

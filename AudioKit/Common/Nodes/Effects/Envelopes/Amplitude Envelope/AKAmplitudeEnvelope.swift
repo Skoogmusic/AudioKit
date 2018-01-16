@@ -3,7 +3,7 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2017 AudioKit. All rights reserved.
 //
 
 /// Triggerable classic ADSR envelope
@@ -34,7 +34,7 @@ open class AKAmplitudeEnvelope: AKNode, AKToggleable, AKComponent, AKInput {
     @objc open dynamic var attackDuration: Double = 0.1 {
         willSet {
             if attackDuration != newValue {
-                if internalAU?.isSetUp() ?? false {
+                if internalAU?.isSetUp ?? false {
                     if let existingToken = token {
                         attackDurationParameter?.setValue(Float(newValue), originator: existingToken)
                     }
@@ -48,7 +48,7 @@ open class AKAmplitudeEnvelope: AKNode, AKToggleable, AKComponent, AKInput {
     @objc open dynamic var decayDuration: Double = 0.1 {
         willSet {
             if decayDuration != newValue {
-                if internalAU?.isSetUp() ?? false {
+                if internalAU?.isSetUp ?? false {
                     if let existingToken = token {
                         decayDurationParameter?.setValue(Float(newValue), originator: existingToken)
                     }
@@ -62,7 +62,7 @@ open class AKAmplitudeEnvelope: AKNode, AKToggleable, AKComponent, AKInput {
     @objc open dynamic var sustainLevel: Double = 1.0 {
         willSet {
             if sustainLevel != newValue {
-                if internalAU?.isSetUp() ?? false {
+                if internalAU?.isSetUp ?? false {
                     if let existingToken = token {
                         sustainLevelParameter?.setValue(Float(newValue), originator: existingToken)
                     }
@@ -76,7 +76,7 @@ open class AKAmplitudeEnvelope: AKNode, AKToggleable, AKComponent, AKInput {
     @objc open dynamic var releaseDuration: Double = 0.1 {
         willSet {
             if releaseDuration != newValue {
-                if internalAU?.isSetUp() ?? false {
+                if internalAU?.isSetUp ?? false {
                     if let existingToken = token {
                         releaseDurationParameter?.setValue(Float(newValue), originator: existingToken)
                     }
@@ -89,7 +89,7 @@ open class AKAmplitudeEnvelope: AKNode, AKToggleable, AKComponent, AKInput {
 
     /// Tells whether the node is processing (ie. started, playing, or active)
     @objc open dynamic var isStarted: Bool {
-        return internalAU?.isPlaying() ?? false
+        return internalAU?.isPlaying ?? false
     }
 
     // MARK: - Initialization
@@ -103,12 +103,13 @@ open class AKAmplitudeEnvelope: AKNode, AKToggleable, AKComponent, AKInput {
     ///   - sustainLevel: Sustain Level
     ///   - releaseDuration: Release time
     ///
-    public init(
+    @objc public init(
         _ input: AKNode? = nil,
         attackDuration: Double = 0.1,
         decayDuration: Double = 0.1,
         sustainLevel: Double = 1.0,
-        releaseDuration: Double = 0.1) {
+        releaseDuration: Double = 0.1
+    ) {
 
         self.attackDuration = attackDuration
         self.decayDuration = decayDuration
@@ -119,11 +120,14 @@ open class AKAmplitudeEnvelope: AKNode, AKToggleable, AKComponent, AKInput {
         super.init()
 
         AVAudioUnit._instantiate(with: _Self.ComponentDescription) { [weak self] avAudioUnit in
+            guard let strongSelf = self else {
+                AKLog("Error: self is nil")
+                return
+            }
+            strongSelf.avAudioNode = avAudioUnit
+            strongSelf.internalAU = avAudioUnit.auAudioUnit as? AKAudioUnitType
 
-            self?.avAudioNode = avAudioUnit
-            self?.internalAU = avAudioUnit.auAudioUnit as? AKAudioUnitType
-
-            input?.connect(to: self!)
+            input?.connect(to: strongSelf)
         }
 
         guard let tree = internalAU?.parameterTree else {

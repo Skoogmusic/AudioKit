@@ -3,7 +3,7 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2017 AudioKit. All rights reserved.
 //
 
 import AudioToolbox
@@ -47,15 +47,22 @@ public func fourCC(_ string: String) -> UInt32 {
     return out
 }
 
-/// Wrapper for printing out status messages to the console, 
+/// Wrapper for printing out status messages to the console,
 /// eventually it could be expanded with log levels
-/// - parameter string: Message to print
+/// - items: Zero or more items to print.
 ///
 @inline(__always)
-public func AKLog(_ string: String, fullname: String = #function, file: String = #file, line: Int = #line) {
+public func AKLog(fullname: String = #function, file: String = #file, line: Int = #line, _ items: Any...) {
     if AKSettings.enableLogging {
         let fileName = (file as NSString).lastPathComponent
-        print("\(fileName):\(fullname):\(line):\(string)")
+        var content = ""
+        for i in 0 ..< items.count {
+            content += String(describing: items[i])
+            if i < items.count - 1 {
+                content += " "
+            }
+        }
+        Swift.print("\(fileName):\(fullname):\(line):\(content)")
     }
 }
 

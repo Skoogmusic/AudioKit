@@ -3,7 +3,7 @@
 //  AudioKit
 //
 //  Created by Mike Gazzaruso, revision history on Github.
-//  Copyright © 2017 Mike Gazzaruso, Devoloop Srls. All rights reserved.
+//  Copyright © 2017 AudioKit. All rights reserved.
 //
 
 #import "AKRhinoGuitarProcessorAudioUnit.h"
@@ -38,16 +38,16 @@
 - (void)setDistType:(float)distType {
     _kernel.setDistType(distType);
 }
-- (void)setDistAmount:(float)distAmount {
-    _kernel.setDistAmount(distAmount);
+- (void)setDistortion:(float)distortion {
+    _kernel.setDistortion(distortion);
 }
 
 standardKernelPassthroughs()
 
 - (void)createParameters {
-    
+
     standardSetup(RhinoGuitarProcessor)
-    
+
     // Create a parameter object for the preGain.
     AUParameter *preGainAUParameter =
     [AUParameter parameter:@"preGain"
@@ -96,16 +96,16 @@ standardKernelPassthroughs()
                        min:1.0
                        max:3.0
                       unit:kAudioUnitParameterUnit_Generic];
-    // Create a parameter object for the distAmount.
-    AUParameter *distAmountAUParameter =
-    [AUParameter parameter:@"distAmount"
+    // Create a parameter object for the distortion.
+    AUParameter *distortionAUParameter =
+    [AUParameter parameter:@"distortion"
                       name:@"Distortion Amount"
-                   address:distAmountAddress
+                   address:distortionAddress
                        min:1.0
                        max:20.0
                       unit:kAudioUnitParameterUnit_Generic];
-    
-    
+
+
     // Initialize the parameter values.
     preGainAUParameter.value = 5.0;
     postGainAUParameter.value = 0.7;
@@ -113,16 +113,16 @@ standardKernelPassthroughs()
     midGainAUParameter.value = 0.0;
     highGainAUParameter.value = 0.0;
     distTypeAUParameter.value = 1.0;
-    distAmountAUParameter.value = 1.0;
-    
+    distortionAUParameter.value = 1.0;
+
     _kernel.setParameter(preGainAddress,  preGainAUParameter.value);
     _kernel.setParameter(postGainAddress, postGainAUParameter.value);
     _kernel.setParameter(lowGainAddress,  lowGainAUParameter.value);
     _kernel.setParameter(midGainAddress,  midGainAUParameter.value);
     _kernel.setParameter(highGainAddress, highGainAUParameter.value);
     _kernel.setParameter(distTypeAddress, distTypeAUParameter.value);
-    _kernel.setParameter(distAmountAddress, distAmountAUParameter.value);
-    
+    _kernel.setParameter(distortionAddress, distortionAUParameter.value);
+
     // Create the parameter tree.
     _parameterTree = [AUParameterTree tree:@[
                                              preGainAUParameter,
@@ -131,9 +131,9 @@ standardKernelPassthroughs()
                                              midGainAUParameter,
                                              highGainAUParameter,
                                              distTypeAUParameter,
-                                             distAmountAUParameter
+                                             distortionAUParameter
                                              ]];
-    
+
     parameterTreeBlock(RhinoGuitarProcessor)
 }
 

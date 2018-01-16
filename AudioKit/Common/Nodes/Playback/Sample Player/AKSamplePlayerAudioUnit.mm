@@ -3,7 +3,7 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2017 AudioKit. All rights reserved.
 //
 
 #import "AKSamplePlayerAudioUnit.h"
@@ -26,6 +26,12 @@
 - (void)setEndPoint:(float)endPoint {
     _kernel.setEndPoint(endPoint);
 }
+- (void)setTempStartPoint:(float)startPoint {
+    _kernel.setTempStartPoint(startPoint);
+}
+- (void)setTempEndPoint:(float)endPoint {
+    _kernel.setTempEndPoint(endPoint);
+}
 - (void)setLoopStartPoint:(float)startPoint {
     _kernel.setLoopStartPoint(startPoint);
 }
@@ -47,21 +53,21 @@
 - (void)setupAudioFileTable:(UInt32)size {
     _kernel.setUpTable(size);
 }
-- (void)loadAudioData:(float *)data size:(UInt32)size {
-    _kernel.loadAudioData(data, size);
+- (void)loadAudioData:(float *)data size:(UInt32)size sampleRate:(float)sampleRate {
+    _kernel.loadAudioData(data, size, sampleRate);
 }
 - (int)size {
     return _kernel.ftbl_size;
 }
-- (float)position {
+- (double)position {
     return _kernel.position;
 }
 standardKernelPassthroughs()
 
 - (void)createParameters {
-    
+
     standardGeneratorSetup(SamplePlayer)
-    
+
     // Create a parameter object for the start.
     AUParameter *startPointAUParameter = [AUParameter parameter:@"startPoint"
                                                            name:@"startPoint"
@@ -69,7 +75,7 @@ standardKernelPassthroughs()
                                                             min:0
                                                             max:1
                                                            unit:kAudioUnitParameterUnit_Generic];
-    
+
     // Create a parameter object for the endPoint.
     AUParameter *endPointAUParameter = [AUParameter parameter:@"endPoint"
                                                          name:@"endPoint"
@@ -77,7 +83,7 @@ standardKernelPassthroughs()
                                                           min:0
                                                           max:1
                                                          unit:kAudioUnitParameterUnit_Generic];
-    
+
     // Create a parameter object for the loop start.
     AUParameter *loopStartPointAUParameter = [AUParameter parameter:@"loopStartPoint"
                                                            name:@"loopStartPoint"
@@ -85,7 +91,7 @@ standardKernelPassthroughs()
                                                             min:0
                                                             max:1
                                                            unit:kAudioUnitParameterUnit_Generic];
-    
+
     // Create a parameter object for the loop endPoint.
     AUParameter *loopEndPointAUParameter = [AUParameter parameter:@"loopEndPoint"
                                                          name:@"loopEndPoint"
@@ -93,15 +99,15 @@ standardKernelPassthroughs()
                                                           min:0
                                                           max:1
                                                          unit:kAudioUnitParameterUnit_Generic];
-    
+
     // Create a parameter object for the rate.
     AUParameter *rateAUParameter = [AUParameter parameter:@"rate"
-                                                     name:@"rate. A value of. 1  normal, 2 is double speed, 0.5 is halfspeed, etc."
+                                                     name:@"rate. A value of 1 is normal, 2 is double speed, 0.5 is halfspeed, etc."
                                                   address:rateAddress
-                                                      min:-10 // adjusted by KN
+                                                      min:-10
                                                       max:10
                                                      unit:kAudioUnitParameterUnit_Generic];
-    
+
     // Create a parameter object for the volume.
     AUParameter *volumeAUParameter = [AUParameter parameter:@"volume"
                                                        name:@"volume"
@@ -144,7 +150,7 @@ standardKernelPassthroughs()
                                              volumeAUParameter,
                                              offsetAUParameter // added by KN
                                              ]];
-    
+
     parameterTreeBlock(SamplePlayer)
 }
 
