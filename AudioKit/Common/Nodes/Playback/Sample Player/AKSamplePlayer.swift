@@ -32,7 +32,6 @@ open class AKSamplePlayer: AKNode, AKComponent {
     fileprivate var loopEndPointParameter: AUParameter?
     fileprivate var rateParameter: AUParameter?
     fileprivate var volumeParameter: AUParameter?
-    fileprivate var offsetParameter: AUParameter? // Added by KN to skip/jump to a position in the sample
 
     /// Ramp Time represents the speed at which parameters are allowed to change
     @objc open dynamic var rampTime: Double = AKSettings.rampTime {
@@ -108,21 +107,6 @@ open class AKSamplePlayer: AKNode, AKComponent {
         }
     }
 
-    /// Offset - playback position adjustment : Added by KN
-    @objc open dynamic var offset: Double = 0 {
-        willSet {
-            if offset != newValue {
-                if internalAU?.isSetUp() ?? false {
-                    if let existingToken = token {
-                        offsetParameter?.setValue(Float(newValue), originator: existingToken)
-                    }
-                } else {
-                    internalAU?.offset = Float(newValue)
-                }
-            }
-        }
-    }
-    
     /// Loop Enabled - if enabled, the sample will loop back to the startpoint when the endpoint is reached.
     /// When disabled, the sample will play through once from startPoint to endPoint
     @objc open dynamic var loopEnabled: Bool = false {
@@ -180,14 +164,13 @@ open class AKSamplePlayer: AKNode, AKComponent {
     ///   - maximumSamples: Largest number of samples that will be loaded into the sample player
     ///   - completionHandler: Callback to run when the sample playback is completed
     ///
-    public init(file: AVAudioFile,
-                startPoint: Sample = 0,
-                endPoint: Sample = 0,
-                rate: Double = 1,
-                volume: Double = 1,
-                maximumSamples: Int = 0,
-                offset: Double = 0, // added by KN
-                completionHandler: @escaping AKCCallback = { }) {
+    @objc public init(file: AKAudioFile,
+                      startPoint: Sample = 0,
+                      endPoint: Sample = 0,
+                      rate: Double = 1,
+                      volume: Double = 1,
+                      maximumSamples: Int = 0,
+                      completionHandler: @escaping AKCCallback = {}) {
 
         self.startPoint = startPoint
         self.rate = rate
@@ -195,7 +178,6 @@ open class AKSamplePlayer: AKNode, AKComponent {
         self.avAudiofile = file
         self.endPoint = Sample(avAudiofile.samplesCount)
         self.maximumSamples = maximumSamples
-        self.offset = offset // added by KN
         self.completionHandler = completionHandler
 
         _Self.register()
@@ -223,8 +205,7 @@ open class AKSamplePlayer: AKNode, AKComponent {
         loopEndPointParameter = tree["endPoint"]
         rateParameter = tree["rate"]
         volumeParameter = tree["volume"]
-        offsetParameter = tree["offset"] // added by KN
-        
+
         token = tree.token(byAddingParameterObserver: { [weak self] _, _ in
 
             guard let _ = self else {
@@ -242,8 +223,7 @@ open class AKSamplePlayer: AKNode, AKComponent {
         internalAU?.loopEndPoint = Float(self.endPoint)
         internalAU?.rate = Float(rate)
         internalAU?.volume = Float(volume)
-        internalAU?.offset = Float(self.offset) // added by KN
-        
+
         if maximumSamples != 0 {
             internalAU?.setupAudioFileTable(UInt32(maximumSamples) * 2)
         }
