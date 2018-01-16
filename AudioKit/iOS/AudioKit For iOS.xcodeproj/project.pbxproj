@@ -75,6 +75,8 @@
 		53359A62200E2E0200509FEA /* AKFluteInstrumentDSPKernel.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 53359A5E200E2E0200509FEA /* AKFluteInstrumentDSPKernel.hpp */; };
 		53359A65200E34FB00509FEA /* CDelay.h in Headers */ = {isa = PBXBuildFile; fileRef = 53359A63200E34FB00509FEA /* CDelay.h */; };
 		53359A66200E34FB00509FEA /* CDelay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53359A64200E34FB00509FEA /* CDelay.cpp */; };
+		53359A68200E470500509FEA /* ModString.h in Headers */ = {isa = PBXBuildFile; fileRef = 53359A67200E470500509FEA /* ModString.h */; };
+		53359A6A200E471E00509FEA /* ModString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53359A69200E471E00509FEA /* ModString.cpp */; };
 		551AAC261F61F24700A14C0D /* AVAudioTimeShim.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551AAC241F61F24500A14C0D /* AVAudioTimeShim.swift */; };
 		551AAC271F61F24700A14C0D /* AVAudioBufferConvenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551AAC251F61F24600A14C0D /* AVAudioBufferConvenience.swift */; };
 		551AAC5E1F620A7500A14C0D /* AKClip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551AAC2C1F61F59500A14C0D /* AKClip.swift */; };
@@ -1044,6 +1046,8 @@
 		53359A5E200E2E0200509FEA /* AKFluteInstrumentDSPKernel.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AKFluteInstrumentDSPKernel.hpp; sourceTree = "<group>"; };
 		53359A63200E34FB00509FEA /* CDelay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDelay.h; sourceTree = "<group>"; };
 		53359A64200E34FB00509FEA /* CDelay.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CDelay.cpp; sourceTree = "<group>"; };
+		53359A67200E470500509FEA /* ModString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ModString.h; path = ../../../../../../Common/Internals/STK/include/ModString.h; sourceTree = "<group>"; };
+		53359A69200E471E00509FEA /* ModString.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ModString.cpp; path = ../../../../../Common/Internals/STK/ModString.cpp; sourceTree = "<group>"; };
 		551AAC241F61F24500A14C0D /* AVAudioTimeShim.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVAudioTimeShim.swift; sourceTree = "<group>"; };
 		551AAC251F61F24600A14C0D /* AVAudioBufferConvenience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVAudioBufferConvenience.swift; sourceTree = "<group>"; };
 		551AAC2A1F61F48300A14C0D /* AKTiming.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AKTiming.swift; sourceTree = "<group>"; };
@@ -2150,6 +2154,7 @@
 				C40717501D21195000665C02 /* Flute.h */,
 				C470478B1E76993300D9906F /* FM.h */,
 				C40717631D21195000665C02 /* Mandolin.h */,
+				53359A67200E470500509FEA /* ModString.h */,
 				C40718171D211A4F00665C02 /* Noise.h */,
 				C40718071D2119D500665C02 /* OnePole.h */,
 				C407180F1D211A1700665C02 /* PoleZero.h */,
@@ -4085,6 +4090,7 @@
 				C4A927B01D1343AE0095E429 /* Flute.cpp */,
 				C47047891E76992100D9906F /* FM.cpp */,
 				C4A928371D1343AE0095E429 /* Mandolin.cpp */,
+				53359A69200E471E00509FEA /* ModString.cpp */,
 				C40716551D2116ED00665C02 /* Noise.cpp */,
 				C407163F1D21168100665C02 /* OnePole.cpp */,
 				C487B60F1DD9237600C56B59 /* OneZero.cpp */,
@@ -4568,6 +4574,7 @@
 				C4FE687A1EC1C1E5000B09B2 /* AKMicrophoneTrackerEngine.h in Headers */,
 				C47AE4BB1D39C5B10091118F /* AKPhaseDistortionOscillatorBankDSPKernel.hpp in Headers */,
 				C4A1073E1E6963C10018848C /* AKBrownianNoiseDSPKernel.hpp in Headers */,
+				53359A68200E470500509FEA /* ModString.h in Headers */,
 				C47047901E76995900D9906F /* FileLoop.h in Headers */,
 				C49D695D1D1F1C6500BF018A /* AKPWMOscillatorBankDSPKernel.hpp in Headers */,
 				C4AA7BFF1FD2A7C000040720 /* AKTimelineTap.h in Headers */,
@@ -5350,6 +5357,7 @@
 				C45380491C3A59EA00A51738 /* AKOperationEffect.swift in Sources */,
 				C4A9164F1C24F95E006C1A15 /* periodicTrigger.swift in Sources */,
 				C42858FB1E90B689009B737D /* AKPhaser.swift in Sources */,
+				53359A6A200E471E00509FEA /* ModString.cpp in Sources */,
 				C466DED3200A15880032D0A5 /* AKOscillatorAudioUnit.swift in Sources */,
 				C43ABE001E5BFD8A00165053 /* diode.c in Sources */,
 				FE52FEEF1CB70A8500A35B63 /* AKAUPresetBuilder.swift in Sources */,
