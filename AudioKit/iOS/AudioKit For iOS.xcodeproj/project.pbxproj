@@ -88,6 +88,10 @@
 		53359A88200E50A700509FEA /* ModalBar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53359A87200E50A700509FEA /* ModalBar.cpp */; };
 		53359A8A200E50DE00509FEA /* BiQuad.h in Headers */ = {isa = PBXBuildFile; fileRef = 53359A89200E50DE00509FEA /* BiQuad.h */; };
 		53359A8C200E511200509FEA /* Modal.h in Headers */ = {isa = PBXBuildFile; fileRef = 53359A8B200E511200509FEA /* Modal.h */; };
+		53DD6569200E57BB00127269 /* StringInstrument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53359A52200E2DFD00509FEA /* StringInstrument.swift */; };
+		53DD656A200E57BE00127269 /* StringInstrumentAudioUnit.h in Headers */ = {isa = PBXBuildFile; fileRef = 53359A53200E2DFD00509FEA /* StringInstrumentAudioUnit.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		53DD656B200E57C400127269 /* StringInstrumentAudioUnit.mm in Sources */ = {isa = PBXBuildFile; fileRef = 53359A54200E2DFD00509FEA /* StringInstrumentAudioUnit.mm */; };
+		53DD656C200E57C700127269 /* StringInstrumentDSPKernel.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 53359A55200E2DFD00509FEA /* StringInstrumentDSPKernel.hpp */; };
 		551AAC261F61F24700A14C0D /* AVAudioTimeShim.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551AAC241F61F24500A14C0D /* AVAudioTimeShim.swift */; };
 		551AAC271F61F24700A14C0D /* AVAudioBufferConvenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551AAC251F61F24600A14C0D /* AVAudioBufferConvenience.swift */; };
 		551AAC5E1F620A7500A14C0D /* AKClip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551AAC2C1F61F59500A14C0D /* AKClip.swift */; };
@@ -1055,25 +1059,25 @@
 		53359A5E200E2E0200509FEA /* AKFluteInstrumentDSPKernel.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AKFluteInstrumentDSPKernel.hpp; sourceTree = "<group>"; };
 		53359A63200E34FB00509FEA /* CDelay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDelay.h; sourceTree = "<group>"; };
 		53359A64200E34FB00509FEA /* CDelay.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CDelay.cpp; sourceTree = "<group>"; };
-		53359A67200E470500509FEA /* ModString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ModString.h; path = ../../../../../../Common/Internals/STK/include/ModString.h; sourceTree = "<group>"; };
-		53359A69200E471E00509FEA /* ModString.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ModString.cpp; path = ../../../../../Common/Internals/STK/ModString.cpp; sourceTree = "<group>"; };
-		53359A6B200E495300509FEA /* Abreu12.lpc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Abreu12.lpc.h; path = ../../../../../../Common/Internals/STK/include/Abreu12.lpc.h; sourceTree = "<group>"; };
-		53359A6D200E495900509FEA /* Arch12.lpc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Arch12.lpc.h; path = ../../../../../../Common/Internals/STK/include/Arch12.lpc.h; sourceTree = "<group>"; };
-		53359A6F200E496300509FEA /* Dunlap12.lpc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Dunlap12.lpc.h; path = ../../../../../../Common/Internals/STK/include/Dunlap12.lpc.h; sourceTree = "<group>"; };
-		53359A71200E499400509FEA /* Fiddle12.lpc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Fiddle12.lpc.h; path = ../../../../../../Common/Internals/STK/include/Fiddle12.lpc.h; sourceTree = "<group>"; };
-		53359A73200E499D00509FEA /* Mando12.lpc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Mando12.lpc.h; path = ../../../../../../Common/Internals/STK/include/Mando12.lpc.h; sourceTree = "<group>"; };
-		53359A75200E49A800509FEA /* ModalBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ModalBar.h; path = ../../../../../../Common/Internals/STK/include/ModalBar.h; sourceTree = "<group>"; };
-		53359A77200E49F500509FEA /* NBody.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NBody.cpp; path = ../../../../../Common/Internals/STK/NBody.cpp; sourceTree = "<group>"; };
-		53359A79200E4A0C00509FEA /* NBody.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NBody.h; path = ../../../../../../Common/Internals/STK/include/NBody.h; sourceTree = "<group>"; };
-		53359A7B200E4A1900509FEA /* Violin12.lpc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Violin12.lpc.h; path = ../../../../../../Common/Internals/STK/include/Violin12.lpc.h; sourceTree = "<group>"; };
-		53359A7D200E4AAB00509FEA /* Plucking_a_guitar_string_with_a_buzz_5b.raw */ = {isa = PBXFileReference; lastKnownFileType = file; name = Plucking_a_guitar_string_with_a_buzz_5b.raw; path = ../../../../../../Common/Internals/STK/rawwaves/Plucking_a_guitar_string_with_a_buzz_5b.raw; sourceTree = "<group>"; };
-		53359A7F200E4ACF00509FEA /* Delay.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Delay.cpp; path = ../../../../../Common/Internals/STK/Delay.cpp; sourceTree = "<group>"; };
-		53359A81200E4AE200509FEA /* Delay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Delay.h; path = ../../../../../../Common/Internals/STK/include/Delay.h; sourceTree = "<group>"; };
-		53359A83200E507300509FEA /* BiQuad.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BiQuad.cpp; path = ../../../../../Common/Internals/STK/BiQuad.cpp; sourceTree = "<group>"; };
-		53359A85200E508B00509FEA /* Modal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Modal.cpp; path = ../../../../../Common/Internals/STK/Modal.cpp; sourceTree = "<group>"; };
-		53359A87200E50A700509FEA /* ModalBar.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ModalBar.cpp; path = ../../../../../Common/Internals/STK/ModalBar.cpp; sourceTree = "<group>"; };
-		53359A89200E50DE00509FEA /* BiQuad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BiQuad.h; path = ../../../../../../Common/Internals/STK/include/BiQuad.h; sourceTree = "<group>"; };
-		53359A8B200E511200509FEA /* Modal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Modal.h; path = ../../../../../../Common/Internals/STK/include/Modal.h; sourceTree = "<group>"; };
+		53359A67200E470500509FEA /* ModString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModString.h; sourceTree = "<group>"; };
+		53359A69200E471E00509FEA /* ModString.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ModString.cpp; sourceTree = "<group>"; };
+		53359A6B200E495300509FEA /* Abreu12.lpc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Abreu12.lpc.h; sourceTree = "<group>"; };
+		53359A6D200E495900509FEA /* Arch12.lpc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Arch12.lpc.h; sourceTree = "<group>"; };
+		53359A6F200E496300509FEA /* Dunlap12.lpc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Dunlap12.lpc.h; sourceTree = "<group>"; };
+		53359A71200E499400509FEA /* Fiddle12.lpc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Fiddle12.lpc.h; sourceTree = "<group>"; };
+		53359A73200E499D00509FEA /* Mando12.lpc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mando12.lpc.h; sourceTree = "<group>"; };
+		53359A75200E49A800509FEA /* ModalBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModalBar.h; sourceTree = "<group>"; };
+		53359A77200E49F500509FEA /* NBody.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NBody.cpp; sourceTree = "<group>"; };
+		53359A79200E4A0C00509FEA /* NBody.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBody.h; sourceTree = "<group>"; };
+		53359A7B200E4A1900509FEA /* Violin12.lpc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Violin12.lpc.h; sourceTree = "<group>"; };
+		53359A7D200E4AAB00509FEA /* Plucking_a_guitar_string_with_a_buzz_5b.raw */ = {isa = PBXFileReference; lastKnownFileType = file; path = Plucking_a_guitar_string_with_a_buzz_5b.raw; sourceTree = "<group>"; };
+		53359A7F200E4ACF00509FEA /* Delay.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Delay.cpp; sourceTree = "<group>"; };
+		53359A81200E4AE200509FEA /* Delay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Delay.h; sourceTree = "<group>"; };
+		53359A83200E507300509FEA /* BiQuad.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BiQuad.cpp; sourceTree = "<group>"; };
+		53359A85200E508B00509FEA /* Modal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Modal.cpp; sourceTree = "<group>"; };
+		53359A87200E50A700509FEA /* ModalBar.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ModalBar.cpp; sourceTree = "<group>"; };
+		53359A89200E50DE00509FEA /* BiQuad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BiQuad.h; sourceTree = "<group>"; };
+		53359A8B200E511200509FEA /* Modal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Modal.h; sourceTree = "<group>"; };
 		551AAC241F61F24500A14C0D /* AVAudioTimeShim.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVAudioTimeShim.swift; sourceTree = "<group>"; };
 		551AAC251F61F24600A14C0D /* AVAudioBufferConvenience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVAudioBufferConvenience.swift; sourceTree = "<group>"; };
 		551AAC2A1F61F48300A14C0D /* AKTiming.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AKTiming.swift; sourceTree = "<group>"; };
@@ -4507,6 +4511,7 @@
 				C47AE4B91D39C5B10091118F /* AKPhaseDistortionOscillatorBankAudioUnit.h in Headers */,
 				C40C12911F08AFFB00F4C7F1 /* AKDSPKernel.hpp in Headers */,
 				52145B4F1F3C5B1A0069C88B /* DynArray.hpp in Headers */,
+				53DD656A200E57BE00127269 /* StringInstrumentAudioUnit.h in Headers */,
 				52145B521F3C5B1A0069C88B /* FFTReal.h in Headers */,
 				C4A43291200618410005BFE4 /* AKCostelloReverbDSP.hpp in Headers */,
 				C407180C1D2119F600665C02 /* FileRead.h in Headers */,
@@ -4547,6 +4552,7 @@
 				C44B597E1C4B5FC70008507F /* AKMorphingOscillatorAudioUnit.h in Headers */,
 				52145B581F3C5B1A0069C88B /* FFTRealPassDirect.hpp in Headers */,
 				C407180A1D2119E000665C02 /* Stk.h in Headers */,
+				53DD656C200E57C700127269 /* StringInstrumentDSPKernel.hpp in Headers */,
 				C40718181D211A4F00665C02 /* Noise.h in Headers */,
 				C470478C1E76993300D9906F /* FM.h in Headers */,
 				C4077AEB2008733A00E5923C /* AKBandRejectButterworthFilterDSP.hpp in Headers */,
@@ -5455,6 +5461,7 @@
 				C49D695A1D1F1C6500BF018A /* AKPWMOscillatorBank.swift in Sources */,
 				C48444E71C36FB2C007BE794 /* triangle.swift in Sources */,
 				C4537FCA1C3A438D00A51738 /* AKHighShelfFilter.swift in Sources */,
+				53DD6569200E57BB00127269 /* StringInstrument.swift in Sources */,
 				C4537FCB1C3A438D00A51738 /* AKHighShelfParametricEqualizerFilter.swift in Sources */,
 				C4F8C91D1DCA8CE4001F38F2 /* switch.c in Sources */,
 				C4CC34121D1DF4D30066DDCC /* AKMIDINode.swift in Sources */,
@@ -5475,6 +5482,7 @@
 				C4537F321C39D2A300A51738 /* AKRingModulator.swift in Sources */,
 				C4537F3B1C39FCF700A51738 /* AKDynamicsProcessor.swift in Sources */,
 				C463028A1C20E7A7009B44D9 /* reverberateWithFlatFrequencyResponse.swift in Sources */,
+				53DD656B200E57C400127269 /* StringInstrumentAudioUnit.mm in Sources */,
 				C4537FCF1C3A438D00A51738 /* AKLowPassButterworthFilter.swift in Sources */,
 				C4E751A31C2344E000688A1B /* autoWah.swift in Sources */,
 				C4F8C8E61DCA8CE4001F38F2 /* line.c in Sources */,
