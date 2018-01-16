@@ -15,8 +15,7 @@ enum {
     loopStartPointAddress = 2,
     loopEndPointAddress = 3,
     rateAddress = 4,
-    volumeAddress = 5,
-    offsetAddress = 6 // added by KN
+    volumeAddress = 5
 };
 
 class AKSamplePlayerDSPKernel : public AKSoundpipeKernel, public AKOutputBuffered {
@@ -133,9 +132,6 @@ public:
             case volumeAddress:
                 volumeRamper.setUIValue(clamp(value, 0.0f, 10.0f));
                 break;
-            case offsetAddress: // added by KN
-                return offsetRamper.setUIValue(clamp(value, 0.0f, 1.0f));
-                break;
         }
     }
 
@@ -146,9 +142,7 @@ public:
 
             case volumeAddress:
                 return volumeRamper.getUIValue();
-            case offsetAddress: // added by KN
-                return offsetRamper.getUIValue();
-                
+
             default: return 0.0f;
         }
     }
@@ -162,10 +156,6 @@ public:
             case volumeAddress:
                 volumeRamper.startRamp(clamp(value, 0.0f, 10.0f), duration);
                 break;
-            case offsetAddress: // added by KN
-                printf("Offset change %f\n", value);
-                offsetRamper.startRamp(clamp(value, 0.0f, 1.0f), duration);
-                break;
         }
     }
     
@@ -177,7 +167,6 @@ public:
             
             rate = double(rateRamper.getAndStep());
             volume = double(volumeRamper.getAndStep());
-
 
             float startPointToUse = startPointViaRate();
             float endPointToUse = endPointViaRate();
@@ -217,31 +206,28 @@ public:
                     *out = 0;
                 }
             }
-            if (!loop && position < lastPosition && started) { // started? remove? has it been added recently
-                started = false;
-                completionHandler();
-            } else {
-                // if statement below added by KN
-                if (position < lastPosition) { // have we reset to the start of the loop?
-                    //                    sp_phasor_set_phase(phasor, 0.0f);
-                    //                    offsetRamper.setImmediate(0.0f);
-                }
-                lastPosition = position;
-            }
         }
     }
     
     float startPointViaRate(){
         if (rate == 0) {return 0;}
         if (useTempStartPoint){
-            return tempStartPoint;
+            // below added by KN
+            float currentEndPoint = endPoint;
+            if (useTempEndPoint) {
+                currentEndPoint = tempEndPoint;
+            }
+            return (rate > 0 ? tempStartPoint : currentEndPoint);
+            //            return tempStartPoint;
         }
         return (rate > 0 ? startPoint : endPoint);
     }
     float endPointViaRate(){
         if (rate == 0) {return 0;}
         if (useTempEndPoint){
-            return tempEndPoint;
+            // below added by KN
+            return (rate > 0 ? tempEndPoint : tempStartPoint);
+            //            return tempEndPoint;
         }
         return (rate > 0 ? endPoint : startPoint);
     }
@@ -347,12 +333,10 @@ public:
     bool resetted = false;
     ParameterRamper rateRamper = 1;
     ParameterRamper volumeRamper = 1;
-    ParameterRamper offsetRamper = 0; // added by KN
     AKCCallback completionHandler = nullptr;
     UInt32 ftbl_size = 2;
     UInt32 current_size = 2;
-    float position = 0.0;
-    float offset = 0.0; // added by KN
+    double position = 0.0;
     float rate = 1;
 };
 

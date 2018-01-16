@@ -63,10 +63,6 @@
 		53359A4E200E2DF500509FEA /* MogoInstrumentAudioUnit.h in Headers */ = {isa = PBXBuildFile; fileRef = 53359A4A200E2DF500509FEA /* MogoInstrumentAudioUnit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		53359A4F200E2DF500509FEA /* MogoInstrumentAudioUnit.mm in Sources */ = {isa = PBXBuildFile; fileRef = 53359A4B200E2DF500509FEA /* MogoInstrumentAudioUnit.mm */; };
 		53359A50200E2DF500509FEA /* MogoInstrumentDSPKernel.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 53359A4C200E2DF500509FEA /* MogoInstrumentDSPKernel.hpp */; };
-		53359A56200E2DFD00509FEA /* StringInstrument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53359A52200E2DFD00509FEA /* StringInstrument.swift */; };
-		53359A57200E2DFD00509FEA /* StringInstrumentAudioUnit.h in Headers */ = {isa = PBXBuildFile; fileRef = 53359A53200E2DFD00509FEA /* StringInstrumentAudioUnit.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		53359A58200E2DFD00509FEA /* StringInstrumentAudioUnit.mm in Sources */ = {isa = PBXBuildFile; fileRef = 53359A54200E2DFD00509FEA /* StringInstrumentAudioUnit.mm */; };
-		53359A59200E2DFD00509FEA /* StringInstrumentDSPKernel.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 53359A55200E2DFD00509FEA /* StringInstrumentDSPKernel.hpp */; };
 		53359A5F200E2E0200509FEA /* AKFluteInstrument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53359A5B200E2E0200509FEA /* AKFluteInstrument.swift */; };
 		53359A60200E2E0200509FEA /* AKFluteInstrumentAudioUnit.h in Headers */ = {isa = PBXBuildFile; fileRef = 53359A5C200E2E0200509FEA /* AKFluteInstrumentAudioUnit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		53359A61200E2E0200509FEA /* AKFluteInstrumentAudioUnit.mm in Sources */ = {isa = PBXBuildFile; fileRef = 53359A5D200E2E0200509FEA /* AKFluteInstrumentAudioUnit.mm */; };
@@ -87,6 +83,11 @@
 		53359A7E200E4AB400509FEA /* Plucking_a_guitar_string_with_a_buzz_5b.raw in Resources */ = {isa = PBXBuildFile; fileRef = 53359A7D200E4AAB00509FEA /* Plucking_a_guitar_string_with_a_buzz_5b.raw */; };
 		53359A80200E4ACF00509FEA /* Delay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53359A7F200E4ACF00509FEA /* Delay.cpp */; };
 		53359A82200E4AE200509FEA /* Delay.h in Headers */ = {isa = PBXBuildFile; fileRef = 53359A81200E4AE200509FEA /* Delay.h */; };
+		53359A84200E507400509FEA /* BiQuad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53359A83200E507300509FEA /* BiQuad.cpp */; };
+		53359A86200E508B00509FEA /* Modal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53359A85200E508B00509FEA /* Modal.cpp */; };
+		53359A88200E50A700509FEA /* ModalBar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53359A87200E50A700509FEA /* ModalBar.cpp */; };
+		53359A8A200E50DE00509FEA /* BiQuad.h in Headers */ = {isa = PBXBuildFile; fileRef = 53359A89200E50DE00509FEA /* BiQuad.h */; };
+		53359A8C200E511200509FEA /* Modal.h in Headers */ = {isa = PBXBuildFile; fileRef = 53359A8B200E511200509FEA /* Modal.h */; };
 		551AAC261F61F24700A14C0D /* AVAudioTimeShim.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551AAC241F61F24500A14C0D /* AVAudioTimeShim.swift */; };
 		551AAC271F61F24700A14C0D /* AVAudioBufferConvenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551AAC251F61F24600A14C0D /* AVAudioBufferConvenience.swift */; };
 		551AAC5E1F620A7500A14C0D /* AKClip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551AAC2C1F61F59500A14C0D /* AKClip.swift */; };
@@ -1068,6 +1069,11 @@
 		53359A7D200E4AAB00509FEA /* Plucking_a_guitar_string_with_a_buzz_5b.raw */ = {isa = PBXFileReference; lastKnownFileType = file; name = Plucking_a_guitar_string_with_a_buzz_5b.raw; path = ../../../../../../Common/Internals/STK/rawwaves/Plucking_a_guitar_string_with_a_buzz_5b.raw; sourceTree = "<group>"; };
 		53359A7F200E4ACF00509FEA /* Delay.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Delay.cpp; path = ../../../../../Common/Internals/STK/Delay.cpp; sourceTree = "<group>"; };
 		53359A81200E4AE200509FEA /* Delay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Delay.h; path = ../../../../../../Common/Internals/STK/include/Delay.h; sourceTree = "<group>"; };
+		53359A83200E507300509FEA /* BiQuad.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BiQuad.cpp; path = ../../../../../Common/Internals/STK/BiQuad.cpp; sourceTree = "<group>"; };
+		53359A85200E508B00509FEA /* Modal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Modal.cpp; path = ../../../../../Common/Internals/STK/Modal.cpp; sourceTree = "<group>"; };
+		53359A87200E50A700509FEA /* ModalBar.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ModalBar.cpp; path = ../../../../../Common/Internals/STK/ModalBar.cpp; sourceTree = "<group>"; };
+		53359A89200E50DE00509FEA /* BiQuad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BiQuad.h; path = ../../../../../../Common/Internals/STK/include/BiQuad.h; sourceTree = "<group>"; };
+		53359A8B200E511200509FEA /* Modal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Modal.h; path = ../../../../../../Common/Internals/STK/include/Modal.h; sourceTree = "<group>"; };
 		551AAC241F61F24500A14C0D /* AVAudioTimeShim.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVAudioTimeShim.swift; sourceTree = "<group>"; };
 		551AAC251F61F24600A14C0D /* AVAudioBufferConvenience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVAudioBufferConvenience.swift; sourceTree = "<group>"; };
 		551AAC2A1F61F48300A14C0D /* AKTiming.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AKTiming.swift; sourceTree = "<group>"; };
@@ -2160,30 +2166,31 @@
 			isa = PBXGroup;
 			children = (
 				53359A6B200E495300509FEA /* Abreu12.lpc.h */,
-				53359A6D200E495900509FEA /* Arch12.lpc.h */,
-				53359A6F200E496300509FEA /* Dunlap12.lpc.h */,
-				53359A71200E499400509FEA /* Fiddle12.lpc.h */,
-				53359A73200E499D00509FEA /* Mando12.lpc.h */,
-				53359A7B200E4A1900509FEA /* Violin12.lpc.h */,
-				C487B60B1DD9236900C56B59 /* OneZero.h */,
-				C487B60D1DD9236E00C56B59 /* Envelope.h */,
 				C40718151D211A4100665C02 /* ADSR.h */,
+				53359A6D200E495900509FEA /* Arch12.lpc.h */,
+				53359A89200E50DE00509FEA /* BiQuad.h */,
 				C487B6091DD9235F00C56B59 /* Clarinet.h */,
 				53359A81200E4AE200509FEA /* Delay.h */,
 				C40718011D21199100665C02 /* DelayA.h */,
 				C40718131D211A3300665C02 /* DelayL.h */,
+				53359A6F200E496300509FEA /* Dunlap12.lpc.h */,
+				C487B60D1DD9236E00C56B59 /* Envelope.h */,
+				53359A71200E499400509FEA /* Fiddle12.lpc.h */,
 				C470478F1E76995900D9906F /* FileLoop.h */,
 				C407180B1D2119F600665C02 /* FileRead.h */,
 				C40718191D211A5E00665C02 /* FileWvIn.h */,
 				C407180D1D211A0600665C02 /* Fir.h */,
 				C40717501D21195000665C02 /* Flute.h */,
 				C470478B1E76993300D9906F /* FM.h */,
-				53359A75200E49A800509FEA /* ModalBar.h */,
+				53359A73200E499D00509FEA /* Mando12.lpc.h */,
 				C40717631D21195000665C02 /* Mandolin.h */,
+				53359A8B200E511200509FEA /* Modal.h */,
+				53359A75200E49A800509FEA /* ModalBar.h */,
 				53359A67200E470500509FEA /* ModString.h */,
 				53359A79200E4A0C00509FEA /* NBody.h */,
 				C40718171D211A4F00665C02 /* Noise.h */,
 				C40718071D2119D500665C02 /* OnePole.h */,
+				C487B60B1DD9236900C56B59 /* OneZero.h */,
 				C407180F1D211A1700665C02 /* PoleZero.h */,
 				C47047871E76988B00D9906F /* Rhodey.h */,
 				C47047711E7685BE00D9906F /* Shakers.h */,
@@ -2193,6 +2200,7 @@
 				C47047AD1E76A2FD00D9906F /* TubeBell.h */,
 				C40718111D211A2300665C02 /* Twang.h */,
 				C47047931E76998600D9906F /* TwoZero.h */,
+				53359A7B200E4A1900509FEA /* Violin12.lpc.h */,
 			);
 			path = include;
 			sourceTree = "<group>";
@@ -4106,6 +4114,7 @@
 			children = (
 				C40717301D21195000665C02 /* include */,
 				C40716371D21160C00665C02 /* ADSR.cpp */,
+				53359A83200E507300509FEA /* BiQuad.cpp */,
 				C487B6071DD9234F00C56B59 /* Clarinet.cpp */,
 				53359A7F200E4ACF00509FEA /* Delay.cpp */,
 				C40716451D21169E00665C02 /* DelayA.cpp */,
@@ -4117,10 +4126,12 @@
 				C407163B1D21164E00665C02 /* Fir.cpp */,
 				C4A927B01D1343AE0095E429 /* Flute.cpp */,
 				C47047891E76992100D9906F /* FM.cpp */,
+				53359A85200E508B00509FEA /* Modal.cpp */,
+				53359A87200E50A700509FEA /* ModalBar.cpp */,
 				C4A928371D1343AE0095E429 /* Mandolin.cpp */,
 				53359A69200E471E00509FEA /* ModString.cpp */,
-				C40716551D2116ED00665C02 /* Noise.cpp */,
 				53359A77200E49F500509FEA /* NBody.cpp */,
+				C40716551D2116ED00665C02 /* Noise.cpp */,
 				C407163F1D21168100665C02 /* OnePole.cpp */,
 				C487B60F1DD9237600C56B59 /* OneZero.cpp */,
 				C40716401D21168100665C02 /* PoleZero.cpp */,
@@ -4482,6 +4493,7 @@
 				52145B5B1F3C5B1A0069C88B /* FFTRealSelect.h in Headers */,
 				C49D69721D1F1DE300BF018A /* AKMorphingOscillatorBankAudioUnit.h in Headers */,
 				C4BEAA121DEC3A9800186C50 /* AKAudioUnit.h in Headers */,
+				53359A8C200E511200509FEA /* Modal.h in Headers */,
 				C40718061D2119BF00665C02 /* SineWave.h in Headers */,
 				C42F35041C057E03000E937C /* AudioKit.h in Headers */,
 				C4077BAD200896B000E5923C /* AKBoosterDSP.hpp in Headers */,
@@ -4490,7 +4502,6 @@
 				C4077B31200878AD00E5923C /* AKPeakingParametricEqualizerFilterDSP.hpp in Headers */,
 				C40C41541C40E3A5009D870B /* EZAudioFFT.h in Headers */,
 				C47047A81E76A25200D9906F /* AKTubularBellsAudioUnit.h in Headers */,
-				53359A59200E2DFD00509FEA /* StringInstrumentDSPKernel.hpp in Headers */,
 				C40C415A1C40E3A5009D870B /* EZAudioFloatData.h in Headers */,
 				C48C6C4A1D3C15F1008EA51B /* ini.h in Headers */,
 				C47AE4B91D39C5B10091118F /* AKPhaseDistortionOscillatorBankAudioUnit.h in Headers */,
@@ -4543,6 +4554,7 @@
 				C40718631D2267B800665C02 /* AKMandolinDSPKernel.hpp in Headers */,
 				C45380941C3A5C0C00A51738 /* AKWhiteNoiseDSPKernel.hpp in Headers */,
 				C453803E1C3A599F00A51738 /* AKAmplitudeTrackerDSPKernel.hpp in Headers */,
+				53359A8A200E50DE00509FEA /* BiQuad.h in Headers */,
 				C40C12931F08B00800F4C7F1 /* AKSoundPipeKernel.hpp in Headers */,
 				53359A65200E34FB00509FEA /* CDelay.h in Headers */,
 				C44B59801C4B5FC70008507F /* AKMorphingOscillatorDSPKernel.hpp in Headers */,
@@ -4600,7 +4612,6 @@
 				C4B192D31C3B637900C0F330 /* AKAmplitudeEnvelopeDSPKernel.hpp in Headers */,
 				C40C428F1C41C3D6009D870B /* AKDripDSPKernel.hpp in Headers */,
 				52145B5A1F3C5B1A0069C88B /* FFTRealPassInverse.hpp in Headers */,
-				53359A57200E2DFD00509FEA /* StringInstrumentAudioUnit.h in Headers */,
 				52145B431F3C5B1A0069C88B /* Array.h in Headers */,
 				C4077B4A200879E900E5923C /* AKMoogLadderDSP.hpp in Headers */,
 				C4AA7C011FD2A7C000040720 /* AKLazyTap.h in Headers */,
@@ -4990,9 +5001,9 @@
 				C4537FA81C3A438D00A51738 /* AKAutoWah.swift in Sources */,
 				C40C42B41C420C1D009D870B /* AKAudioPlayer.swift in Sources */,
 				E4630B501D2BC7F800437E75 /* AKMoogLadderPresets.swift in Sources */,
+				53359A86200E508B00509FEA /* Modal.cpp in Sources */,
 				C4F8C8BA1DCA8CE4001F38F2 /* bltriangle.c in Sources */,
 				C46615321EEA65060044A5FC /* growl.c in Sources */,
-				53359A58200E2DFD00509FEA /* StringInstrumentAudioUnit.mm in Sources */,
 				C4077B142008760F00E5923C /* AKKorgLowPassFilterAudioUnit.swift in Sources */,
 				C4F8C92A1DCA8CE4001F38F2 /* tin.c in Sources */,
 				F4CA85841EB666260066BE5C /* AKTuningTable+Wilson.swift in Sources */,
@@ -5114,7 +5125,6 @@
 				C48C6CCB1D3C15F1008EA51B /* sporth.c in Sources */,
 				C48C6C641D3C15F1008EA51B /* clip.c in Sources */,
 				C48C6C681D3C15F1008EA51B /* count.c in Sources */,
-				53359A56200E2DFD00509FEA /* StringInstrument.swift in Sources */,
 				C41910312009A8540067B5E0 /* AKStereoFieldLimiterAudioUnit.swift in Sources */,
 				C44A816C200C447A00D1CCC2 /* AKClarinetAudioUnit.swift in Sources */,
 				C466153D1EEA651B0044A5FC /* AKVocalTractAudioUnit.mm in Sources */,
@@ -5160,6 +5170,7 @@
 				C48C6C6A1D3C15F1008EA51B /* dcblock.c in Sources */,
 				C48C6C601D3C15F1008EA51B /* butbp.c in Sources */,
 				C4077BE22009870400E5923C /* AKVariableDelay.mm in Sources */,
+				53359A88200E50A700509FEA /* ModalBar.cpp in Sources */,
 				C487B6081DD9234F00C56B59 /* Clarinet.cpp in Sources */,
 				C47048211E7A660A00D9906F /* rspline.c in Sources */,
 				C4077BB3200896C900E5923C /* AKPitchShifter.mm in Sources */,
@@ -5400,6 +5411,7 @@
 				53359A6A200E471E00509FEA /* ModString.cpp in Sources */,
 				C466DED3200A15880032D0A5 /* AKOscillatorAudioUnit.swift in Sources */,
 				C43ABE001E5BFD8A00165053 /* diode.c in Sources */,
+				53359A84200E507400509FEA /* BiQuad.cpp in Sources */,
 				FE52FEEF1CB70A8500A35B63 /* AKAUPresetBuilder.swift in Sources */,
 				C4F8C9241DCA8CE4001F38F2 /* tenv2.c in Sources */,
 				C49D696D1D1F1DE300BF018A /* AKFMOscillatorBank.swift in Sources */,
