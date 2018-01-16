@@ -149,7 +149,7 @@ public:
                 break;
                 
             case rateAddress:
-                rateRamper.setUIValue(clamp(value, 0.0f, 10.0f));
+                rateRamper.setUIValue(clamp(value, -10.0f, 10.0f));
                 break;
                 
             case volumeAddress:
