@@ -20,6 +20,7 @@ FOUNDATION_EXPORT const unsigned char AudioKitVersionString[];
 
 #import "AKAudioUnitBase.h"
 #import "AKGeneratorAudioUnitBase.h"
+#import "AKSoundpipeDSPBase.hpp"
 
 // Analysis
 #import "AKAmplitudeTrackerAudioUnit.h"
@@ -91,9 +92,9 @@ FOUNDATION_EXPORT const unsigned char AudioKitVersionString[];
 #import "AKOperationGeneratorAudioUnit.h"
 
 // Generators / Noise
-#import "AKBrownianNoiseAudioUnit.h"
-#import "AKPinkNoiseAudioUnit.h"
-#import "AKWhiteNoiseAudioUnit.h"
+#import "AKBrownianNoiseDSP.hpp"
+#import "AKPinkNoiseDSP.hpp"
+#import "AKWhiteNoiseDSP.hpp"
 
 // Generators / Oscillators
 #import "AKFMOscillatorDSP.hpp"
@@ -114,8 +115,8 @@ FOUNDATION_EXPORT const unsigned char AudioKitVersionString[];
 #import "AKFluteDSP.hpp"
 #import "AKMandolinAudioUnit.h"
 #import "AKMetalBarAudioUnit.h"
-#import "AKPluckedStringAudioUnit.h"
 #import "AKRhodesPianoAudioUnit.h"
+#import "AKPluckedStringDSP.hpp"
 #import "AKShakerAudioUnit.h"
 #import "AKTubularBellsAudioUnit.h"
 #import "AKVocalTractAudioUnit.h"

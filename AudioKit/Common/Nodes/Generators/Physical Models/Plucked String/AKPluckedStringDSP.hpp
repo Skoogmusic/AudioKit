@@ -1,5 +1,5 @@
 //
-//  AKFluteDSP.hpp
+//  AKPluckedStringDSP.hpp
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
@@ -10,53 +10,48 @@
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM(int64_t, AKFluteParameter) {
-    AKFluteParameterFrequency,
-    AKFluteParameterAmplitude,
-    AKFluteParameterRampTime
+typedef NS_ENUM(int64_t, AKPluckedStringParameter) {
+    AKPluckedStringParameterFrequency,
+    AKPluckedStringParameterAmplitude,
+    AKPluckedStringParameterRampTime
 };
 
 #import "AKLinearParameterRamp.hpp"  // have to put this here to get it included in umbrella header
 
 #ifndef __cplusplus
 
-void* createFluteDSP(int nChannels, double sampleRate);
+void* createPluckedStringDSP(int nChannels, double sampleRate);
 
 #else
 
-#import <AudioKit/AudioKit-Swift.h>
+#import "AKSoundpipeDSPBase.hpp"
 
-#include "Flute.h"
+class AKPluckedStringDSP : public AKSoundpipeDSPBase {
 
-class AKFluteDSP : public AKDSPBase {
-
-private:
+    sp_pluck *_pluck;
     float internalTrigger = 0;
-    stk::Flute *flute;
-
+private:
     AKLinearParameterRamp frequencyRamp;
     AKLinearParameterRamp amplitudeRamp;
-    AKLinearParameterRamp detuningOffsetRamp;
-    AKLinearParameterRamp detuningMultiplierRamp;
 
 public:
-    AKFluteDSP() {
-        frequencyRamp.setTarget(440, true);
+    AKPluckedStringDSP() {
+        frequencyRamp.setTarget(110, true);
         frequencyRamp.setDurationInSamples(10000);
-        amplitudeRamp.setTarget(1, true);
+        amplitudeRamp.setTarget(0.5, true);
         amplitudeRamp.setDurationInSamples(10000);
     }
 
     /** Uses the ParameterAddress as a key */
     void setParameter(uint64_t address, float value, bool immediate) override {
         switch (address) {
-            case AKFluteParameterFrequency:
+            case AKPluckedStringParameterFrequency:
                 frequencyRamp.setTarget(value, immediate);
                 break;
-            case AKFluteParameterAmplitude:
+            case AKPluckedStringParameterAmplitude:
                 amplitudeRamp.setTarget(value, immediate);
                 break;
-            case AKFluteParameterRampTime:
+            case AKPluckedStringParameterRampTime:
                 frequencyRamp.setRampTime(value, _sampleRate);
                 amplitudeRamp.setRampTime(value, _sampleRate);
                 break;
@@ -66,21 +61,28 @@ public:
     /** Uses the ParameterAddress as a key */
     float getParameter(uint64_t address) override {
         switch (address) {
-            case AKFluteParameterFrequency:
+            case AKPluckedStringParameterFrequency:
                 return frequencyRamp.getTarget();
-            case AKFluteParameterAmplitude:
+            case AKPluckedStringParameterAmplitude:
                 return amplitudeRamp.getTarget();
-            case AKFluteParameterRampTime:
+            case AKPluckedStringParameterRampTime:
                 return frequencyRamp.getRampTime(_sampleRate);
         }
         return 0;
     }
 
     void init(int _channels, double _sampleRate) override {
-        AKDSPBase::init(_channels, _sampleRate);
+        AKSoundpipeDSPBase::init(_channels, _sampleRate);
 
-        stk::Stk::setSampleRate(_sampleRate);
-        flute = new stk::Flute(100);
+        sp_pluck_create(&_pluck);
+        sp_pluck_init(_sp, _pluck, 110);
+        _pluck->freq = 110;
+        _pluck->amp = 0.5;
+    }
+
+    void destroy() {
+        sp_pluck_destroy(&_pluck);
+        AKSoundpipeDSPBase::destroy();
     }
 
     void trigger() override {
@@ -92,10 +94,6 @@ public:
         frequencyRamp.setTarget(freq, immediate);
         amplitudeRamp.setTarget(amp, immediate);
         trigger();
-    }
-
-    void destroy() {
-        delete flute;
     }
 
     void process(AUAudioFrameCount frameCount, AUAudioFrameCount bufferOffset) override {
@@ -110,18 +108,19 @@ public:
             }
             float frequency = frequencyRamp.getValue();
             float amplitude = amplitudeRamp.getValue();
+            _pluck->freq = frequency;
+            _pluck->amp = amplitude;
 
             for (int channel = 0; channel < _nChannels; ++channel) {
                 float* out = (float *)_outBufferListPtr->mBuffers[channel].mData + frameOffset;
 
                 if (_playing) {
-                    if (internalTrigger == 1) {
-                        flute->noteOn(frequency, amplitude);
+                    if (channel == 0) {
+                        sp_pluck_compute(_sp, _pluck, &internalTrigger, out);
                     }
                 } else {
                     *out = 0.0;
                 }
-                *out = flute->tick();
             }
         }
         if (internalTrigger == 1) {
@@ -131,4 +130,3 @@ public:
 };
 
 #endif
-
