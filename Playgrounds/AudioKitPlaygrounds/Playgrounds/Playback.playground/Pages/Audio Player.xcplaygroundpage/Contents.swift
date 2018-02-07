@@ -68,7 +68,7 @@ class LiveView: AKLiveViewController {
         ) { sliderValue in
             player.fadeInTime = sliderValue
         }
-        addView(fadeInSlider)
+        addView(fadeInSlider!)
 
         fadeOutSlider = AKSlider(property: "Fade Out",
                                  value: player.fadeOutTime,
@@ -77,7 +77,7 @@ class LiveView: AKLiveViewController {
         ) { sliderValue in
             player.fadeOutTime = sliderValue
         }
-        addView(fadeOutSlider)
+        addView(fadeOutSlider!)
 
         inPositionSlider = AKSlider(property: "In Position",
                                     value: player.startTime,
@@ -86,7 +86,7 @@ class LiveView: AKLiveViewController {
         ) { sliderValue in
             player.startTime = sliderValue
         }
-        addView(inPositionSlider)
+        addView(inPositionSlider!)
 
         outPositionSlider = AKSlider(property: "Out Position",
                                      value: player.endTime,
@@ -95,7 +95,7 @@ class LiveView: AKLiveViewController {
         ) { sliderValue in
             player.endTime = sliderValue
         }
-        addView(outPositionSlider)
+        addView(outPositionSlider!)
 
         playingPositionSlider = AKSlider(property: "Position",
                                          value: player.playhead,
@@ -104,7 +104,7 @@ class LiveView: AKLiveViewController {
         ) { _ in
             // Can't do player.playhead = sliderValue
         }
-        addView(playingPositionSlider)
+        addView(playingPositionSlider!)
     }
 }
 
