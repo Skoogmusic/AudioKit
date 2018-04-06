@@ -3,7 +3,7 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2018 AudioKit. All rights reserved.
 //
 
 #import "AKConvolutionAudioUnit.h"
@@ -31,10 +31,10 @@ standardKernelPassthroughs()
 
 - (void)createParameters {
     standardSetup(Convolution)
-    
+
     // Create the parameter tree.
     _parameterTree = [AUParameterTree createTreeWithChildren:@[]];
-    
+
     parameterTreeBlock(Convolution)
 }
 

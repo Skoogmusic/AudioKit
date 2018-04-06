@@ -2,8 +2,8 @@
 //  AKMetronome.swift
 //  AudioKit
 //
-//  Created by Aurelius Prochazka on 6/4/17.
-//  Copyright © 2017 AudioKit. All rights reserved.
+//  Created by Aurelius Prochazka, revision history on GitHub.
+//  Copyright © 2018 AudioKit. All rights reserved.
 //
 
 /// Metronome Callback Ugen
@@ -47,7 +47,7 @@ public class AKMetronome: AKOperationGenerator {
     }
 
     /// Initialize the metronome
-    public init() {
+    @objc public init() {
 
         let sporth = "(0 p) bpm2rate metro (_triggerFunction fe) dup 0.001 0.01 0.001 tenvx swap (1 p) 0 count dup 2 pset 0 eq (4 p) (3 p) branch 0.4 sine * dup"
         callback = { return }

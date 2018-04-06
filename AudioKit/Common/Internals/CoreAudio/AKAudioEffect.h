@@ -2,12 +2,11 @@
 //  AKAudioEffect.h
 //  AudioKit
 //
-//  Created by Andrew Voelkel on 8/28/17.
-//  Copyright © 2017 AudioKit. All rights reserved.
+//  Created by Andrew Voelkel, revision history on Github.
+//  Copyright © 2018 AudioKit. All rights reserved.
 //
 
-#ifndef AKAudioEffect_h
-#define AKAudioEffect_h
+#pragma once
 
 #import <AVFoundation/AVFoundation.h>
 #import "AKAudioUnit.h"
@@ -19,6 +18,3 @@
 
 @end
 
-
-
-#endif /* AKAudioEffect_h */

@@ -2,8 +2,8 @@
 //  MIDISenderVC.swift
 //  MIDIUtility
 //
-//  Created by Jeff Cooper on 9/11/17.
-//  Copyright © 2017 AudioKit. All rights reserved.
+//  Created by Jeff Cooper, revision history on Githbub.
+//  Copyright © 2018 AudioKit. All rights reserved.
 //
 
 import Foundation
@@ -11,7 +11,7 @@ import AudioKit
 import UIKit
 
 class MIDISenderVC: UIViewController {
-    let midiOut = AKMIDI()
+    let midiOut = AudioKit.midi
 
     @IBOutlet var noteNumField: UITextField!
     @IBOutlet var noteVelField: UITextField!

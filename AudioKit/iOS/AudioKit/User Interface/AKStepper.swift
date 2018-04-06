@@ -2,8 +2,8 @@
 //  AKStepper.swift
 //  AudioKit for iOS
 //
-//  Created by Aurelius Prochazka on 3/11/17.
-//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
+//  Created by Aurelius Prochazka, revision history on GitHub.
+//  Copyright © 2018 AudioKit. All rights reserved.
 //
 
 import AudioKit
@@ -44,10 +44,10 @@ open class AKStepper: UIView {
     }
 
     /// Initialize the stepper view
-    public init(text: String,
-                value: MIDIByte,
-                frame: CGRect = CGRect(x: 0, y: 0, width: 440, height: 60),
-                callback: @escaping (MIDIByte) -> Void) {
+    @objc public init(text: String,
+                      value: MIDIByte,
+                      frame: CGRect = CGRect(x: 0, y: 0, width: 440, height: 60),
+                      callback: @escaping (MIDIByte) -> Void) {
         self.callback = callback
         self.value = value
         self.text = text

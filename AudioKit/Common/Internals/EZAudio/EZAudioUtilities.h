@@ -2,7 +2,7 @@
 //  EZAudioUtilities.h
 //  EZAudio
 //
-//  Created by Syed Haris Ali on 6/23/15.
+//  Created by Syed Haris Ali, revision history on Githbub.
 //  Copyright (c) 2015 Syed Haris Ali. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -262,7 +262,7 @@ typedef NSRect EZRect;
 //------------------------------------------------------------------------------
 
 /**
- Checks an AudioStreamBasicDescription to see if it is a linear PCM format (uncompressed, 
+ Checks an AudioStreamBasicDescription to see if it is a linear PCM format (uncompressed,
  1 frame per packet)
  @param asbd A valid AudioStreamBasicDescription
  @return A BOOL indicating whether or not the AudioStreamBasicDescription is linear PCM.

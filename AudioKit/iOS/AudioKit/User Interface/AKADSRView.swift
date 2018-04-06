@@ -3,7 +3,7 @@
 //  AudioKit for iOS
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2018 AudioKit. All rights reserved.
 //
 
 import UIKit
@@ -102,7 +102,7 @@ import UIKit
     // MARK: - Initialization
 
     /// Initialize the view, usually with a callback
-    public init(callback: ADSRCallback? = nil) {
+    @objc public init(callback: ADSRCallback? = nil) {
         self.callback = callback
         super.init(frame: CGRect(x: 0, y: 0, width: 440, height: 150))
         backgroundColor = .clear

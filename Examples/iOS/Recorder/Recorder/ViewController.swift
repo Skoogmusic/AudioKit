@@ -3,7 +3,7 @@
 //  Recorder
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright © 2017 AudioKit. All rights reserved.
+//  Copyright © 2018 AudioKit. All rights reserved.
 //
 
 import AudioKit
@@ -14,7 +14,7 @@ class ViewController: UIViewController {
 
     var micMixer: AKMixer!
     var recorder: AKNodeRecorder!
-    var player: AKAudioPlayer!
+    var player: AKPlayer!
     var tape: AKAudioFile!
     var micBooster: AKBooster!
     var moogLadder: AKMoogLadder!
@@ -26,6 +26,7 @@ class ViewController: UIViewController {
     var state = State.readyToRecord
 
     @IBOutlet private var inputPlot: AKNodeOutputPlot!
+    @IBOutlet private var outputPlot: AKOutputWaveformPlot!
     @IBOutlet private weak var infoLabel: UILabel!
     @IBOutlet private weak var resetButton: UIButton!
     @IBOutlet private weak var mainButton: UIButton!
@@ -71,9 +72,9 @@ class ViewController: UIViewController {
         micBooster.gain = 0
         recorder = try? AKNodeRecorder(node: micMixer)
         if let file = recorder.audioFile {
-            player = try? AKAudioPlayer(file: file)
+            player = AKPlayer(audioFile: file)
         }
-        player.looping = true
+        player.isLooping = true
         player.completionHandler = playingEnded
 
         moogLadder = AKMoogLadder(player)
@@ -81,7 +82,11 @@ class ViewController: UIViewController {
         mainMixer = AKMixer(moogLadder, micBooster)
 
         AudioKit.output = mainMixer
-        AudioKit.start()
+        do {
+            try AudioKit.start()
+        } catch {
+            AKLog("AudioKit did not start!")
+        }
 
         setupUIForRecording()
     }
@@ -113,16 +118,14 @@ class ViewController: UIViewController {
         case .recording :
             // Microphone monitoring is muted
             micBooster.gain = 0
-            do {
-                try player.reloadFile()
-            } catch { print("Errored reloading.") }
+            tape = recorder.audioFile!
+            player.load(audioFile: tape)
 
-            let recordedDuration = player != nil ? player.audioFile.duration  : 0
-            if recordedDuration > 0.0 {
+            if let _ = player.audioFile?.duration {
                 recorder.stop()
-                player.audioFile.exportAsynchronously(name: "TempTestFile.m4a",
-                                                      baseDir: .documents,
-                                                      exportFormat: .m4a) {_, exportError in
+                tape.exportAsynchronously(name: "TempTestFile.m4a",
+                                          baseDir: .documents,
+                                          exportFormat: .m4a) {_, exportError in
                     if let error = exportError {
                         print("Export Failed \(error)")
                     } else {
@@ -163,8 +166,8 @@ class ViewController: UIViewController {
     }
 
     func setupUIForPlaying () {
-        let recordedDuration = player != nil ? player.audioFile.duration  : 0
-        infoLabel.text = "Recorded: \(String(format: "%0.1f", recordedDuration)) seconds"
+        let recordedDuration = player != nil ? player.audioFile?.duration  : 0
+        infoLabel.text = "Recorded: \(String(format: "%0.1f", recordedDuration!)) seconds"
         mainButton.setTitle("Play", for: .normal)
         state = .readyToPlay
         resetButton.isHidden = false
@@ -187,11 +190,11 @@ class ViewController: UIViewController {
 
     @IBAction func loopButtonTouched(sender: UIButton) {
 
-        if player.looping {
-            player.looping = false
+        if player.isLooping {
+            player.isLooping = false
             sender.setTitle("Loop is Off", for: .normal)
         } else {
-            player.looping = true
+            player.isLooping = true
             sender.setTitle("Loop is On", for: .normal)
 
         }

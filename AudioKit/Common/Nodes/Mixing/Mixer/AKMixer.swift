@@ -3,7 +3,7 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2018 AudioKit. All rights reserved.
 //
 
 /// AudioKit version of Apple's Mixer Node
@@ -37,7 +37,7 @@ open class AKMixer: AKNode, AKToggleable, AKInput {
     ///
     //swiftlint:disable force_unwrapping
     public convenience init(_ inputs: AKNode?...) {
-        self.init(inputs.filter { $0 != nil }.map { $0! })
+        self.init(inputs.compactMap { $0 })
     }
     //swiftlint:enable force_unwrapping
 

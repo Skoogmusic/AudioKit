@@ -3,35 +3,37 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2018 AudioKit. All rights reserved.
 //
 
+#ifdef __cplusplus
 #pragma once
 
 #import "AKBankDSPKernel.hpp"
 
-enum {
-    standardBankEnumElements(),
-    pulseWidthAddress = numberOfBankEnumElements
-};
-
 class AKPWMOscillatorBankDSPKernel : public AKBankDSPKernel, public AKOutputBuffered {
 public:
     // MARK: Types
+    
+    enum {
+        standardBankEnumElements(),
+        pulseWidthAddress = numberOfBankEnumElements
+    };
+    
     struct NoteState {
         NoteState* next;
         NoteState* prev;
         AKPWMOscillatorBankDSPKernel* kernel;
-        
+
         enum { stageOff, stageOn, stageRelease };
         int stage = stageOff;
-        
+
         float internalGate = 0;
         float amp = 0;
-        
+
         sp_adsr *adsr;
         sp_blsquare *blsquare;
-        
+
         void init() {
             sp_adsr_create(&adsr);
             sp_adsr_init(kernel->sp, adsr);
@@ -46,21 +48,21 @@ public:
             stage = stageOff;
             amp = 0;
         }
-        
+
         // linked list management
         void remove() {
             if (prev) prev->next = next;
             else kernel->playingNotes = next;
-            
+
             if (next) next->prev = prev;
-            
+
             //prev = next = nullptr; Had to remove due to a click, potentially bad
-            
+
             --kernel->playingNotesCount;
 
             sp_blsquare_destroy(&blsquare);
         }
-        
+
         void add() {
             init();
             prev = nullptr;
@@ -69,11 +71,11 @@ public:
             kernel->playingNotes = this;
             ++kernel->playingNotesCount;
         }
-        
+
         void noteOn(int noteNumber, int velocity) {
             noteOn(noteNumber, velocity, (float)noteToHz(noteNumber));
         }
-        
+
         void noteOn(int noteNumber, int velocity, float frequency) {
             if (velocity == 0) {
                 if (stage == stageOn) {
@@ -88,8 +90,8 @@ public:
                 internalGate = 1;
             }
         }
-        
-        
+
+
         void run(int frameCount, float* outL, float* outR)
         {
             float originalFrequency = *blsquare->freq;
@@ -98,12 +100,12 @@ public:
             float bentFrequency = *blsquare->freq;
 
             *blsquare->width = kernel->pulseWidth;
-            
+
             adsr->atk = (float)kernel->attackDuration;
             adsr->dec = (float)kernel->decayDuration;
             adsr->sus = (float)kernel->sustainLevel;
             adsr->rel = (float)kernel->releaseDuration;
-            
+
             for (int frameIndex = 0; frameIndex < frameCount; ++frameIndex) {
                 float x = 0;
                 float depth = kernel->vibratoDepth / 12.0;
@@ -113,7 +115,7 @@ public:
                 sp_blsquare_compute(kernel->sp, blsquare, nil, &x);
                 *outL++ += amp * x;
                 *outR++ += amp * x;
-                
+
             }
             *blsquare->freq = originalFrequency;
             if (stage == stageRelease && amp < 0.00001) {
@@ -121,7 +123,7 @@ public:
                 remove();
             }
         }
-        
+
     };
 
     // MARK: Member Functions
@@ -146,9 +148,9 @@ public:
         pulseWidthRamper.reset();
         AKBankDSPKernel::reset();
     }
-    
+
     standardBankKernelFunctions()
-    
+
     void setPulseWidth(float value) {
         pulseWidth = clamp(value, 0.0f, 1.0f);
         pulseWidthRamper.setImmediate(pulseWidth);
@@ -156,7 +158,7 @@ public:
 
     void setParameter(AUParameterAddress address, AUValue value) {
         switch (address) {
-                
+
             case pulseWidthAddress:
                 pulseWidthRamper.setUIValue(clamp(value, 0.0f, 1.0f));
                 break;
@@ -175,14 +177,14 @@ public:
 
     void startRamp(AUParameterAddress address, AUValue value, AUAudioFrameCount duration) override {
         switch (address) {
-                
+
             case pulseWidthAddress:
                 pulseWidthRamper.startRamp(clamp(value, 0.0f, 1.0f), duration);
                 break;
                 standardBankStartRamps()
         }
     }
-    
+
     standardHandleMIDI()
 
     void process(AUAudioFrameCount frameCount, AUAudioFrameCount bufferOffset) override {
@@ -215,7 +217,9 @@ private:
 
 public:
     NoteState* playingNotes = nullptr;
-    
+
     ParameterRamper pulseWidthRamper = 0.5;
 };
+
+#endif
 

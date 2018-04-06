@@ -3,7 +3,7 @@
 //  AudioKit for iOS
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2018 AudioKit. All rights reserved.
 //
 
 /// This is primarily for the telephone page in the Synthesis playground
@@ -55,8 +55,8 @@ open class AKTelephoneView: UIView {
     }
 
     /// Initialize the telephone view
-    public init(frame: CGRect = CGRect(x: 0, y: 0, width: 440, height: 782),
-                callback: @escaping (String, String) -> Void) {
+    @objc public init(frame: CGRect = CGRect(x: 0, y: 0, width: 440, height: 782),
+                      callback: @escaping (String, String) -> Void) {
         self.callback = callback
         super.init(frame: frame)
     }

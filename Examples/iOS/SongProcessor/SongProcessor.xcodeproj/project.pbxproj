@@ -10,7 +10,6 @@
 		C40244491DB56A0500617B38 /* BitCrusherViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40244481DB56A0500617B38 /* BitCrusherViewController.swift */; };
 		C42C1F001D23B0550020D550 /* SongExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C42C1EFF1D23B0550020D550 /* SongExporter.swift */; };
 		C4981E171DACC8CB007C8E7A /* AudioKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C4981E151DACC8BF007C8E7A /* AudioKit.framework */; };
-		C4981E181DACC8CB007C8E7A /* AudioKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C4981E151DACC8BF007C8E7A /* AudioKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C4CB57541D1AFB1500479598 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CB57531D1AFB1500479598 /* AppDelegate.swift */; };
 		C4CB57591D1AFB1500479598 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C4CB57571D1AFB1500479598 /* Main.storyboard */; };
 		C4CB575B1D1AFB1500479598 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C4CB575A1D1AFB1500479598 /* Assets.xcassets */; };
@@ -33,7 +32,6 @@
 		C4E2D0661E95060F004D2557 /* mixloop.wav in Resources */ = {isa = PBXBuildFile; fileRef = C4E2D0611E95060F004D2557 /* mixloop.wav */; };
 		C4FB84BA1DB563D800B68B3D /* PitchShifterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4FB84B91DB563D800B68B3D /* PitchShifterViewController.swift */; };
 		EA10E1561F4F94BD003F0CA9 /* AudioKitUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA10E1551F4F94BD003F0CA9 /* AudioKitUI.framework */; };
-		EA10E1581F4F94C3003F0CA9 /* AudioKitUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EA10E1551F4F94BD003F0CA9 /* AudioKitUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -43,8 +41,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				EA10E1581F4F94C3003F0CA9 /* AudioKitUI.framework in Embed Frameworks */,
-				C4981E181DACC8CB007C8E7A /* AudioKit.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -214,7 +210,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0730;
-				LastUpgradeCheck = 0900;
+				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = AudioKit;
 				TargetAttributes = {
 					C4CB574F1D1AFB1500479598 = {
@@ -325,12 +321,14 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -381,12 +379,14 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -433,6 +433,7 @@
 				INFOPLIST_FILE = SongProcessor/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_LDFLAGS = "-lstdc++";
 				PRODUCT_BUNDLE_IDENTIFIER = io.audiokit.SongProcessor;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -456,6 +457,7 @@
 				INFOPLIST_FILE = SongProcessor/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_LDFLAGS = "-lstdc++";
 				PRODUCT_BUNDLE_IDENTIFIER = io.audiokit.SongProcessor;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;

@@ -7,30 +7,9 @@ import AudioKit
 import AudioKitUI
 
 let fmBank = AKFMOscillatorBank()
-var delay = AKDelay()
-var delayMixer: AKDryWetMixer
-var masterVolume = AKMixer()
-var filter: AKMoogLadder
-var trackedAmp: AKAmplitudeTracker
-var tick = 0
 
-fmBank.attackDuration = 0.01
-fmBank.decayDuration = 0.01
-fmBank.sustainLevel = 0.3
-fmBank.releaseDuration = 0.01
-fmBank.modulatingMultiplier = 4
-fmBank.modulationIndex = 10
-
-filter = AKMoogLadder(fmBank)
-delay = AKDelay(filter)
-delay.lowPassCutoff = 8000
-delay.time = 0.4
-delay.feedback = 0.4
-delayMixer = AKDryWetMixer(filter, delay, balance: 0.4)
-masterVolume = AKMixer(delayMixer)
-trackedAmp = AKAmplitudeTracker(masterVolume)
-AudioKit.output = trackedAmp
-AudioKit.start()
+AudioKit.output = fmBank
+try AudioKit.start()
 
 class LiveView: AKLiveViewController, AKKeyboardDelegate {
 
@@ -48,7 +27,7 @@ class LiveView: AKLiveViewController, AKKeyboardDelegate {
 
         addView(AKSlider(property: "Modulating Multiplier",
                          value: fmBank.modulatingMultiplier,
-                         range: 0 ... 4
+                         range: 0 ... 2
         ) { multiplier in
             fmBank.modulatingMultiplier = multiplier
         })
@@ -90,20 +69,10 @@ class LiveView: AKLiveViewController, AKKeyboardDelegate {
 
         addView(AKSlider(property: "Vibrato Rate",
                          value: fmBank.vibratoRate,
-                         range: 0 ... 1,
-                         format: "%.2f"
+                         range: 0 ... 10,
+                         format: "%0.2f Hz"
         ) { sliderValue in
-            
-            tick = tick + 1
-            
-            if (tick <= 20){
-                fmBank.modulatingMultiplier = 0.5 + Double(tick) * 0.025
-            }
-            else {
-                fmBank.modulatingMultiplier = 1.0 + 0.05 * sliderValue * sin(Double(tick) * 0.14 * sliderValue * Double.pi)
-            }
-            filter.cutoffFrequency = 20 + (sliderValue * (10000))
-            filter.resonance = 0.4 + (sliderValue * 0.3)
+            fmBank.vibratoRate = sliderValue
         })
 
         keyboard = AKKeyboardView(width: 440, height: 100)
@@ -122,12 +91,10 @@ class LiveView: AKLiveViewController, AKKeyboardDelegate {
     }
 
     func noteOn(note: MIDINoteNumber) {
-         tick = 0
         fmBank.play(noteNumber: note, velocity: 80)
     }
 
     func noteOff(note: MIDINoteNumber) {
-         tick = 0
         fmBank.stop(noteNumber: note)
     }
 }

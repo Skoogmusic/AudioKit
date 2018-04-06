@@ -3,10 +3,10 @@
 //  AudioKit for iOS
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2018 AudioKit. All rights reserved.
 //
 
-/// Preset view scoller
+/// Preset view scroller
 @IBDesignable open class AKPresetLoaderView: UIView {
     // Default corner radius
     static var standardCornerRadius: CGFloat = 3.0
@@ -59,12 +59,12 @@
     }
 
     /// Initialize the preset loader view
-    public init(presets: [String],
-                frame: CGRect = CGRect(x: 0, y: 0, width: 440, height: 60),
-                font: UIFont = UIFont.boldSystemFont(ofSize: 24),
-                fontSize: CGFloat = 24,
-                initialIndex: Int = 0,
-                callback: @escaping (String) -> Void) {
+    @objc public init(presets: [String],
+                      frame: CGRect = CGRect(x: 0, y: 0, width: 440, height: 60),
+                      font: UIFont = UIFont.boldSystemFont(ofSize: 24),
+                      fontSize: CGFloat = 24,
+                      initialIndex: Int = 0,
+                      callback: @escaping (String) -> Void) {
         self.callback = callback
         self.presets = presets
         self.font = font

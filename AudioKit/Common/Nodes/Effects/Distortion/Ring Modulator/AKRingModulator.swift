@@ -3,7 +3,7 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2018 AudioKit. All rights reserved.
 //
 
 /// AudioKit version of Apple's Ring Modulator from the Distortion Audio Unit
@@ -63,7 +63,7 @@ open class AKRingModulator: AKNode, AKToggleable, AUEffect, AKInput {
     ///   - balance: Balance (Normalized Value) ranges from 0 to 1 (Default: 0.5)
     ///   - mix: Mix (Normalized Value) ranges from 0 to 1 (Default: 1)
     ///
-    public init(
+    @objc public init(
         _ input: AKNode? = nil,
         frequency1: Double = 100,
         frequency2: Double = 100,

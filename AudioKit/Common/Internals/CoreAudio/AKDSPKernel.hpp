@@ -2,30 +2,31 @@
 //  AKDSPKernel.hpp
 //  AudioKit
 //
-//  Created by Aurelius Prochazka on 7/1/17.
-//  Copyright © 2017 AudioKit. All rights reserved.
+//  Created by Aurelius Prochazka, revision history on GitHub.
+//  Copyright © 2018 AudioKit. All rights reserved.
 //
 
+#ifdef __cplusplus
 #pragma once
 
 #import "DSPKernel.hpp"
+#import "ParameterRamper.hpp"
 
-class AKDSPKernel: public DSPKernel {
+class AKDSPKernel : public DSPKernel {
 protected:
-    int channels = AKSettings.numberOfChannels;
-    float sampleRate = AKSettings.sampleRate;
+    int channels;
+    float sampleRate;
 public:
-    AKDSPKernel(int _channels, float _sampleRate):
-    channels(_channels), sampleRate(_sampleRate) { }
-    
-    AKDSPKernel(): AKDSPKernel(AKSettings.numberOfChannels, AKSettings.sampleRate) { }
-    
+    AKDSPKernel(int _channels, float _sampleRate) : channels(_channels), sampleRate(_sampleRate) { }
+
+    AKDSPKernel();
+
     virtual ~AKDSPKernel() { }
     //
-    // todo: these should be constructors but the original samples
+    // TODO: these should be constructors but the original samples
     // had init methods
     //
-    
+
     virtual void init(int _channels, double _sampleRate) {
         channels = _channels;
         sampleRate = _sampleRate;
@@ -35,13 +36,13 @@ public:
 class AKParametricKernel {
 protected:
     virtual ParameterRamper& getRamper(AUParameterAddress address) = 0;
-    
+
 public:
-    
+
     AUValue getParameter(AUParameterAddress address) {
         return getRamper(address).getUIValue();
     }
-    
+
     void setParameter(AUParameterAddress address, AUValue value) {
         return getRamper(address).setUIValue(value);
     }
@@ -67,7 +68,6 @@ public:
     void setBuffers(AudioBufferList *inBufferList, AudioBufferList *outBufferList) {
         AKOutputBuffered::setBuffer(outBufferList);
         inBufferListPtr = inBufferList;
-        
     }
 };
 
@@ -77,8 +77,13 @@ public:
     void stop() {}
     bool started;
     bool resetted;
-    
+
 };
 
+static inline double noteToHz(int noteNumber)
+{
+    return 440. * exp2((noteNumber - 69)/12.);
+}
 
+#endif
 

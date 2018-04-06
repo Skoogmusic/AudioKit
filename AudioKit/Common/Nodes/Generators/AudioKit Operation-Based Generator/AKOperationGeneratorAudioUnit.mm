@@ -3,7 +3,7 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2018 AudioKit. All rights reserved.
 //
 
 #import "AKOperationGeneratorAudioUnit.h"
@@ -17,7 +17,7 @@
 @implementation AKOperationGeneratorAudioUnit {
     // C++ members need to be ivars; they would be copied on access if they were properties.
     AKOperationGeneratorDSPKernel _kernel;
-    
+
     BufferedOutputBus _outputBusBuffer;
 }
 @synthesize parameterTree = _parameterTree;

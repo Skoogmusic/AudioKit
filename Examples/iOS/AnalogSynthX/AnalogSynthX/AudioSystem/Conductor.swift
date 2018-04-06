@@ -3,7 +3,7 @@
 //  AnalogSynthX
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright © 2016 AudioKit. All rights reserved.
+//  Copyright © 2018 AudioKit. All rights reserved.
 //
 
 import AudioKit
@@ -47,10 +47,14 @@ class Conductor: AKMIDIListener {
         // AKSettings.playbackWhileMuted = true
 
         AudioKit.output = reverbMixer
-        AudioKit.start()
+        do {
+            try AudioKit.start()
+        } catch {
+            AKLog("AudioKit did not start!")
+        }
         Audiobus.start()
 
-        let midi = AKMIDI()
+        let midi = AudioKit.midi
         midi.createVirtualPorts()
         midi.openInput("Session 1")
         midi.addListener(self)

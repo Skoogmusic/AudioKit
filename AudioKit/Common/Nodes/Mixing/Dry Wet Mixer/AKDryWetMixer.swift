@@ -3,7 +3,7 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2018 AudioKit. All rights reserved.
 //
 
 /// Balanceable Mix between two signals, usually used for a dry signal and wet signal
@@ -33,7 +33,7 @@ open class AKDryWetMixer: AKNode, AKInput {
     ///   - wet: Wet Input (or just input 2)
     ///   - balance: Balance Point (0 = all dry, 1 = all wet)
     ///
-    public init(_ dry: AKNode? = nil, _ wet: AKNode? = nil, balance: Double = 0.5) {
+    @objc public init(_ dry: AKNode? = nil, _ wet: AKNode? = nil, balance: Double = 0.5) {
 
         self.balance = balance
 

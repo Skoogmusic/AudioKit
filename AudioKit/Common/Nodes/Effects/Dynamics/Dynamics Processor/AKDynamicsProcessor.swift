@@ -3,7 +3,7 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2018 AudioKit. All rights reserved.
 //
 
 /// AudioKit version of Apple's DynamicsProcessor Audio Unit
@@ -87,17 +87,17 @@ open class AKDynamicsProcessor: AKNode, AKToggleable, AUEffect, AKInput {
         return au[kDynamicsProcessorParam_OutputAmplitude]
     }
 
-    /// Dry/Wet Mix (Default 100)
-    @objc open dynamic var dryWetMix: Double = 100 {
+    /// Dry/Wet Mix (Default 1 Fully Wet)
+    @objc open dynamic var dryWetMix: Double = 1 {
         didSet {
-            dryWetMix = (0...100).clamp(dryWetMix)
+            dryWetMix = (0...1).clamp(dryWetMix)
 
-            inputGain?.volume = 1 - dryWetMix / 100
-            effectGain?.volume = dryWetMix / 100
+            inputGain?.volume = 1 - dryWetMix
+            effectGain?.volume = dryWetMix
         }
     }
 
-    fileprivate var lastKnownMix: Double = 100
+    fileprivate var lastKnownMix: Double = 1
     fileprivate var inputGain: AKMixer?
     fileprivate var effectGain: AKMixer?
     fileprivate var inputMixer = AKMixer()
@@ -123,7 +123,7 @@ open class AKDynamicsProcessor: AKNode, AKToggleable, AUEffect, AKInput {
     ///   - inputAmplitude: Input Amplitude (dB) ranges from -40 to 40 (Default: 0)
     ///   - outputAmplitude: Output Amplitude (dB) ranges from -40 to 40 (Default: 0)
     ///
-    public init(
+    @objc public init(
         _ input: AKNode? = nil,
         threshold: Double = -20,
         headRoom: Double = 5,
@@ -204,7 +204,10 @@ open class AKDynamicsProcessor: AKNode, AKToggleable, AUEffect, AKInput {
     override open func disconnect() {
         stop()
 
-        AudioKit.detach(nodes: [inputMixer.avAudioNode, inputGain!.avAudioNode, effectGain!.avAudioNode, mixer.avAudioNode])
+        AudioKit.detach(nodes: [inputMixer.avAudioNode,
+                                inputGain!.avAudioNode,
+                                effectGain!.avAudioNode,
+                                mixer.avAudioNode])
         AudioKit.engine.detach(self.internalEffect)
     }
 }

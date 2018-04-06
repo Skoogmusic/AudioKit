@@ -2,8 +2,8 @@
 //  Conductor.swift
 //  SequencerDemo
 //
-//  Created by Kanstantsin Linou on 6/30/16.
-//  Copyright © 2016 AudioKit. All rights reserved.
+//  Created by Kanstantsin Linou, revision history on Githbub.
+//  Copyright © 2018 AudioKit. All rights reserved.
 //
 
 import AudioKit
@@ -61,7 +61,11 @@ class Conductor {
         [verb, bassDrum, snareDrum, snareGhost, snareVerb] >>> mixer
 
         AudioKit.output = pumper
-        AudioKit.start()
+        do {
+            try AudioKit.start()
+        } catch {
+            AKLog("AudioKit did not start!")
+        }
     }
 
     func setupTracks() {

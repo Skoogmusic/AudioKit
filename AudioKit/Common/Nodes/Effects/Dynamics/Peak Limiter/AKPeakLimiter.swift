@@ -3,7 +3,7 @@
 //  AudioKit
 //
 //  Created by Aurelius Prochazka, revision history on Github.
-//  Copyright © 2017 Aurelius Prochazka. All rights reserved.
+//  Copyright © 2018 AudioKit. All rights reserved.
 //
 
 /// AudioKit version of Apple's PeakLimiter Audio Unit
@@ -40,16 +40,16 @@ open class AKPeakLimiter: AKNode, AKToggleable, AUEffect, AKInput {
         }
     }
 
-    /// Dry/Wet Mix (Default 100)
-    @objc open dynamic var dryWetMix: Double = 100 {
+    /// Dry/Wet Mix (Default 1)
+    @objc open dynamic var dryWetMix: Double = 1 {
         didSet {
-            dryWetMix = (0...100).clamp(dryWetMix)
-            inputGain?.volume = 1 - dryWetMix / 100
-            effectGain?.volume = dryWetMix / 100
+            dryWetMix = (0...1).clamp(dryWetMix)
+            inputGain?.volume = 1 - dryWetMix
+            effectGain?.volume = dryWetMix
         }
     }
 
-    private var lastKnownMix: Double = 100
+    private var lastKnownMix: Double = 1
     private var inputGain: AKMixer?
     private var effectGain: AKMixer?
     private var inputMixer = AKMixer()
@@ -68,7 +68,7 @@ open class AKPeakLimiter: AKNode, AKToggleable, AUEffect, AKInput {
     ///   - decayTime: Decay Time (Secs) ranges from 0.001 to 0.06 (Default: 0.024)
     ///   - preGain: Pre Gain (dB) ranges from -40 to 40 (Default: 0)
     ///
-    public init(
+    @objc public init(
         _ input: AKNode? = nil,
         attackTime: Double = 0.012,
         decayTime: Double = 0.024,
