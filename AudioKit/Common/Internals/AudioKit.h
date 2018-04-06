@@ -113,6 +113,7 @@ FOUNDATION_EXPORT const unsigned char AudioKitVersionString[];
 #import "AKMorphingOscillatorBankDSPKernel.hpp"
 #import "AKOscillatorDSP.hpp"
 #import "AKOscillatorBankAudioUnit.h"
+#import "AKFMOscillatorBank2AudioUnit.h"    // Skoog custom
 #import "AKPhaseDistortionOscillatorDSP.hpp"
 #import "AKPhaseDistortionOscillatorBankAudioUnit.h"
 #import "AKPWMOscillatorDSP.hpp"
@@ -130,6 +131,9 @@ FOUNDATION_EXPORT const unsigned char AudioKitVersionString[];
 #import "AKShakerAudioUnit.h"
 #import "AKTubularBellsAudioUnit.h"
 #import "AKVocalTractDSP.hpp"
+#import "MogoInstrumentAudioUnit.h"     // Skoog custom
+#import "AKFluteInstrumentAudioUnit.h"  // Skoog custom
+#import "StringInstrumentAudioUnit.h"   // Skoog custom
 
 // Mixing
 #import "AKBalancerAudioUnit.h"
