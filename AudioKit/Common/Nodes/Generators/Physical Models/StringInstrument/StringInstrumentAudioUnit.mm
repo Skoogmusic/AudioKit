@@ -14,6 +14,8 @@
 
 #import <AudioKit/AudioKit-Swift.h>
 
+#include "mand_raw.h"
+
 @interface StringInstrumentAudioUnit()
 
 @property AUAudioUnitBus *outputBus;
@@ -151,7 +153,7 @@
     };
 
     self.maximumFramesToRender = 512;
-
+    
     return self;
 }
 
@@ -177,6 +179,23 @@
         return NO;
     }
     _inputBus.allocateRenderResources(self.maximumFramesToRender);
+    
+    // Create temporary raw files
+    NSError *error = nil;
+    NSURL *directoryURL = [NSURL fileURLWithPath:[NSTemporaryDirectory()
+                                                  stringByAppendingPathComponent:[[NSProcessInfo processInfo] globallyUniqueString]]
+                                     isDirectory:YES];
+    NSFileManager *manager = [NSFileManager defaultManager];
+    if ([manager createDirectoryAtURL:directoryURL withIntermediateDirectories:YES attributes:nil error:&error] == YES) {
+        NSURL *pluckURL = [directoryURL URLByAppendingPathComponent:@"Plucking_a_guitar_string_with_a_buzz_5b.raw"];
+        if ([manager fileExistsAtPath:pluckURL.path] == NO) { // Create files once
+            [[NSData dataWithBytesNoCopy:stringpluck length:stringpluck_len freeWhenDone:NO] writeToURL:pluckURL atomically:YES];
+        }
+    } else {
+        NSLog(@"Failed to create temporary directory at path %@ with error %@", directoryURL, error);
+    }
+    
+    stk::Stk::setRawwavePath(directoryURL.fileSystemRepresentation);
 
     _kernel.init(self.outputBus.format.channelCount, self.outputBus.format.sampleRate);
     _kernel.reset();

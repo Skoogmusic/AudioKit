@@ -183,10 +183,10 @@ public:
         sampleRate = float(inSampleRate);
         
         
-        NSBundle *frameworkBundle = [NSBundle bundleForClass:[AKOscillator class]];
-        NSString *resourcePath = [frameworkBundle resourcePath];
-        stk::Stk::setRawwavePath([resourcePath cStringUsingEncoding:NSUTF8StringEncoding]);
-        stk::Stk::setSampleRate(sampleRate);
+//        NSBundle *frameworkBundle = [NSBundle bundleForClass:[AKOscillator class]];
+//        NSString *resourcePath = [frameworkBundle resourcePath];
+//        stk::Stk::setRawwavePath([resourcePath cStringUsingEncoding:NSUTF8StringEncoding]);
+//        stk::Stk::setSampleRate(sampleRate);
     }
     
     void startNote(int note, int velocity) {

@@ -6,6 +6,7 @@ import AudioKit
 let playRate = 2.0
 
 let mandolin = AKMandolin()
+let string = StringInstrument()
 mandolin.detune = 1
 mandolin.bodySize = 1
 var pluckPosition = 0.2
@@ -31,6 +32,7 @@ let performance = AKPeriodicFunction(frequency: playRate) {
     if random(in: 0...10) < 1.0 { note2 += 1 }
 
     if random(in: 0...6) > 1.0 {
+        string.play(noteNumber: note1 + octave1, velocity: 80)
         mandolin.fret(noteNumber: note1 + octave1, course: course1 - 1)
         mandolin.pluck(course: course1 - 1, position: pluckPosition, velocity: 127)
     }

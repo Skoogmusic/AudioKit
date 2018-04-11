@@ -14,22 +14,23 @@ namespace stk {
     ModString :: ModString( StkFloat lowestFrequency )
     {
         // Concatenate the STK rawwave path to the rawwave files Plucking_a_guitar_string_with_a_buzz_5b.raw
-        soundfile[0] = new FileWvIn( (Stk::rawwavePath() + "Plucking_a_guitar_string_with_a_buzz_5b.raw").c_str(), true );
-        soundfile[1] = new FileWvIn( (Stk::rawwavePath() + "mand2.raw").c_str(), true );
-        soundfile[2] = new FileWvIn( (Stk::rawwavePath() + "mand3.raw").c_str(), true );
-        soundfile[3] = new FileWvIn( (Stk::rawwavePath() + "mand4.raw").c_str(), true );
-        soundfile[4] = new FileWvIn( (Stk::rawwavePath() + "mand5.raw").c_str(), true );
-        soundfile[5] = new FileWvIn( (Stk::rawwavePath() + "mand6.raw").c_str(), true );
-        soundfile[6] = new FileWvIn( (Stk::rawwavePath() + "mand7.raw").c_str(), true );
-        soundfile[7] = new FileWvIn( (Stk::rawwavePath() + "mand8.raw").c_str(), true );
-        soundfile[8] = new FileWvIn( (Stk::rawwavePath() + "mand9.raw").c_str(), true );
-        soundfile[9] = new FileWvIn( (Stk::rawwavePath() + "mand10.raw").c_str(), true );
-        soundfile[10] = new FileWvIn( (Stk::rawwavePath() + "mand11.raw").c_str(), true );
-        soundfile[11] = new FileWvIn( (Stk::rawwavePath() + "mand12.raw").c_str(), true );
+        soundfile[0].openFile((Stk::rawwavePath() + "Plucking_a_guitar_string_with_a_buzz_5b.raw").c_str(), true);
+//        soundfile[0] = new FileWvIn( (Stk::rawwavePath() + "Plucking_a_guitar_string_with_a_buzz_5b.raw").c_str(), true );
+//        soundfile[1] = new FileWvIn( (Stk::rawwavePath() + "mand2.raw").c_str(), true );
+//        soundfile[2] = new FileWvIn( (Stk::rawwavePath() + "mand3.raw").c_str(), true );
+//        soundfile[3] = new FileWvIn( (Stk::rawwavePath() + "mand4.raw").c_str(), true );
+//        soundfile[4] = new FileWvIn( (Stk::rawwavePath() + "mand5.raw").c_str(), true );
+//        soundfile[5] = new FileWvIn( (Stk::rawwavePath() + "mand6.raw").c_str(), true );
+//        soundfile[6] = new FileWvIn( (Stk::rawwavePath() + "mand7.raw").c_str(), true );
+//        soundfile[7] = new FileWvIn( (Stk::rawwavePath() + "mand8.raw").c_str(), true );
+//        soundfile[8] = new FileWvIn( (Stk::rawwavePath() + "mand9.raw").c_str(), true );
+//        soundfile[9] = new FileWvIn( (Stk::rawwavePath() + "mand10.raw").c_str(), true );
+//        soundfile[10] = new FileWvIn( (Stk::rawwavePath() + "mand11.raw").c_str(), true );
+//        soundfile[11] = new FileWvIn( (Stk::rawwavePath() + "mand12.raw").c_str(), true );
         
         this->mic = 0;
         this->dampTime = 0;
-        this->waveDone = soundfile[mic]->isFinished();
+        this->waveDone = soundfile[mic].isFinished();
         this->srate = 44100.0F;
         this->one_over_srate = 1.0F / srate;
         
@@ -99,8 +100,8 @@ namespace stk {
     
     ModString :: ~ModString( void )
     {
-        for ( int i = 0; i < 12; i++ )
-            delete soundfile[i];
+//        for ( int i = 0; i < 12; i++ )
+//            delete soundfile[i];
     }
     void ModString :: clear(void)
     {
@@ -251,7 +252,7 @@ namespace stk {
         // may be longer than string length, so we just
         // reset the soundfile and add in the pluck in
         // the tick method.
-        soundfile[mic]->reset();
+        soundfile[mic].reset();
         this->waveDone = false;
         this->pluckAmplitude = amplitude;
         if ( amplitude < 0.0 ) {

@@ -136,7 +136,7 @@ namespace stk {
         StkFloat one_over_srate;
         StkFloat pluckAmplitude;
         
-        FileWvIn *soundfile[12];
+        FileWvIn soundfile[12];
         
         int mic;
         long dampTime;
@@ -176,8 +176,8 @@ namespace stk {
         if (!waveDone) {
             // Scale the pluck excitation with comb
             // filtering for the duration of the file.
-            temp = soundfile[mic]->tick() * this->pluckAmplitude;
-            waveDone = soundfile[mic]->isFinished();
+            temp = soundfile[mic].tick() * this->pluckAmplitude;
+            waveDone = soundfile[mic].isFinished();
         }
         
         float input; // input for vertical and horizontal filters
