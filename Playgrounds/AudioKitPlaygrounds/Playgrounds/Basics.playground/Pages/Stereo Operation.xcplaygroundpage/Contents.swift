@@ -1,9 +1,13 @@
+//: [TOC](Table%20Of%20Contents) | [Previous](@previous) | [Next](@next)
+//:
+//: ---
+//:
 //: ## Stereo Operation
 //: This is an example of building a stereo sound generator.
 import AudioKitPlaygrounds
 import AudioKit
 
-let generator = AKOperationGenerator(numberOfChannels: 2) { _ in
+let generator = AKOperationGenerator(channelCount: 2) { _ in
 
     let slowSine = round(AKOperation.sineWave(frequency: 1) * 12) / 12
     let vibrato = slowSine.scale(minimum: -1_200, maximum: 1_200)
@@ -23,3 +27,5 @@ generator.start()
 
 import PlaygroundSupport
 PlaygroundPage.current.needsIndefiniteExecution = true
+
+//: [TOC](Table%20Of%20Contents) | [Previous](@previous) | [Next](@next)

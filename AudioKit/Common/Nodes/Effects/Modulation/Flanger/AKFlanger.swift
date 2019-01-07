@@ -33,10 +33,10 @@ open class AKFlanger: AKNode, AKToggleable, AKComponent, AKInput {
     fileprivate var feedbackParameter: AUParameter?
     fileprivate var dryWetMixParameter: AUParameter?
 
-    /// Ramp Time represents the speed at which parameters are allowed to change
-    @objc open dynamic var rampTime: Double = AKSettings.rampTime {
+    /// Ramp Duration represents the speed at which parameters are allowed to change
+    @objc open dynamic var rampDuration: Double = AKSettings.rampDuration {
         willSet {
-            internalAU?.rampTime = newValue
+            internalAU?.rampDuration = newValue
         }
     }
 
@@ -94,7 +94,7 @@ open class AKFlanger: AKNode, AKToggleable, AKComponent, AKInput {
         }
     }
 
-    /// Dry Wet Mix (fraction)
+    /// Dry Wet Mix - Traditionally 50% for a flanger, avoid changing this value
     @objc open dynamic var dryWetMix: Double = defaultDryWetMix {
         willSet {
             if dryWetMix == newValue {
@@ -126,7 +126,7 @@ open class AKFlanger: AKNode, AKToggleable, AKComponent, AKInput {
     ///   - frequency: modulation frequency Hz
     ///   - depth: depth of modulation (fraction)
     ///   - feedback: feedback fraction
-    ///   - dryWetMix: fraction of wet signal in mix
+    ///   - dryWetMix: fraction of wet signal in mix  - traditionally 50%, avoid changing this value
     ///
     @objc public init(
         _ input: AKNode? = nil,
@@ -148,6 +148,7 @@ open class AKFlanger: AKNode, AKToggleable, AKComponent, AKInput {
                 AKLog("Error: self is nil")
                 return
             }
+            strongSelf.avAudioUnit = avAudioUnit
             strongSelf.avAudioNode = avAudioUnit
             strongSelf.internalAU = avAudioUnit.auAudioUnit as? AKAudioUnitType
 
@@ -185,11 +186,11 @@ open class AKFlanger: AKNode, AKToggleable, AKComponent, AKInput {
 
     /// Function to start, play, or activate the node, all do the same thing
     @objc open func start() {
-        AKLog("start() \(isStopped)")
+        internalAU?.start()
     }
 
     /// Function to stop or bypass the node, both are equivalent
     @objc open func stop() {
-        AKLog("stop() \(isPlaying)")
+        internalAU?.stop()
     }
 }

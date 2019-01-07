@@ -38,17 +38,33 @@ open class AKMicrophone: AKNode, AKToggleable {
     /// Initialize the microphone
     override public init() {
         super.init()
-        #if !os(tvOS)
-            self.avAudioNode = mixer
-            AKSettings.audioInputEnabled = true
-            AudioKit.engine.attach(mixer)
-            AKLog("Mixer inputs", mixer.numberOfInputs)
-            AudioKit.engine.connect(AudioKit.engine.inputNode, to: self.avAudioNode, format: nil)
+        self.avAudioNode = mixer
+        AKSettings.audioInputEnabled = true
+
+        #if os(iOS)
+        let format = getFormatForDevice()
+        // we have to connect the input at the original device sample rate, because once AVAudioEngine is initialized, it reports the wrong rate
+        setAVSessionSampleRate(sampleRate: AudioKit.deviceSampleRate)
+        AudioKit.engine.attach(avAudioUnitOrNode)
+        AudioKit.engine.connect(AudioKit.engine.inputNode, to: self.avAudioNode, format: format!)
+        setAVSessionSampleRate(sampleRate: AKSettings.sampleRate)
+        #elseif !os(tvOS)
+        AudioKit.engine.inputNode.connect(to: self.avAudioNode)
         #endif
     }
 
     deinit {
         AKSettings.audioInputEnabled = false
+    }
+
+    private func setAVSessionSampleRate(sampleRate: Double) {
+        #if !os(macOS)
+        do {
+            try AVAudioSession.sharedInstance().setPreferredSampleRate(sampleRate)
+        } catch {
+            AKLog(error)
+        }
+        #endif
     }
 
     /// Function to start, play, or activate the node, all do the same thing
@@ -64,5 +80,20 @@ open class AKMicrophone: AKNode, AKToggleable {
             lastKnownVolume = volume
             volume = 0
         }
+    }
+
+    // Here is where we actually check the device type and make the settings, if needed
+    private func getFormatForDevice() -> AVAudioFormat? {
+        #if os(iOS) && !targetEnvironment(simulator)
+        let currentFormat = AudioKit.engine.inputNode.inputFormat(forBus: 0)
+        let desiredFS = AudioKit.deviceSampleRate
+        return AVAudioFormat(commonFormat: currentFormat.commonFormat,
+                             sampleRate: desiredFS,
+                             interleaved: currentFormat.isInterleaved,
+                             channelLayout: currentFormat.channelLayout!)
+        #else
+        let desiredFS = AKSettings.sampleRate
+        return AVAudioFormat(standardFormatWithSampleRate: desiredFS, channels: 2)
+        #endif
     }
 }

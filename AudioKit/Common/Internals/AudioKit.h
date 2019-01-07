@@ -83,6 +83,8 @@ FOUNDATION_EXPORT const unsigned char AudioKitVersionString[];
 #import "AKRhinoGuitarProcessorDSPKernel.hpp"
 
 // Effects / Modulation
+#import "AKModulatedDelay_Typedefs.h"
+#import "AKModulatedDelay.hpp"
 #import "AKModulatedDelayDSP.hpp"
 #import "AKPhaserDSP.hpp"
 
@@ -108,12 +110,12 @@ FOUNDATION_EXPORT const unsigned char AudioKitVersionString[];
 // Generators / Oscillators
 #import "AKFMOscillatorDSP.hpp"
 #import "AKFMOscillatorBankAudioUnit.h"
+#import "AKFMOscillatorBank2AudioUnit.h"
 #import "AKMorphingOscillatorDSP.hpp"
 #import "AKMorphingOscillatorBankAudioUnit.h"
 #import "AKMorphingOscillatorBankDSPKernel.hpp"
 #import "AKOscillatorDSP.hpp"
 #import "AKOscillatorBankAudioUnit.h"
-#import "AKFMOscillatorBank2AudioUnit.h"    // Skoog custom
 #import "AKPhaseDistortionOscillatorDSP.hpp"
 #import "AKPhaseDistortionOscillatorBankAudioUnit.h"
 #import "AKPWMOscillatorDSP.hpp"
@@ -125,15 +127,15 @@ FOUNDATION_EXPORT const unsigned char AudioKitVersionString[];
 #import "AKDripDSP.hpp"
 #import "AKFluteDSP.hpp"
 #import "AKMandolinAudioUnit.h"
+#import "MogoInstrumentAudioUnit.h"
+#import "StringInstrumentAudioUnit.h"
+#import "AKFluteInstrumentAudioUnit.h"
 #import "AKMetalBarDSP.hpp"
 #import "AKRhodesPianoAudioUnit.h"
 #import "AKPluckedStringDSP.hpp"
 #import "AKShakerAudioUnit.h"
 #import "AKTubularBellsAudioUnit.h"
 #import "AKVocalTractDSP.hpp"
-#import "MogoInstrumentAudioUnit.h"     // Skoog custom
-#import "AKFluteInstrumentAudioUnit.h"  // Skoog custom
-#import "StringInstrumentAudioUnit.h"   // Skoog custom
 
 // Mixing
 #import "AKBalancerAudioUnit.h"
@@ -144,8 +146,16 @@ FOUNDATION_EXPORT const unsigned char AudioKitVersionString[];
 // Playback
 #import "AKPhaseLockedVocoderAudioUnit.h"
 #import "AKSamplePlayerAudioUnit.h"
+#import "AKWaveTableAudioUnit.h"
+#import "AKDiskStreamerAudioUnit.h"
 #import "AKPresetManager.h"
+#import "AKSampler_Typedefs.h"
+#import "AKCoreSampler.hpp"
 #import "AKSamplerDSP.hpp"
+
+#if !TARGET_OS_TV
+#import "AKCallbackInstrumentAudioUnit.h"
+#endif
 
 // Testing
 #import "AKTesterAudioUnit.h"
@@ -168,9 +178,14 @@ FOUNDATION_EXPORT const unsigned char AudioKitVersionString[];
 #import "ParameterRamper.hpp"
 #import "BufferedAudioBus.hpp"
 #import "AKTimeline.h"
+#import "AudioEngineUnit.h"
 
 // Sequencer
 #import "AKSamplerMetronome.h"
 
 // Swift/ObjC/C/C++ Inter-operability
 #import "AKInterop.h"
+
+// Synth
+#import "AKSynth.hpp"
+#import "AKSynthDSP.hpp"

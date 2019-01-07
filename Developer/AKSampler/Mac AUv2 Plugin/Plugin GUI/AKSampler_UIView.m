@@ -16,6 +16,7 @@ AudioUnitParameter parameter[] = {
     { 0, kVibratoDepthSemitones, kAudioUnitScope_Global, 0 },
     { 0, kFilterEnable, kAudioUnitScope_Global, 0 },
     { 0, kFilterCutoffHarmonic, kAudioUnitScope_Global, 0 },
+    { 0, kFilterCutoffEgStrength, kAudioUnitScope_Global, 0 },
     { 0, kFilterResonanceDb, kAudioUnitScope_Global, 0 },
     { 0, kAmpEgAttackTimeSeconds, kAudioUnitScope_Global, 0 },
     { 0, kAmpEgDecayTimeSeconds, kAudioUnitScope_Global, 0 },
@@ -25,6 +26,10 @@ AudioUnitParameter parameter[] = {
     { 0, kFilterEgDecayTimeSeconds, kAudioUnitScope_Global, 0 },
     { 0, kFilterEgSustainFraction, kAudioUnitScope_Global, 0 },
     { 0, kFilterEgReleaseTimeSeconds, kAudioUnitScope_Global, 0 },
+    { 0, kLoopThruRelease, kAudioUnitScope_Global, 0 },
+    { 0, kMonophonic, kAudioUnitScope_Global, 0 },
+    { 0, kLegato, kAudioUnitScope_Global, 0 },
+    { 0, kGlideRate, kAudioUnitScope_Global, 0 },
 };
 
 
@@ -86,6 +91,25 @@ void ParameterListenerDispatcher (void *inRefCon, void *inObject, const AudioUni
              @"[AKSampler_UIView onVibratoDepthSlider:] AUParameterSet()");
 }
 
+- (IBAction)onMonoCheckbox:(NSButton *)sender {
+    bool enable = ([sender state] == NSOnState);
+    NSAssert(AUParameterSet(mParameterListener, sender, &parameter[kMonophonic], (Float32)(enable ? 1 : 0), 0) == noErr,
+             @"[AKSampler_UIView onMonoCheckbox:] AUParameterSet()");
+}
+
+- (IBAction)onLegatoCheckbox:(NSButton *)sender {
+    bool enable = ([sender state] == NSOnState);
+    NSAssert(AUParameterSet(mParameterListener, sender, &parameter[kLegato], (Float32)(enable ? 1 : 0), 0) == noErr,
+             @"[AKSampler_UIView onLegatoCheckbox:] AUParameterSet()");
+}
+
+- (IBAction)onGlideRateSlider:(NSSlider *)sender {
+    float inValue = [sender floatValue];
+    [glideRateText setFloatValue: inValue];
+    NSAssert(AUParameterSet(mParameterListener, sender, &parameter[kGlideRate], (Float32)inValue, 0) == noErr,
+             @"[AKSampler_UIView onGlideRateSlider:] AUParameterSet()");
+}
+
 - (IBAction)onAmpAttackSlider:(NSSlider *)sender {
     float inValue = [sender floatValue];
     [ampAttackText setFloatValue: inValue];
@@ -125,6 +149,13 @@ void ParameterListenerDispatcher (void *inRefCon, void *inObject, const AudioUni
     [filterCutoffText setFloatValue: inValue];
     NSAssert(AUParameterSet(mParameterListener, sender, &parameter[kFilterCutoffHarmonic], (Float32)inValue, 0) == noErr,
              @"[AKSampler_UIView onFilterCutoffSlider:] AUParameterSet()");
+}
+
+- (IBAction)onFilterEgStrengthSlider:(NSSlider *)sender {
+    float inValue = [sender floatValue];
+    [filterEgStrengthText setFloatValue: inValue];
+    NSAssert(AUParameterSet(mParameterListener, sender, &parameter[kFilterCutoffEgStrength], (Float32)inValue, 0) == noErr,
+             @"[AKSampler_UIView onFilterEgStrengthSlider:] AUParameterSet()");
 }
 
 - (IBAction)onFilterResonanceSlider:(NSSlider *)sender {
@@ -278,6 +309,16 @@ void ParameterListenerDispatcher (void *inRefCon, void *inObject, const AudioUni
             [vibratoDepthSlider setFloatValue: inValue];
             [vibratoDepthText setFloatValue: inValue];
             break;
+        case kMonophonic:
+            [monoCheckbox setState: inValue != 0.0 ? NSOnState : NSOffState];
+            break;
+        case kLegato:
+            [legatoCheckbox setState: inValue != 0.0 ? NSOnState : NSOffState];
+            break;
+        case kGlideRate:
+            [glideRateSlider setFloatValue: inValue];
+            [glideRateText setFloatValue: inValue];
+            break;
         case kAmpEgAttackTimeSeconds:
             [ampAttackSlider setFloatValue: inValue];
             [ampAttackText setFloatValue: inValue];
@@ -300,6 +341,10 @@ void ParameterListenerDispatcher (void *inRefCon, void *inObject, const AudioUni
         case kFilterCutoffHarmonic:
             [filterCutoffSlider setFloatValue: inValue];
             [filterCutoffText setFloatValue: inValue];
+            break;
+        case kFilterCutoffEgStrength:
+            [filterEgStrengthSlider setFloatValue: inValue];
+            [filterEgStrengthText setFloatValue: inValue];
             break;
         case kFilterResonanceDb:
             [filterResonanceSlider setFloatValue: inValue];

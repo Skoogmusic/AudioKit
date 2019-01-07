@@ -27,7 +27,7 @@ open class AKFluteInstrument: AKPolyphonicNode, AKComponent {
     fileprivate var amplitudeParameter: AUParameter?
 
     /// Ramp Time represents the speed at which parameters are allowed to change
-    open var rampTime: Double = AKSettings.rampTime {
+    open var rampTime: Double = AKSettings.rampDuration {
         willSet {
             if rampTime != newValue {
                 internalAU?.rampTime = newValue

@@ -21,7 +21,7 @@ open class StringInstrument: AKPolyphonicNode, AKComponent {
     fileprivate var lowestFrequency: Double
 
     /// Ramp Time represents the speed at which parameters are allowed to change
-    open var rampTime: Double = AKSettings.rampTime {
+    open var rampTime: Double = AKSettings.rampDuration {
         willSet {
             if rampTime != newValue {
                 internalAU?.rampTime = newValue

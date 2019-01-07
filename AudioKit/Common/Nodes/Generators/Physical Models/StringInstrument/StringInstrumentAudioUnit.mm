@@ -84,7 +84,7 @@
 
     // Initialize a default format for the busses.
     AVAudioFormat *defaultFormat = [[AVAudioFormat alloc] initStandardFormatWithSampleRate:AKSettings.sampleRate
-                                                                                  channels:AKSettings.numberOfChannels];
+                                                                                  channels:AKSettings.channelCount];
 
     // Create a DSP kernel to handle the signal processing.
     _kernel.init(defaultFormat.channelCount, defaultFormat.sampleRate);
@@ -119,7 +119,7 @@
     frequencyAUParameter.value = 110;
     amplitudeAUParameter.value = 0.5;
 
-    _rampTime = AKSettings.rampTime;
+    _rampTime = AKSettings.rampDuration;
 
     _kernel.setParameter(frequencyAddress,       frequencyAUParameter.value);
     _kernel.setParameter(amplitudeAddress,       amplitudeAUParameter.value);

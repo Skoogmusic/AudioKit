@@ -55,6 +55,14 @@ public:
     }
 
     void setUpTable(UInt32 size) {
+        // Addition for Skoog Skratch
+        if (ftbl1 != nil) {
+            sp_ftbl_destroy(&ftbl1);
+            sp_ftbl_destroy(&ftbl2);
+            current_size = 2;
+        }
+        
+        // normal operation
         if (current_size <= 2) {
             current_size = size / 2;
             ftbl_size = size / 2;

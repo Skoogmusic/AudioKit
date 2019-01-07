@@ -279,7 +279,7 @@ public:
 
 private:
     std::vector<NoteState> noteStates;
-    int channels = AKSettings.numberOfChannels;
+    int channels = AKSettings.channelCount;
     float sampleRate = AKSettings.sampleRate;
 
     AudioBufferList *outBufferListPtr = nullptr;

@@ -6,33 +6,23 @@
 //  Copyright (c) 2016 Aurelius Prochazka. All rights reserved.
 //
 
-#ifndef AKFMOscillatorBank2AudioUnit_h
-#define AKFMOscillatorBank2AudioUnit_h
+#pragma once
 
-#import <AudioToolbox/AudioToolbox.h>
+#import "AKBankAudioUnit.h"
 
-@interface AKFMOscillatorBank2AudioUnit : AUAudioUnit
+@interface AKFMOscillatorBank2AudioUnit : AKBankAudioUnit
 
 @property (nonatomic) float carrierMultiplier;
 @property (nonatomic) float modulatingMultiplier;
 @property (nonatomic) float modulationIndex;
-
-@property (nonatomic) float attackDuration;
-@property (nonatomic) float decayDuration;
-@property (nonatomic) float sustainLevel;
-@property (nonatomic) float releaseDuration;
 @property (nonatomic) float detuningOffset;
 @property (nonatomic) float detuningMultiplier;
 
 - (void)setupWaveform:(int)size;
 - (void)setWaveformValue:(float)value atIndex:(UInt32)index;
-- (void)startNote:(int)note velocity:(int)velocity;
-- (void)stopNote:(int)note;
-- (void)setUpParameterRamp;
+//- (void)startNote:(int)note velocity:(int)velocity;
+//- (void)stopNote:(int)note;
+//- (void)setUpParameterRamp;
 - (BOOL)isSetUp;
 
-@property double rampTime;
-
 @end
-
-#endif /* AKFMOscillatorBank2AudioUnit_h */

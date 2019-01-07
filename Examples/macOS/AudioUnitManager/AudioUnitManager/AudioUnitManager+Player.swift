@@ -10,11 +10,8 @@ import AudioKit
 import Cocoa
 
 extension AudioUnitManager {
-
     internal func handlePlay(state: Bool) {
         guard let player = player else { return }
-        guard let internalManager = internalManager else { return }
-
         // stop
         if player.isPlaying {
             player.pause()
@@ -36,7 +33,7 @@ extension AudioUnitManager {
             }
 
             // then attach the effects chain if needed
-            if internalManager.input != (player as AKNode) {
+            if internalManager.input != player {
                 internalManager.connectEffects(firstNode: player, lastNode: mixer)
             }
             startEngine(completionHandler: {
@@ -46,14 +43,12 @@ extension AudioUnitManager {
                 self.startAudioTimer()
             })
         } else {
-
             if AudioKit.engine.isRunning {
                 // just turns off reverb tails or delay lines etc
                 internalManager.reset()
             }
             stopAudioTimer()
         }
-
     }
 
     func handleRewind() {
@@ -76,7 +71,7 @@ extension AudioUnitManager {
 
     func handleAudioComplete() {
         guard let player = player else { return }
-        // Swift.print("handleAudioComplete()")
+        // AKLog("handleAudioComplete()")
 
         handlePlay(state: false)
         player.startTime = 0
@@ -85,7 +80,9 @@ extension AudioUnitManager {
 
     /// open an audio URL for playing
     func open(url: URL) {
-        guard let internalManager = internalManager else { return }
+        try? AudioKit.stop()
+
+        peak = nil
 
         if player == nil {
             player = AKPlayer(url: url)
@@ -99,6 +96,8 @@ extension AudioUnitManager {
         player.completionHandler = handleAudioComplete
         internalManager.connectEffects(firstNode: player, lastNode: mixer)
         player.isLooping = isLooping
+        player.isNormalized = false
+        player.buffering = isBuffered ? .always : .dynamic
 
         playButton.isEnabled = true
         fileField.stringValue = "🔈 \(url.lastPathComponent)"
@@ -115,14 +114,15 @@ extension AudioUnitManager {
         waveform.frame = waveformContainer.frame
         waveform.fitToFrame()
         waveform.delegate = self
-
         audioEnabled = true
+
+        audioNormalizedButton.state = .off
     }
 
     func close() {
         fileField.stringValue = ""
         waveform?.dispose()
-        player?.disconnect()
+        player?.detach()
         player = nil
         audioEnabled = false
     }
@@ -145,7 +145,7 @@ extension AudioUnitManager {
 
     @objc private func updateWaveformDisplay() {
         guard let player = player else { return }
-        // Swift.print("\(player.currentTime)")
+        // AKLog("\(player.currentTime)")
         waveform?.position = player.currentTime
         updateTimeDisplay(player.currentTime)
     }
